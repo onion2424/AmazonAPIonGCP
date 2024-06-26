@@ -1,4 +1,4 @@
-import {clientID, clientSecret, refreshToken} from '../../../../AmazonApiServiceKey/spAPItoken.js';
+import {clientID, clientSecret, refreshToken, name} from '../../../../AmazonApiServiceKey/spAPItoken.js';
 import { createGunzip } from 'zlib';
 import { Readable } from 'node:stream';
 import { streamFileUpload } from '../../../GoogleCloudAPI/streamFileUpload.js';
@@ -14,7 +14,7 @@ export async function download(url, path) {
     .then(async (res) => 
       {
           let readable = Readable.fromWeb(res.body);
-          let destFileName = path + "シロクロ/" + "GetSalesAndTrafficReport.json"
+          let destFileName = path + name + "/GetSalesAndTrafficReport.json"
           let streams = 
           [
             readable,
