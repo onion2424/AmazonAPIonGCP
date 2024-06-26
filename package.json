@@ -1,0 +1,17 @@
+{
+  "name": "sendtest",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "node ./src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/storage": "^7.11.2",
+    "iconv-lite": "^0.6.3",
+    "stream-json": "^1.8.0"
+  }
+}
