@@ -1,0 +1,15 @@
+{
+    "date":"2024-06-27",
+    "attributedSalesSameSku1d":0,
+    "unitsSoldClicks1d":0,
+    "attributedSalesSameSku7d":0,
+    "attributedSalesSameSku14d":0,
+    "sales1d":0,
+    "adGroupId":22093182871566,
+    "attributedSalesSameSku30d":0,
+    "purchasesSameSku14d":0,
+    "spend":0,"purchasesSameSku1d":0,"unitsSoldSameSku1d":0,"advertisedSku":"eu-01","advertisedAsin":"B08DS6KMLR","purchases1d":0,"purchasesSameSku7d":0,"unitsSoldSameSku7d":0,"purchases7d":0,"unitsSoldSameSku30d":0,"cost":0,"unitsSoldClicks14d":0,"campaignId":190567543936625,"sales14d":0,"sales30d":0,"impressions":878,"purchasesSameSku30d":0,"purchases14d":0,"unitsSoldClicks30d":0,"purchases30d":0,"clicks":0,"unitsSoldSameSku14d":0,"unitsSoldClicks7d":0}
+
+{"date":"2024-06-27","attributedSalesSameSku1d":0,"unitsSoldClicks1d":0,"attributedSalesSameSku7d":0,"attributedSalesSameSku14d":0,"sales1d":0,"adGroupId":180435390365131,"attributedSalesSameSku30d":0,"purchasesSameSku14d":0,"spend":243.66,"purchasesSameSku1d":0,"unitsSoldSameSku1d":0,"advertisedSku":"eu-01","advertisedAsin":"B08DS6KMLR","purchases1d":0,"purchasesSameSku7d":0,"unitsSoldSameSku7d":0,"purchases7d":0,"unitsSoldSameSku30d":0,"cost":243.66,"unitsSoldClicks14d":0,"campaignId":46888089611354,"sales14d":0,"sales30d":0,"impressions":477,"purchasesSameSku30d":0,"purchases14d":0,"unitsSoldClicks30d":0,"purchases30d":0,"clicks":1,"unitsSoldSameSku14d":0,"unitsSoldClicks7d":0}
+{"date":"2024-06-27","attributedSalesSameSku1d":0,"unitsSoldClicks1d":0,"attributedSalesSameSku7d":0,"attributedSalesSameSku14d":0,"sales1d":0,"adGroupId":114248083255050,"attributedSalesSameSku30d":0,"purchasesSameSku14d":0,"spend":319,"purchasesSameSku1d":0,"unitsSoldSameSku1d":0,"advertisedSku":"eu-01","advertisedAsin":"B08DS6KMLR","purchases1d":0,"purchasesSameSku7d":0,"unitsSoldSameSku7d":0,"purchases7d":0,"unitsSoldSameSku30d":0,"cost":319,"unitsSoldClicks14d":0,"campaignId":46888089611354,"sales14d":0,"sales30d":0,"impressions":163,"purchasesSameSku30d":0,"purchases14d":0,"unitsSoldClicks30d":0,"purchases30d":0,"clicks":2,"unitsSoldSameSku14d":0,"unitsSoldClicks7d":0}
+{"date":"2024-06-27","attributedSalesSameSku1d":2759,"unitsSoldClicks1d":1,"attributedSalesSameSku7d":2759,"attributedSalesSameSku14d":2759,"sales1d":2759,"adGroupId":354117678583415,"attributedSalesSameSku30d":2759,"purchasesSameSku14d":1,"spend":41.6,"purchasesSameSku1d":1,"unitsSoldSameSku1d":1,"advertisedSku":"eu-01","advertisedAsin":"B08DS6KMLR","purchases1d":1,"purchasesSameSku7d":1,"unitsSoldSameSku7d":1,"purchases7d":1,"unitsSoldSameSku30d":1,"cost":41.6,"unitsSoldClicks14d":1,"campaignId":46888089611354,"sales14d":2759,"sales30d":2759,"impressions":140,"purchasesSameSku30d":1,"purchases14d":1,"unitsSoldClicks30d":1,"purchases30d":1,"clicks":1,"unitsSoldSameSku14d":1,"unitsSoldClicks7d":1}

@@ -5,13 +5,28 @@
   "type": "module",
   "main": "./src/index.js",
   "scripts": {
-    "test": "node ./src/index.js"
+    "reportReceive:create": "node ./src/Main/create.js -reportReceive -release",
+    "reportReceive:image": "docker build -t asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/report-receive-image .",
+    "reportReceive:push": "docker push asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/report-receive-image",
+    "reportReceive:job": "gcloud run jobs deploy report-receive-run --image asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/report-receive-image --region=asia-northeast1 --tasks=1 --cpu=1 --max-retries=0 --memory=512Mi --parallelism=1 --task-timeout=86400 --region asia-northeast1",
+    "reportReceive:build": "run-s reportReceive:create reportReceive:image reportReceive:push reportReceive:job",
+    "reportReceive:create_test": "node ./src/Main/create.js -reportReceive",
+    "reportReceive:image_test": "docker build -t asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/test-report-receive-image .",
+    "reportReceive:push_test": "docker push asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/test-report-receive-image",
+    "reportReceive:job_test": "gcloud run jobs deploy test-report-receive-run --image asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/test-report-receive-image --region=asia-northeast1 --tasks=1 --cpu=1 --max-retries=0 --memory=512Mi --parallelism=1 --task-timeout=86400 --region asia-northeast1",
+    "reportReceive:build_test": "run-s reportReceive:create_test reportReceive:image_test reportReceive:push_test reportReceive:job_test",
+    "reportReceive": "node ./src/Main/reportReceive.js",
+    "userSetting": "node ./src/Main/userSetting.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@google-cloud/storage": "^7.11.2",
+    "ajv": "^8.16.0",
     "iconv-lite": "^0.6.3",
     "stream-json": "^1.8.0"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }

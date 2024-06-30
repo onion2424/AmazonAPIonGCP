@@ -1,7 +1,7 @@
 import {clientID, clientSecret, refreshToken, name} from '../../../../AmazonApiServiceKey/spAPItoken.js';
 import { createGunzip } from 'zlib';
 import { Readable } from 'node:stream';
-import { streamFileUpload } from '../../../GoogleCloudAPI/streamFileUpload.js';
+import storageManager from "../../../GoogleCloudStorageAPI/manager.js"
 import iconv from 'iconv-lite';
 
 // CommonJs
@@ -25,7 +25,7 @@ export async function download(url, path) {
               decodeStream('Shift_JIS'),
               encodeStream( 'utf-8' )
             ];
-            await streamFileUpload(destFileName, streams);
+            await storageManager.streamFileUpload(destFileName, streams);
         })
       .catch((err) => false);
     return response;

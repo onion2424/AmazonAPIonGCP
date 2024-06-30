@@ -15,7 +15,10 @@ export async function create(accesToken, dataStartTime, dataEndTime) {
             "marketplaceIds": [
                "A1VC38T7YXB528"
             ],
-            "reportOptions":{"dateGranularity":"DAY"}
+            "reportOptions":{
+              "dateGranularity":"DAY",
+              "custom" : "true",
+            }
         }),
     })
       .then((res) => res.json())

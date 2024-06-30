@@ -1,7 +1,8 @@
 import {clientID, clientSecret, profileID, refreshToken, name} from '../../../../../AmazonApiServiceKey/adsAPItoken.js';
 import { createGunzip } from 'zlib';
 import { Readable } from 'node:stream';
-import { streamFileUpload } from '../../../../GoogleCloudAPI/streamFileUpload.js';
+import storageManager from "../../../../GoogleCloudStorageAPI/manager.js"
+
 import parser from "stream-json";
 import streamArray from "stream-json/streamers/StreamArray.js"
 
@@ -30,7 +31,7 @@ export async function download(url, path)
                 return JSON.stringify(value) + '\n'
               },
             ];
-            await streamFileUpload(destFileName, streams);
+            await storageManager.streamFileUpload(destFileName, streams);
         })
         .catch((err) => false);
       return response;
