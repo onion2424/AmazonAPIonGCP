@@ -18,8 +18,6 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-48665c60d888.json';
 const bucketName = 'amazon-api-report';
 const storage = new Storage({keyFilename: keyFilename});
 
-console.log('import moveFile');
-
 export async function moveFile(srcFileName, destFileName) {
   // Optional:
   // Set a generation-match precondition to avoid potential race conditions

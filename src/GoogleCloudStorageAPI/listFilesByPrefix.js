@@ -1,11 +1,18 @@
-import { combine } from "../Common/systemCommon.js";
+import { utils } from "../Common/systemCommon.js";
+import { Storage } from '@google-cloud/storage';
 
-export async function listFilesByPrefix(storage, bucketName, test, prefix, delimiter) {
-  console.log(storage);
-  console.log(bucketName);
 
+/**
+ * 
+ * @param {Storage} storage 
+ * @param {string} bucketName 
+ * @param {string} prefix 
+ * @param {string} delimiter 
+ * @returns 
+ */
+export async function listFilesByPrefix(storage, bucketName, prefix, delimiter) {
   const options = {
-    prefix: combine(test, prefix),
+    prefix: prefix,
   };
 
   console.log(options.prefix);
@@ -15,10 +22,14 @@ export async function listFilesByPrefix(storage, bucketName, test, prefix, delim
   }
 
   // Lists files in the bucket, filtered by a prefix
-  const [files] = await storage.bucket(bucketName).getFiles(options);
+  let [files] = await storage.bucket(bucketName).getFiles(options);
 
   console.log('Files:');
+  files = files.filter(file => file.name.slice(-1) !== "/");
+  /*
   files.forEach(file => {
     console.log(file.name);
   });
+  */
+  return files;
 }

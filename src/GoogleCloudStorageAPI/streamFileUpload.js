@@ -1,4 +1,4 @@
-import { combine } from '../Common/systemCommon.js';
+import { utils } from '../Common/systemCommon.js';
 import { Storage } from '@google-cloud/storage';
 import chain from "stream-chain";
 import { pipeline } from 'node:stream/promises';
@@ -11,18 +11,23 @@ import { pipeline } from 'node:stream/promises';
 // passthroughStream.write(contents);
 // passthroughStream.end();
 
-export async function streamFileUpload(storage, bucketName, test, destFileName, streams) {
+/**
+ * 
+ * @param {Storage} storage 
+ * @param {string} bucketName 
+ * @param {string} destFileName 
+ * @param {Array<>} streams 
+ * @returns 
+ */
+export async function streamFileUpload(storage, bucketName, destFileName, streams) {
     let ret = true;
-
-
-    const filepath = combine(test, destFileName);
 
     const myBucket = storage.bucket(bucketName);
 
     //console.log(filepath);
 
     // Create a reference to a file object
-    const file = myBucket.file(filepath);
+    const file = myBucket.file(destFileName);
     const writable = file.createWriteStream();
     const readable = new chain(
         [
@@ -51,7 +56,7 @@ export async function streamFileUpload(storage, bucketName, test, destFileName, 
 
 
     if(ret)
-        console.log(`${filepath} uploaded to ${bucketName}`);
+        console.log(`${destFileName} uploaded to ${bucketName}`);
     else
         console.log('エラー時処理');
     
