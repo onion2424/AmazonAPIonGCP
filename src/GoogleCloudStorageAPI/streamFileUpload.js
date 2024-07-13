@@ -2,6 +2,7 @@ import { utils } from '../Common/systemCommon.js';
 import { Storage } from '@google-cloud/storage';
 import chain from "stream-chain";
 import { pipeline } from 'node:stream/promises';
+import { logger } from '../Common/systemCommon.js';
 
 // Get a reference to the bucket
 
@@ -33,18 +34,14 @@ export async function streamFileUpload(storage, bucketName, destFileName, stream
         [
             ...streams
         ]);
-        
+
     // pipeをつなぐ
     const end = new pipeline(readable, writable);
 
     // エラーハンドリング
-    [...streams, writable].forEach((item) =>
-    {
-        if('on' in item)
-        {
-            item.on('error', () => 
-            {
-                console.log('on error');
+    [...streams, writable].forEach((item) => {
+        if ('on' in item) {
+            item.on('error', () => {
                 ret = false;
             })
         }
@@ -55,10 +52,12 @@ export async function streamFileUpload(storage, bucketName, destFileName, stream
     //console.log('await ended');
 
 
-    if(ret)
-        console.log(`${destFileName} uploaded to ${bucketName}`);
-    else
-        console.log('エラー時処理');
-    
+    if (ret) {
+        logger.info(`${destFileName} uploaded to ${bucketName}`);
+    }
+    else {
+        logger.error('エラー時処理');
+    }
+
     return ret;
 }

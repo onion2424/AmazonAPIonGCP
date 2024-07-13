@@ -4,10 +4,10 @@ const schema =
     "additionalProperties": false,
     "properties": {
         "command": { "type": "enum"["CREATE"] },
-        "name": { "type": "string" },
+        "tag": { "type": "string" },
         "sellerId": { "type": "string" },
         "sellerStartDate": { "type": "string" },
-        "ADS-API": {
+        "ads_token": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -21,7 +21,7 @@ const schema =
             ],
         },
 
-        "SP-API":
+        "sp_token":
         {
             "type": "object",
             "additionalProperties": false,
@@ -37,7 +37,7 @@ const schema =
         },
     },
     "required" : [
-        "command", "name", "sellerId"
+        "command", "tag", "sellerId", "ads_token", "sp_token"
     ],
 }
 

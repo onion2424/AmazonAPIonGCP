@@ -1,9 +1,10 @@
+import root from "../../../root.js"
+import { _ } from "../../../Common/systemCommon.js";
 import { create } from "./create.js";
 import { status } from "./status.js";
 import { get } from "./get.js";
 import { download } from "./download.js";
-import root from "../../../root.js"
-import { _ } from "../../../Common/systemCommon.js";
+import { getDate } from "./date.js";
 
 class manager
 {
@@ -13,6 +14,7 @@ class manager
         this.get = get;
         this.status = status;
         this.download = download;
+        this.getDate = getDate;
     }
 }
 

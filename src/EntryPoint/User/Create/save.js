@@ -1,82 +1,72 @@
-import { getFirestore, FieldValue, Transaction, Timestamp, DocumentReference, DocumentSnapshot } from 'firebase-admin/firestore';
-import { _, utils } from "../../../Common/systemCommon.js";
+import { _, utils, dayjs } from "../../../Common/systemCommon.js";
 import root from "../../../import.js"
-import { manager as FireStoreAPI } from "../../../FireStoreAPI/manager.js"
+import fireStoreManager from "../../../FireStoreAPI/manager.js"
+import M_AccountManager from "../../../FireStoreAPI/Collection/M_Account/manager.js"
+import D_TokenManager from "../../../FireStoreAPI/Collection/D_Token/manager.js"
+import D_ReportRequestManager from '../../../FireStoreAPI/Collection/D_ReportRequest/manager.js';
+import D_TransactionManager from "../../../FireStoreAPI/Collection/D_Transaction/manager.js"
+import { M_Request } from '../../../FireStoreAPI/Collection/M_Request/class.js';
+import { D_Transaction } from '../../../FireStoreAPI/Collection/D_Transaction/class.js';
+import { M_Transaction } from '../../../FireStoreAPI/Collection/M_Transaction/class.js';
 
 export default async function save(json) {
-    /**
-     * @type {FireStoreAPI}
-     */
-    const fireStoreManager = _.get(root, ["FireStoreAPI"]);
+    const date = dayjs();
+
     const batch = await fireStoreManager.createBatch();
-    console.log(_.get(json, ['ADS-API']));
-    const adsDocRef = fireStoreManager.createDoc("D_Token");
-    batch.set(adsDocRef, D_Token(json['ADS-API'].tokenInfo));
-    const spDocRef = fireStoreManager.createDoc("D_Token");
-    batch.set(spDocRef, D_Token(json['SP-API'].tokenInfo));
-    const accountDocRef = fireStoreManager.createDoc("M_Account");
-    batch.set(accountDocRef, M_Acount(json, adsDocRef.id, spDocRef.id));
-    batch.commit();
+
+    const adsDocRef = await fireStoreManager.createDoc("D_Token");
+    batch.set(adsDocRef, D_TokenManager.create(json['ads_token'].accessToken));
+    delete json.ads_token.accessToken;
+
+    const spDocRef = await fireStoreManager.createDoc("D_Token");
+    batch.set(spDocRef, D_TokenManager.create(json['sp_token'].accessToken));
+    delete json.sp_token.accessToken;
+
+    const accountDocRef = await fireStoreManager.createDoc("M_Account");
+    const account = M_AccountManager.create(json, adsDocRef.id, spDocRef.id);
+    batch.set(accountDocRef, account);
+
+    const mtrans = await fireStoreManager.getDocs("M_Transaction", [["valid", "==", true]]);
+    for (const mtran of mtrans) {
+        const transactionDoc = await fireStoreManager.createDoc("D_Transaction");
+        // 初期データ取得用のD_Tranを作成
+        {
+            // M_TransactionからD_Transactionを作成する。statusesはReport⇒FirstCall。これだけ？
+            // firstCallStatusesをM_Transactionに持たせないといけない
+
+            const dtran = structuredClone(D_Transaction);
+            /**
+             * @type {M_Transaction}
+             */
+            const mtranData = mtran.data();
+            dtran.ref = mtran.ref;
+            dtran.statuses = mtranData.firstStatuses.map(s => s.status);
+            dtran.status = "";
+            batch.set(transactionDoc, dtran);
+        }
+    }
+
+    await batch.commit();
     return true;
 }
 
-// transaction貼らないと無意味か？
-function M_Acount(json, adsToken, spToken) {
-    const ads = json["ADS-API"];
-    const sp = json["SP-API"];
-    let document =
-    {
-        deleted: false,
-        tag: json.name,
-        token:
-        {
-            ads: {
-                client_id: ads.client_id,
-                client_secret: ads.client_secret,
-                profileId: ads.profileId,
-                tokenId: adsToken,
-            },
-            sp: {
-                client_id: sp.client_id,
-                client_secret: sp.client_secret,
-                marketplaceIds: json.marketplaceIds,
-                tokenId: spToken,
-            }
+/**
+ * 
+ * @param {number} dateback 
+ * @param {dayjs.Dayjs} basedate 
+ * @param {dayjs.Dayjs} startdate 
+ * @returns 
+ */
+function getSpans(dateback, basedate, startdate) {
+    switch (dateback) {
+        case -1:
+            return [];
+        case 0: {
+            const diff = basedate.diff(startdate, 'day');
+            return [...Array(diff)].map((_, i) => i + 1);
         }
-    };
-    return document;
-}
-
-function D_Token(accessToken) {
-    let date = new Date();
-    date.setSeconds(date.getSeconds() + accessToken["expires_in"]);
-
-    let document =
-    {
-        delayInfo:
-        {
-            delayCount: 0,
-            delayTime: Timestamp.fromDate(new Date())
-        },
-        expiration: Timestamp.fromDate(date),
-        token: accessToken.access_token,
-        valid: true,
+        default: {
+            return [...Array(dateback)].map((_, i) => i + 1);
+        }
     }
-
-    return document;
-}
-
-function D_Transaction() {
-
-}
-
-
-function D_ReportRequest() {
-    // 全部とれるだけとる(一昨日まで)
-    // M_Requestを全聚徳
-}
-
-// これは自動にする
-function M_Schedule() {
-
 }

@@ -5,7 +5,7 @@ export default schema =
     "properties": {
         "command": { "type": "enum"["DELETE"] },
         "sellerId": { "type": "string" },
-        "ADS-API": {
+        "ads-token": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -13,7 +13,7 @@ export default schema =
             }
         },
 
-        "SP-API":
+        "sp_token":
         {
             "type": "object",
             "additionalProperties": false,

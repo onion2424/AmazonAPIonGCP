@@ -1,24 +1,18 @@
+import { utils } from '../Common/systemCommon.js';
+import { Storage } from '@google-cloud/storage';
+import chain from "stream-chain";
+import { pipeline } from 'node:stream/promises';
+import { logger } from '../Common/systemCommon.js';
+
 /**
- * TODO(developer): Uncomment the following lines before running the sample.
+ * 
+ * @param {Storage} storage 
+ * @param {string} bucketName 
+ * @param {string} srcFileName
+ * @param {string} destFileName 
+ * @returns 
  */
-// The ID of your GCS bucket
-// const bucketName = 'your-source-bucket';
-
-// The ID of your GCS file
-// const srcFileName = 'your-file-name';
-
-// The new ID for your GCS file
-// const destFileName = 'your-new-file-name';
-
-// Imports the Google Cloud client library
-import {Storage} from '@google-cloud/storage';
-
-// Creates a client
-const keyFilename = './AmazonApiServiceKey/amazon-api-report-48665c60d888.json';
-const bucketName = 'amazon-api-report';
-const storage = new Storage({keyFilename: keyFilename});
-
-export async function moveFile(srcFileName, destFileName) {
+export async function moveFile(storage, bucketName, srcFileName, destFileName) {
   // Optional:
   // Set a generation-match precondition to avoid potential race conditions
   // and data corruptions. The request to copy is aborted if the object's
@@ -37,8 +31,4 @@ export async function moveFile(srcFileName, destFileName) {
     .bucket(bucketName)
     .file(srcFileName)
     .move(destFileName, moveOptions);
-
-  console.log(
-    `gs://${bucketName}/${srcFileName} moved to gs://${bucketName}/${destFileName}`
-  );
 }

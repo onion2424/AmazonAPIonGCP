@@ -4,6 +4,7 @@ import createSchema from "./Create/schema.js"
 // import updateSchema from "./Delete/schema.js"
 // import deleteManager from "./Create/manager.js"
 // import deleteSchema from "./Delete/schema.js"
+import { _, logger } from "../../Common/systemCommon.js";
 
 import Ajv from 'ajv'
 
@@ -12,7 +13,7 @@ export default function factoryMethod(filename, json)
     const ajv = new Ajv();
 
     if (ajv.validate(createSchema, json)) {
-        console.log("Valid CREATE: " + filename);
+        logger.info("Valid CREATE: " + filename);
         return createManager;
     }
     /*
@@ -26,7 +27,7 @@ export default function factoryMethod(filename, json)
     }
     */
     else {
-        console.log("Invalid: " + filename);
+        logger.warn("Invalid: " + filename);
         return;
     }
 }

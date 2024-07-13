@@ -4,8 +4,7 @@ export default schema =
     "additionalProperties": false,
     "properties": {
         "command": { "type": "enum"["UPDATE"] },
-        "name": { "type": "string" },
-        "ADS-API": {
+        "ads-token": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -16,7 +15,7 @@ export default schema =
             }
         },
 
-        "SP-API":
+        "sp-token":
         {
             "type": "object",
             "additionalProperties": false,
@@ -30,6 +29,6 @@ export default schema =
         }
     },
     "required" : [
-        "command", "name"
+        "command", "ads_token", "sp_token"
     ],
 }

@@ -1,8 +1,15 @@
 import * as pathImport from 'path';
-import lodash from "lodash";
+import dayjs from "dayjs";
+import { toLocalDate } from './Helpers/Dayjs/toLocalDate.js';
+import 'dayjs/locale/ja.js'
+dayjs.locale('ja');
+dayjs.extend(toLocalDate);
+export {dayjs}
+import lodash  from "lodash";
+export const _ = lodash;
 
 // timezoneをセット
-process.env.TZ = "Asia/Tokyo";
+//process.env.TZ = "Asia/Tokyo";
 
 class utilsClass {
     constructor() {
@@ -13,7 +20,7 @@ class utilsClass {
     }
     /**
      *    引数を Date オブジェクトへ変換する。Date として解釈できなかった場合はundefinedを返す
-     * @param {*} dateStr 
+     * @param {string} dateStr 
      * @returns Date|undefined
      */
     tryParseDate(dateStr) {
@@ -43,4 +50,35 @@ class systemInfoClass {
     }
 }
 export const systemInfo = new systemInfoClass();
-export const _ = lodash;
+
+import winston from 'winston';
+import {LoggingWinston} from "@google-cloud/logging-winston"
+
+const severity = winston.format((info) => {
+    info["severity"] = info.level.toUpperCase();
+    return info;
+  });
+  
+const errorReport = winston.format((info) => {
+if (info instanceof Error) {
+    info.err = {
+    name: info.name,
+    message: info.message,
+    stack: info.stack,
+    };
+}
+return info;
+});
+
+export const logger = winston.createLogger({
+level: systemInfo.isTest ? 'info' : 'debug',
+format: winston.format.combine(
+    severity(),
+    errorReport(),
+    winston.format.json()
+),
+transports: [
+    new winston.transports.Console(),
+    //new LoggingWinston()
+],
+});

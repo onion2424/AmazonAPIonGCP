@@ -1,6 +1,4 @@
 import { utils } from "../Common/systemCommon.js";
-import { Storage } from '@google-cloud/storage';
-
 
 /**
  * 
@@ -24,12 +22,12 @@ export async function listFilesByPrefix(storage, bucketName, prefix, delimiter) 
   // Lists files in the bucket, filtered by a prefix
   let [files] = await storage.bucket(bucketName).getFiles(options);
 
-  console.log('Files:');
+  //console.log('Files:');
   files = files.filter(file => file.name.slice(-1) !== "/");
-  /*
+  
   files.forEach(file => {
     console.log(file.name);
   });
-  */
+  
   return files;
 }

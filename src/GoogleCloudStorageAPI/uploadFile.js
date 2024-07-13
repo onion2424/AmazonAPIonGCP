@@ -24,5 +24,4 @@ export async function uploadFile(path, filename) {
   };
   // The `path` here is the location of the file that you want to upload.
   await storage.bucket(bucketName).upload(path, options);
-  console.log(`${path} uploaded to ${bucketName}`);
 }

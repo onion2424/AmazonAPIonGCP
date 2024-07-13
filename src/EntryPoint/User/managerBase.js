@@ -1,3 +1,4 @@
+import { _, logger } from "../../Common/systemCommon.js";
 export default class managerBase {
     constructor(check, save) {
         this.check = check;
@@ -6,14 +7,15 @@ export default class managerBase {
 
     async run(json) {
         if (!await this.check(json)) {
-            console.log("Check Failed, Need to check over;");
-            return;
+            logger.warn("Check Failed, Need to check over;");
+            return false;
         }
         if (!await this.save(json)) {
-            console.log("Save Failed, Something went wrong;");
-            return;
+            logger.warn("Save Failed, Something went wrong;");
+            return false;
         }
 
-        console.log("Complete Saved!");
+        logger.info("Complete!");
+        return true;
     }
 }

@@ -21,8 +21,13 @@ class manager
 {
     constructor()
     {
-        this.moveFile = moveFile;
         this.uploadFile = uploadFile;
+    }
+
+    async moveFile(srcFileName, destFileName)
+    {
+        // Testはこの時点で付与されている前提
+        return moveFile(storage, bucketName, srcFileName, destFileName);   
     }
 
     /**
@@ -49,14 +54,16 @@ class manager
      * 
      * @param {string} fileName 
      */
-    async downloadIntoMemory(fileName, isConsiderTest)
+    async downloadIntoMemory(fileName)
     {
-        // すでにTestに入っている可能性を考慮
-        fileName = isConsiderTest ? utils.combine(fileName) : fileName;
+        // Testはこの時点で付与されている前提
+        //fileName = isConsiderTest ? utils.combine(fileName) : fileName;
         return downloadIntoMemory(storage, bucketName, fileName);
     }
 }
 
-_.set(root, ["GoogleCloudStorageAPI"], new manager());
+const instance = new manager();
 
-export default root.GoogleCloudStorageAPI;
+_.set(root, ["GoogleCloudStorageAPI"], instance);
+
+export default instance;

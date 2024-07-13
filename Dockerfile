@@ -2,4 +2,4 @@ FROM node:22-alpine
 WORKDIR /app
 COPY . .
 RUN npm install
-CMD [ "node", "./src/Main/reportReceive.js"]
+CMD [ "node", "./src/EntryPoint/User/index.js", "-release"]
