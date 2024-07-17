@@ -127,6 +127,8 @@ async function runSchedule() {
 async function runObserve() {
     // Transaction監視
     const dtranDocs = await fireStoreManager.getDocs("D_Transaction", [["status", "!=", "COMPLETED"]]);
+    logger.info(`[監視対象][合計${dtranDocs.length}件]`);
+    let count = 0;
     for await (const dtranDoc of dtranDocs) {
         // SIGTERM検出時終了処理
         if(systemInfo.sigterm) {
@@ -141,7 +143,7 @@ async function runObserve() {
         const mtranDoc = (await collectiomManager.get(dtran.transactionRef));
         const call = mtranDoc.data().details.find(d => d.refName == dtran.refName);
         const status = call.statuses.find(s => s.status == dtran.status);
-        logger.info(`[監視開始][${dtranDoc.id}]`);
+        logger.info(`[監視開始][${dtranDoc.id}][${++count}/${dtranDocs.length}件目]`);
         if (dtran.status == "" || await observe(status.collection, dtranDoc)) {
             // 次に進めて初期化処理
             const index = call.statuses.indexOf(status);
@@ -160,7 +162,7 @@ async function runObserve() {
 
             logger.info(`[ステータス更新][${status?.status || "empty"} ⇒ ${nextStatus?.status || "COMPLETED"}]`);
         }
-        logger.info(`[監視終了][${dtranDoc.id}]`);
+        logger.info(`[監視終了][${dtranDoc.id}][${++count}/${dtranDocs.length}件目]`);
     }
 }
 
