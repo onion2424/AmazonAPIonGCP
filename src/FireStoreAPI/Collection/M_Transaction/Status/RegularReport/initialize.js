@@ -22,7 +22,8 @@ export async function initialize(batch, mtranDoc, dtranDoc) {
     logger.info(`[初期化開始][ステータス(REGULARREPORT)][${accountDoc.data().tag}][${mtran.tag}]`);
     for (const requestInfo of mtran.requests){
         const requestDoc = await collectionManager.get(requestInfo.ref);
-        const detail = requestDoc.data().details.find(d => d.refName == requestInfo.refName);
+        const request = requestDoc.data();
+        const detail = request.details.find(d => d.refName == requestInfo.refName);
         // 日付設定からRegularCallを展開
         const dateSettings = detail.settings.date;
         const spans = dateSettings.spans;
@@ -31,7 +32,7 @@ export async function initialize(batch, mtranDoc, dtranDoc) {
             const ref = await firestoreManager.createRef("D_ReportRequest");
             batch.set(ref, drequest);
         }
-        logger.info(`[D_Request][${drequests.length}件]`);
+        logger.info(`[D_ReportRequest][${request.tag}][${detail.tag}][${drequests.length}件]`);
     }
     logger.info(`[初期化終了][ステータス(REGULARREPORT)][${accountDoc.data().tag}][${mtran.tag}]`);
     return;

@@ -16,7 +16,7 @@ async function observe(collection, dtranDoc) {
     // 対象のテーブルを監視する
     const count = await fireStoreManager.countDocs(collection, [["transactionRef", "==", dtranDoc.ref], ["status", "!=", "COMPLETED"]]);
 
-    logger.info(`[継続中][残り${count}件]`);
+    logger.info(`[継続中][${collection}][残り${count}レコード]`);
 
     return count == 0;
 }
@@ -31,7 +31,7 @@ async function main() {
              */
             const state = doc.data();
 
-            logger.info(`[起動][${state.tag}][v${state.version}]`);
+            logger.info(`[起動][${state.tag}][Version = ${state.version}]`);
 
             if (state.nextTime.toDate() < dayjs().toDate()) {
                 logger.info(`[定時処理開始][今回日時：${dayjs(state.nextTime.toDate()).format("YYYY-MM-DD HH:mm:ss")}]`);
@@ -143,7 +143,7 @@ async function runObserve() {
         const mtranDoc = (await collectiomManager.get(dtran.transactionRef));
         const call = mtranDoc.data().details.find(d => d.refName == dtran.refName);
         const status = call.statuses.find(s => s.status == dtran.status);
-        logger.info(`[監視開始][${dtranDoc.id}][${++count}/${dtranDocs.length}件目]`);
+        logger.info(`[監視開始][${dtranDoc.id}][${++count}/${dtranDocs.length}件]`);
         if (dtran.status == "" || await observe(status.collection, dtranDoc)) {
             // 次に進めて初期化処理
             const index = call.statuses.indexOf(status);
@@ -162,7 +162,7 @@ async function runObserve() {
 
             logger.info(`[ステータス更新][${status?.status || "empty"} ⇒ ${nextStatus?.status || "COMPLETED"}]`);
         }
-        logger.info(`[監視終了][${dtranDoc.id}][${++count}/${dtranDocs.length}件目]`);
+        logger.info(`[監視終了][${dtranDoc.id}][${count}/${dtranDocs.length}件]`);⇒⇒
     }
 }
 
