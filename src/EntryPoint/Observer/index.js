@@ -162,7 +162,7 @@ async function runObserve() {
 
             logger.info(`[ステータス更新][${status?.status || "empty"} ⇒ ${nextStatus?.status || "COMPLETED"}]`);
         }
-        logger.info(`[監視終了][${dtranDoc.id}][${count}/${dtranDocs.length}件]`);⇒⇒
+        logger.info(`[監視終了][${dtranDoc.id}][${count}/${dtranDocs.length}件]`);
     }
 }
 
