@@ -42,7 +42,9 @@ async function main() {
         logger.info("[定時処理失敗][エラー内容表示]");
         logger.error(e);
     }
+    logger.info(`[定期監視処理開始]`);
     await runObserve();
+    logger.info(`[定期監視処理終了]`);
 }
 
 /**
