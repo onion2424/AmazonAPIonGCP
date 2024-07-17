@@ -1,20 +1,31 @@
 import root from "../../../root.js"
-import { _ } from "../../../Common/systemCommon.js";
+import { _, logger } from "../../../Common/systemCommon.js";
 import { create } from "./create.js";
-import { M_Transaction } from "./class.js";
 import { caching } from "./caching.js";
+export { M_Transaction } from "./class.js";
+import collectionManaer from "../manager.js" // import順を考慮
 
 export class manager
 {
     constructor(){
       this.create = create;
-      this.caching = caching;
       /**
-       * @type {[M_Transaction]}
+       * @type {[FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>]}
        */
       this.cache = [];
     }
+    
+    async caching()
+    {
+      if(this.cached) return;
+      logger.debug("M_Transaction：キャッシング開始");
+      this.cache = await caching();
+      this.cached = true;
+      logger.debug("M_Transaction：キャッシング完了");
+    }
 }
+
+logger.debug("import FireStoreAPI/Collection/M_Transaction");
 
 const instance = new manager();
 

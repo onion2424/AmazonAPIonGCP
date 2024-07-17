@@ -6,7 +6,7 @@ import { Firestore } from "firebase-admin/firestore";
  * @param {string} collectionName 
  * @returns 
  */
-export function createDoc(db, collectionName)
+export function createRef(db, collectionName)
 {
     return db.collection(collectionName).doc();
 }

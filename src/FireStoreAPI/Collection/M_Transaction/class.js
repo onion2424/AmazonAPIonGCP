@@ -4,11 +4,12 @@ const reffer = await manager.getDocs("M_Transaction");
 console.log('%o', reffer);
 */
 
+import { DocumentReference } from "firebase-admin/firestore";
+
 /**
  * @typedef {object} M_Transaction
  * @prop {string} tag タグ
- * @prop {[status]} regularStatuses 全ステータス(通常時)
- * @prop {[status]} firstStatuses 全ステータス(初回時)
+ * @prop {[detail]} details 詳細
  * @prop {[request]} requests リクエストIDs
  * @prop {boolean} valid 有効フラグ
  */
@@ -25,34 +26,41 @@ export const M_Transaction = {
      * @prop {string} collection 監視対象のCollection - なければそのまま次のステータスへ
      * @prop {string} status ステータス
      */
-    regularStatuses:
-    {
-        path: "",
-        collection: "",
-        status: "",
-    },
 
     /**
-     * @typedef {object} status
-     * @prop {string} path パス
-     * @prop {string} collection 監視対象のCollection - なければそのまま次のステータスへ
-     * @prop {string} status ステータス
+     * @typedef {object} detail
+     * @prop {[status]} statuses 全ステータス
+     * @prop {string} refName 参照名称
      */
-    firstStatuses:
-    {
-        path: "",
-        collection: "",
-        status: "",
-    },
+    details: [
+        {
+            refName: "firstCall",
+            statuses: [
+                {
+                    path: "",
+                    collection: "",
+                    status: "",
+                }]
+        },
+        {
+            refName: "regularCall",
+            statuses: [
+                {
+                    path: "",
+                    collection: "",
+                    status: "",
+                }]
+        },
+    ],
 
     /**
      * @typedef {object} request
-     * @prop {string} id リクエストID
+     * @prop {DocumentReference} ref リクエストID
      * @prop {string} refName 参照名称
      */
     requests:
     {
-        id: "",
+        ref: null,
         refName: "",
     },
 

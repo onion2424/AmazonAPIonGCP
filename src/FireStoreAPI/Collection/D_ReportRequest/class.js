@@ -4,19 +4,19 @@ const reffer = await manager.getDocs("M_Request");
 console.log('%o', reffer);
 */
 import { _, utils, dayjs } from "../../../Common/systemCommon.js";
-import { Timestamp } from "firebase-admin/firestore";
+import { DocumentReference, Timestamp } from "firebase-admin/firestore";
 
 /**
  * @typedef {object} D_ReportRequest 
  * @prop {Timestamp} requestTime リクエスト送信時間
- * @prop {string} accountId M_AccountのID
+ * @prop {DocumentReference} accountRef M_Accountのリファレンス
  * @prop {requestInfo} requestInfo リクエスト情報
  * @prop {string} status 現在のステータス
  * @prop {number} continue コンティニュー回数
  * @prop {number} host ホスト
  * @prop {[string]} statuses 遷移ステータス
  * @prop {reportInfo} reportInfo レポート情報
- * @prop {string} transaction トランザクションID
+ * @prop {DocumentReference} transactionRef D_Transactionのリファレンス
  */
 
 /**
@@ -24,17 +24,17 @@ import { Timestamp } from "firebase-admin/firestore";
  */
 export const D_ReportRequest = {
     requestTime: null,
-    accountId: "",
+    accountRef: null,
 
     /**
      * @typedef {object} requestInfo
-     * @prop {string} id リクエストID
+     * @prop {DocumentReference} ref M_Requestのリファレンス
      * @prop {string} refName 参照名称
      * @prop {object} date 日時
      */
     requestInfo:
     {
-        id: "",
+        ref: null,
         refName: "",
         date: {}
     },
@@ -60,5 +60,5 @@ export const D_ReportRequest = {
         documentId: "",
         //created: null,
     },
-    transaction: "",
+    transactionRef: null,
 }

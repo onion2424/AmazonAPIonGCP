@@ -10,7 +10,9 @@ import { Timestamp, DocumentReference } from "firebase-admin/firestore";
  * @typedef {object} D_Transaction
  * @prop {string} status ステータス
  * @prop {[status]} statuses 全ステータス
- * @prop {DocumentReference} ref M_Transactionのref
+ * @prop {string} refName 参照名称
+ * @prop {DocumentReference} transactionRef M_Transactionのref
+ * @prop {DocumentReference} accountRef M_Accountのref
  * @prop {Timestamp} date 対象日時
  */
 
@@ -20,31 +22,8 @@ import { Timestamp, DocumentReference } from "firebase-admin/firestore";
 export const D_Transaction = {
     status: "",
     statuses:[],
-    ref: null,
+    refName: "",
+    transactionRef: null,
+    accountRef: null,
     date: null,
-}
-
-
-
-
-/**
- * @type {M_Transaction}
- */
-export const M_Transaction = {
-    tag: "",
-
-    /**
-     * @typedef {object} status
-     * @prop {string} path パス
-     * @prop {string} collection 監視対象のCollection - なければそのまま次のステータスへ
-     * @prop {string} status ステータス
-     */
-    statuses:
-    {
-        path: "",
-        collection: "",
-        status: "",
-    },
-
-    valid: true,
 }

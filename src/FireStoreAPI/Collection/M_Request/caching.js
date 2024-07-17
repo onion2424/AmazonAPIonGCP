@@ -5,6 +5,5 @@ import manager from "./manager.js"
 
 export async function caching()
 {
-    const docs = await firestoreManager.getDocs("M_Request");
-    manager.cache = docs;
+    return await firestoreManager.getDocs("M_Request");
 }

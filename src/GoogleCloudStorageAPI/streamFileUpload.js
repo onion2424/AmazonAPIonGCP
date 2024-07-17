@@ -21,6 +21,7 @@ import { logger } from '../Common/systemCommon.js';
  * @returns 
  */
 export async function streamFileUpload(storage, bucketName, destFileName, streams) {
+    logger.info(`[アップロード開始][バケット名：${bucketName}][ファイル名：${destFileName}]`);
     let ret = true;
 
     const myBucket = storage.bucket(bucketName);
@@ -41,8 +42,10 @@ export async function streamFileUpload(storage, bucketName, destFileName, stream
     // エラーハンドリング
     [...streams, writable].forEach((item) => {
         if ('on' in item) {
-            item.on('error', () => {
+            item.on('error', (e) => {
                 ret = false;
+                logger.error('[GCPエラー][アップロード失敗][エラー内容表示]');
+                logger.error(e);
             })
         }
     })
@@ -53,7 +56,7 @@ export async function streamFileUpload(storage, bucketName, destFileName, stream
 
 
     if (ret) {
-        logger.info(`${destFileName} uploaded to ${bucketName}`);
+        logger.info(`[アップロード完了][バケット名：${bucketName}][ファイル名：${destFileName}]`);
     }
     else {
         logger.error('エラー時処理');

@@ -13,7 +13,7 @@ const requests = _.map(snapshot.docs, (doc) => {
     return { ref: doc.ref, refName: data.details[0].refName }
 });
 
-let docRef = await FirestoreManager.createDoc("M_Transaction");
+let ref = await FirestoreManager.createRef("M_Transaction");
 
 // テスト中はとりあえずもってこればいい。
 
@@ -22,24 +22,34 @@ let docRef = await FirestoreManager.createDoc("M_Transaction");
  */
 let data = {
     tag: 'マージ用レポート受信',
-    regularStatuses: [
+    details:[
         {
-            status: "RECEIVE",
-            collection: "D_ReportRequest",
-            path: "FireStoreAPI/Collection/M_Transaction/Status/receive",
-        }
-    ], // ここからpathは取得する(D_Transactionでは[string]にする) + transactionIDを持たせる
-    firstStatuses: [
+            refName: "firstCall",
+            statuses: 
+            [
+                {
+                    status: "FIRSTREPORT",
+                    collection: "D_ReportRequest",
+                    path: "FireStoreAPI/Collection/M_Transaction/Status/FirstReport/initialize",
+                }
+            ]
+        },
         {
-            status: "FIRSTRECEIVE",
-            collection: "D_ReportRequest",
-            path: "FireStoreAPI/Collection/M_Transaction/Status/firstReceive",
-        }
+            refName: "regularCall",
+            statuses: 
+            [
+                {
+                    status: "REGULARREPORT",
+                    collection: "D_ReportRequest",
+                    path: "FireStoreAPI/Collection/M_Transaction/Status/RegularReport/initialize",
+                }
+            ]
+        },
     ],
     requests: requests,
     valid: true,
 }
-await docRef.set(data);
+await ref.set(data);
 
 console.log("Success!")
 // transaction

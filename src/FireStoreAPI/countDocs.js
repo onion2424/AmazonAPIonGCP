@@ -5,7 +5,7 @@ import { Firestore, FieldPath } from "firebase-admin/firestore";
  * @param {Firestore} db 
  * @param {string} collectionName 
  * @param {[Array<string|FieldPath|any>]} queries 
- * @returns {[object]}
+ * @returns {number}
  */
 export async function countDocs(db, collectionName, queries) {
     let collectionRef = db.collection(collectionName);

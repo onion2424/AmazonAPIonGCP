@@ -51,6 +51,7 @@ class systemInfoClass {
 }
 export const systemInfo = new systemInfoClass();
 
+// https://zenn.dev/aiji42/articles/b41232aea7ca34
 import winston from 'winston';
 import {LoggingWinston} from "@google-cloud/logging-winston"
 
@@ -71,7 +72,7 @@ return info;
 });
 
 export const logger = winston.createLogger({
-level: systemInfo.isTest ? 'info' : 'debug',
+level: systemInfo.isTest() ? 'debug' : 'info',
 format: winston.format.combine(
     severity(),
     errorReport(),

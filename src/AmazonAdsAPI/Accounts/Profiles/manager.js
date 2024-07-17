@@ -1,5 +1,5 @@
 import root from "../../../root.js"
-import { _ } from "../../../Common/systemCommon.js";
+import { _, logger } from "../../../Common/systemCommon.js";
 
 import { get } from "./get.js"
 
@@ -11,6 +11,10 @@ class manager
     }
 }
 
-_.set(root, ["AmazonAdsAPI", "Accounts", "Profiles"], new manager());
+logger.debug("import AmazonSpAPI/Reporting/ReportsAPI_v2021");
 
-export default root.AmazonAdsAPI.Accounts.Profiles;
+const instance = new manager();
+
+_.set(root, ["AmazonAdsAPI", "Accounts", "Profiles"], instance);
+
+export default instance;

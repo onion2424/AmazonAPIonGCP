@@ -7,15 +7,13 @@ export default class managerBase {
 
     async run(json) {
         if (!await this.check(json)) {
-            logger.warn("Check Failed, Need to check over;");
             return false;
         }
         if (!await this.save(json)) {
-            logger.warn("Save Failed, Something went wrong;");
             return false;
         }
 
-        logger.info("Complete!");
+        logger.info("【アカウント作成完了】");
         return true;
     }
 }

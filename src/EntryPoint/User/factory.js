@@ -13,7 +13,7 @@ export default function factoryMethod(filename, json)
     const ajv = new Ajv();
 
     if (ajv.validate(createSchema, json)) {
-        logger.info("Valid CREATE: " + filename);
+        logger.info("【アカウント作成開始】" + filename);
         return createManager;
     }
     /*

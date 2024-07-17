@@ -1,5 +1,5 @@
 import root from "../../../root.js"
-import { _ } from "../../../Common/systemCommon.js";
+import { _, logger } from "../../../Common/systemCommon.js";
 import { create } from "./create.js";
 import { status } from "./status.js";
 import { get } from "./get.js";
@@ -18,6 +18,10 @@ class manager
     }
 }
 
-_.set(root, ["AmazonSpAPI", "Reporting", "ReportsAPI_v2021"], new manager());
+logger.debug("import AmazonSpAPI/Reporting/ReportsAPI_v2021");
 
-export default root.AmazonAdsAPI.Reporting.SponsoredAdsV3;
+const instance = new manager();
+
+_.set(root, ["AmazonSpAPI", "Reporting", "ReportsAPI_v2021"], instance);
+
+export default instance;

@@ -1,5 +1,5 @@
-import { _, utils, dayjs, logger } from "../../Common/systemCommon.js"; { }
-import root from "../../import.js";
+import { _, utils, dayjs, logger, systemInfo } from "../../Common/systemCommon.js"; { }
+import root from "./import.js";
 import factoryMethod from "./factory.js"
 import * as path from "path";
 import storageManager from "./../../GoogleCloudStorageAPI/manager.js"
@@ -24,7 +24,7 @@ async function run() {
             return;
         let ret = await manager.run(json);
 
-        if(ret){
+        if(ret && !systemInfo.isTest()){
             // _oldに入れる
             await storageManager.moveFile(file.name, file.name.replace(fileName, `_old/${fileName}`));
         }

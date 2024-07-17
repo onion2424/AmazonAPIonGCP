@@ -1,8 +1,8 @@
 import root from "../../../root.js"
 import { _ } from "../../../Common/systemCommon.js";
 import { create } from "./create.js";
-
-export {M_Account} from "./class.js";
+export { S_RunningState } from "./class.js";
+import collectionManaer from "../manager.js" // import順を考慮
 
 
 export class manager
@@ -14,6 +14,6 @@ export class manager
 
 const instance = new manager();
 
-_.set(root, ["FireStoreAPI", "Collection", "M_Transaction"], instance);
+_.set(root, ["FireStoreAPI", "Collection", "S_RunningState"], instance);
 
 export default instance;

@@ -13,7 +13,6 @@ export async function listFilesByPrefix(storage, bucketName, prefix, delimiter) 
     prefix: prefix,
   };
 
-  console.log(options.prefix);
 
   if (delimiter) {
     options.delimiter = delimiter;
@@ -24,10 +23,6 @@ export async function listFilesByPrefix(storage, bucketName, prefix, delimiter) 
 
   //console.log('Files:');
   files = files.filter(file => file.name.slice(-1) !== "/");
-  
-  files.forEach(file => {
-    console.log(file.name);
-  });
   
   return files;
 }

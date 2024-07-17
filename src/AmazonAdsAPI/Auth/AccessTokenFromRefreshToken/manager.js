@@ -1,5 +1,5 @@
 import root from "../../../root.js"
-import { _ } from "../../../Common/systemCommon.js";
+import { _, logger } from "../../../Common/systemCommon.js";
 import { get } from "./get.js";
 
 class manager{
@@ -8,6 +8,10 @@ class manager{
     }
 }
 
-_.set(root, ["AmazonAdsAPI", "Auth", "AccessTokenFromRefreshToken"], new manager());
+logger.debug("import AmazonAdsAPI/Auth/AccessTokenFromRefreshToken");
 
-export default root.AmazonAdsAPI.Auth.AccessTokenFromRefreshToken;
+const instance = new manager();
+
+_.set(root, ["AmazonAdsAPI", "Auth", "AccessTokenFromRefreshToken"], instance);
+
+export default instance;

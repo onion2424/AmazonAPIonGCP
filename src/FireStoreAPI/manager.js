@@ -1,18 +1,17 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Transaction, Timestamp, Query} from 'firebase-admin/firestore';
-import { createDoc } from './createDoc.js';
+import { createRef } from './createRef.js';
 import { createBatch } from './createBatch.js'
 import { getDocs, getQuery } from './getDocs.js'
-import { countDocs } from './countDocs.js'
 import { transaction } from './transaction.js';
+import { countDocs } from "./countDocs.js"
 import root from '../root.js';
-import { _, systemInfo } from '../Common/systemCommon.js';
+import { _, systemInfo, logger } from '../Common/systemCommon.js';
 
 const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-semvr-dfdb5719d0.json';
 
 const firebaseApp = initializeApp({ credential: cert(keyFilename) });
 const db = getFirestore(firebaseApp, systemInfo.isTest() ? "test" : "(default)");
-//const db = getFirestore(firebaseApp, "test");
 
 export class manager {
     constructor() {
@@ -20,12 +19,12 @@ export class manager {
     }
 
     /**
-     * 空のドキュメントを作成します。
+     * 空のドキュメントリファレンスを作成します。
      * @param {string} collectionName 
      * @returns 
      */
-    async createDoc(collectionName) {
-        return createDoc(db, collectionName);
+    async createRef(collectionName) {
+        return createRef(db, collectionName);
     }
 
     /**
@@ -65,7 +64,7 @@ export class manager {
      * @returns 
      */
     async countDocs(collectionName, queries) {
-        this.countDocs(db, collectionName, queries)
+        return countDocs(db, collectionName, queries);
     }
 
     /**
@@ -77,6 +76,8 @@ export class manager {
         transaction(db, functions);
     }
 }
+
+logger.debug("import FireStoreAPI");
 
 const instance = new manager();
 _.set(root, ["FireStoreAPI"], instance);

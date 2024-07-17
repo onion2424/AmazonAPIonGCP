@@ -1,5 +1,5 @@
 import root from "../../../root.js"
-import { _ } from "../../../Common/systemCommon.js";
+import { _, logger } from "../../../Common/systemCommon.js";
 import { get } from "./get.js";
 
 class manager
@@ -10,6 +10,10 @@ class manager
     }
 }
 
-_.set(root, ["AmazonSpAPI", "Fees", "GetMyFeesEstimateForASIN"], new manager());
+logger.debug("import AmazonSpAPI/Fees/GetMyFeesEstimateForASIN")
 
-export default root.AmazonSpAPI.Fees.GetMyFeesEstimateForASIN;
+const instance = new manager();
+
+_.set(root, ["AmazonSpAPI", "Fees", "GetMyFeesEstimateForASIN"], instance);
+
+export default instance;
