@@ -34,6 +34,19 @@ class utilsClass {
         const invalidDate = Number.isNaN(maybeDate.getTime());
         return invalidDate ? undefined : maybeDate;
     }
+
+    /**
+     * Version up
+     * @param {string} str 
+     * @param {number} level 
+     * @returns 
+     */
+        nextVersion(str, level)
+        {
+            const arr = str.split(".");
+            arr[level] = String(Number(arr[level]) + 1);
+            return arr.join(".");
+        }
 }
 export const utils = new utilsClass();
 
@@ -44,6 +57,12 @@ class systemInfoClass {
          * @type {string}
          */
         this.mode = process.argv.some(arg => arg == "-release") ? "RELEASE" : "TEST";
+
+        /**
+         * SIGTERMを受信しているかどうか
+         * @type {boolean}
+         */
+        this.sigterm = false;
     }
     isTest() {
         return this.mode == "TEST";
@@ -83,3 +102,9 @@ transports: [
     //new LoggingWinston()
 ],
 });
+
+process.once("SIGTERM", async () => {
+    logger.warn("[SIGTERM検出][systemInfo.sigterm=true]");
+    systemInfo.sigterm = true;
+  });
+  

@@ -1,5 +1,5 @@
 import root from "./import.js" 
-import { _, utils, dayjs, logger } from "../../Common/systemCommon.js";
+import { _, utils, dayjs, logger, systemInfo } from "../../Common/systemCommon.js";
 import collectiomManager from "../../FireStoreAPI/Collection/manager.js"
 import fireStoreManager from "../../FireStoreAPI/manager.js"
 import M_AccountManager, { M_Account } from "../../FireStoreAPI/Collection/M_Account/manager.js";
@@ -16,19 +16,23 @@ async function observe(collection, dtranDoc) {
     // 対象のテーブルを監視する
     const count = await fireStoreManager.countDocs(collection, [["transactionRef", "==", dtranDoc.ref], ["status", "!=", "COMPLETED"]]);
 
-    logger.info(`[継続中][残り${count}件]`)
+    logger.info(`[継続中][残り${count}件]`);
 
     return count == 0;
 }
 
 async function main() {
     try {
-        const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"], ["nextTime", "<", Timestamp.fromMillis(dayjs())]], 1);
+        //const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"], ["nextTime", "<", Timestamp.fromMillis(dayjs())]], 1);
+        const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"]], 1);
         for await (const doc of docs) {
             /**
              * @type {S_RunningState}
              */
             const state = doc.data();
+
+            logger.info(`[起動][${state.tag}][v${state.version}]`);
+
             if (state.nextTime.toDate() < dayjs().toDate()) {
                 logger.info(`[定時処理開始][今回日時：${dayjs(state.nextTime.toDate()).format("YYYY-MM-DD HH:mm:ss")}]`);
                 await runSchedule();
@@ -124,6 +128,12 @@ async function runObserve() {
     // Transaction監視
     const dtranDocs = await fireStoreManager.getDocs("D_Transaction", [["status", "!=", "COMPLETED"]]);
     for await (const dtranDoc of dtranDocs) {
+        // SIGTERM検出時終了処理
+        if(systemInfo.sigterm) {
+            logger.warn("[SIGTERM検出][処理中断]");
+            return;
+        }
+
         const dtran = dtranDoc.data();
         /**
          * @type {M_Transaction}
