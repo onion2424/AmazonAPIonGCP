@@ -3,7 +3,7 @@ import { M_Request } from "../M_Request/class.js";
 import { M_Account } from "../M_Account/class.js";
 import { DocumentReference, DocumentSnapshot, Timestamp } from "firebase-admin/firestore";
 import { _, utils, dayjs} from "../../../Common/systemCommon.js";
-import root from "../../../EntryPoint/Report/import.js"
+import root from "../../../root.js"
 
 /**
  * tokenInfo形式のjsonを受け取り、D_Tokenを返す
