@@ -19,7 +19,7 @@ class utilsClass {
         return pathImport.join(...args).replace(/(\\)/g, '/');
     }
     /**
-     *    引数を Date オブジェクトへ変換する。Date として解釈できなかった場合はundefinedを返す
+     * 引数を Date オブジェクトへ変換する。Date として解釈できなかった場合はundefinedを返す
      * @param {string} dateStr 
      * @returns Date|undefined
      */
@@ -44,6 +44,9 @@ class utilsClass {
     nextVersion(str, level) {
         const arr = str.split(".");
         arr[level] = String(Number(arr[level]) + 1);
+        for(let i = 3; i--; i > level){
+            arr[i] = 0;
+        }
         return arr.join(".");
     }
 

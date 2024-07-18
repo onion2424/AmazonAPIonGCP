@@ -1,7 +1,7 @@
 import { Firestore, FieldPath } from "firebase-admin/firestore";
 
 /**
- * カウントを取得
+ * 
  * @param {Firestore} db 
  * @param {string} collectionName 
  * @param {[Array<string|FieldPath|any>]} queries 

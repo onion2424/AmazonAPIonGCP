@@ -16,7 +16,7 @@ export async function download(request)
       })
         .then(async (res) =>{
             let readable = Readable.fromWeb(res.body);
-            let destFileName = utils.combine(googleCloudStorageAPIConst.AMAZON_ADS_API, request.account.name ,"SponsoredProducts.json")
+            let destFileName = utils.combine("AmazonAdsAPI", request.account.name ,"SponsoredProducts.json")
             let streams = 
             [
               readable,

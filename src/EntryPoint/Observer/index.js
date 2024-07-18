@@ -10,17 +10,8 @@ import { S_RunningState } from "../../FireStoreAPI/Collection/S_RunningState/man
 import { Timestamp, Transaction } from "firebase-admin/firestore";
 
 /**
- * @param {D_Transaction} doc
-*/
-async function observe(collection, dtranDoc) {
-    // 対象のテーブルを監視する
-    const count = await fireStoreManager.countDocs(collection, [["transactionRef", "==", dtranDoc.ref], ["status", "!=", "COMPLETED"]]);
-
-    logger.info(`[継続中][${collection}][残り${count}レコード]`);
-
-    return count == 0;
-}
-
+ * エントリーポイント
+ */
 async function main() {
     try {
         //const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"], ["nextTime", "<", Timestamp.fromMillis(dayjs())]], 1);
@@ -165,5 +156,16 @@ async function runObserve() {
     }
 }
 
+/**
+ * 対象のテーブルを監視すします。
+ * @param {D_Transaction} doc
+*/
+async function observe(collection, dtranDoc) {
+    const count = await fireStoreManager.countDocs(collection, [["transactionRef", "==", dtranDoc.ref], ["status", "!=", "COMPLETED"]]);
+
+    logger.info(`[継続中][${collection}][残り${count}レコード]`);
+
+    return count == 0;
+}
 
 await main();

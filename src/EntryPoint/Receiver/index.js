@@ -6,7 +6,10 @@ import { S_RunningState } from "../../FireStoreAPI/Collection/S_RunningState/man
 import { Timestamp, Transaction } from "firebase-admin/firestore";
 import { D_ReportRequest } from "../../FireStoreAPI/Collection/D_ReportRequest/class.js";
 
-
+/**
+ * エントリーポイント
+ * @returns 
+ */
 async function main() {
     // 並列処理用にランダム時間待機
     await utils.wait(Math.floor((Math.random() * 3 + 1) * 1000) / 1000);
@@ -47,6 +50,11 @@ async function main() {
     logger.info(`[定期処理終了]`);
 }
 
+/**
+ * 非同期タスクを作成します。
+ * @param {*} hosts 
+ * @returns 
+ */
 async function createTasks(hosts) {
     const tasks = [];
     const syncObj = { abort: false };
@@ -56,6 +64,11 @@ async function createTasks(hosts) {
     return Promise.allSettled(tasks);
 }
 
+/**
+ * 非同期で処理を行います。
+ * @param {*} host 
+ * @param {*} syncObj 
+ */
 async function runAsync(host, syncObj) {
     try {
         logger.info(`[タスク開始][host${host}]`);
@@ -85,7 +98,7 @@ async function runAsync(host, syncObj) {
 }
 
 /**
- * 
+ * トランザクション処理を行い、リクエストを取得します。
  * @param {number} host 
  */
 async function getRequest(host) {
@@ -113,7 +126,7 @@ async function getRequest(host) {
 }
 
 /**
- * 
+ * ホストしているリクエストを開放します。
  * @param {number} host 
  */
 async function release(host){
@@ -130,6 +143,10 @@ async function release(host){
     }
 }
 
+/**
+ * 起動を行います。
+ * @returns 
+ */
 async function startup() {
     //transactin
     const getfunc = async (tran, obj) => {

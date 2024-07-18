@@ -15,7 +15,6 @@ const db = getFirestore(firebaseApp, systemInfo.isTest() ? "test" : "(default)")
 
 export class manager {
     constructor() {
-
     }
 
     /**

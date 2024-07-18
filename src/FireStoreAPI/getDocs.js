@@ -10,36 +10,6 @@ import { Firestore, FieldPath, Filter, Query } from "firebase-admin/firestore";
  * @returns {[FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>]}
  */
 export async function getDocs(db, collectionName, queries, orderbyInfo,  limit) {
-    /*
-    let collectionRef = db.collection(collectionName);
-
-    const ret = [];
-
-    if (queries)
-        queries.forEach(query => {
-            if (query[0] == "documentId") {
-                query[0] = FieldPath.documentId();
-            }
-            collectionRef = collectionRef.where(...query);
-        });
-
-    if (limit) {
-        collectionRef = collectionRef.limit(limit);
-    }
-
-    const snapshot = await collectionRef.get();
-    console.log("doc get start");
-    for await (let doc of snapshot.docs) {
-        const data = doc.data();
-        // documentIdを追加
-        data.documentId = doc.id;
-        ret.push(data);
-        console.log("doc push " + data.documentId);
-    }
-    console.log("doc get end");
-
-    return ret;
-    */
     return getDocs_step(db, collectionName, queries, orderbyInfo, limit, true);
 };
 

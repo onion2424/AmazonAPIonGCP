@@ -24,6 +24,12 @@ class manager
         this.uploadFile = uploadFile;
     }
 
+    /**
+     * ファイルを移動します。
+     * @param {string} srcFileName 
+     * @param {string} destFileName 
+     * @returns 
+     */
     async moveFile(srcFileName, destFileName)
     {
         // Testはこの時点で付与されている前提
@@ -31,7 +37,7 @@ class manager
     }
 
     /**
-     * 
+     * ファイルをストリーミングアップロードします。
      * @param {string} destFileName 
      * @param {Array<ReadableStream|any>} stream 
      */
@@ -41,7 +47,7 @@ class manager
     }
 
     /**
-     * 
+     * プレフィックスを指定し、ファイル名一覧を取得します。
      * @param {string} prefix 
      * @param {string} delimiter 
      */
@@ -51,7 +57,7 @@ class manager
     }
 
     /**
-     * 
+     * ファイルをオンメモリします。
      * @param {string} fileName 
      */
     async downloadIntoMemory(fileName)
