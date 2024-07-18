@@ -93,18 +93,18 @@ async function runSchedule() {
                 logger.info(`[新規][${mtran.tag}]`);
             }
             else {
-                const batch = await fireStoreManager.createBatch();
                 // あれば日時を見て、今より小さければD_Transactionに展開
                 /**
                  * @type {D_Schedule}
                  */
                 const dschedule = doc.data();
 
-                if (dayjs(dschedule.date.toDate()) < date) {
+                if (dayjs(dschedule.date.toDate()) <= date) {
+                    const batch = await fireStoreManager.createBatch();
                     // D_Transactionを作成
                     const dtranRef = await fireStoreManager.createRef("D_Transaction");
-                    batch.set(dtranRef, D_TransactionManager.create(dschedule, mtranDoc));
-                    batch.update(doc, { date: Timestamp.fromDate(dayjs(dschedule.date.toDate()).add(1, 'day').startOf('day').toDate()) });
+                    batch.set(dtranRef, D_TransactionManager.create(dschedule, mtranDoc, accountDoc));
+                    batch.update(doc.ref, { date: Timestamp.fromDate(dayjs(dschedule.date.toDate()).add(1, 'day').startOf('day').toDate()) });
                     await batch.commit();
                     logger.info(`[更新][${mtran.tag}]`);
                 }
