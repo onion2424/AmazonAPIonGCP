@@ -1,6 +1,6 @@
 import { D_Token } from "./class.js";
 import { Timestamp } from "firebase-admin/firestore";
-import { dayjs } from "../../../Common/systemCommon.js";
+import { dayjs } from "../../../Common/common.js";
 
 /**
  * tokenInfo形式のjsonを受け取り、D_Tokenを返す

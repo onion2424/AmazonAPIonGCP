@@ -1,7 +1,7 @@
 import FirestoreManager from "../../manager.js"
 import { M_Transaction } from './class.js';
 import { M_Request } from "../M_Request/class.js";
-import { _, dayjs } from "../../../Common/systemCommon.js";
+import { _, dayjs } from "../../../Common/common.js";
 
 
 const query = await FirestoreManager.getQuery("M_Request");

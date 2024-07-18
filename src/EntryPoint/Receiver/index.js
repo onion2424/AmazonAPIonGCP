@@ -1,10 +1,11 @@
 import root from "./import.js"
-import { _, utils, dayjs, logger, systemInfo } from "../../Common/systemCommon.js";
+import { _, utils, dayjs, logger, systemInfo } from "../../Common/common.js";
 import collectiomManager from "../../FireStoreAPI/Collection/manager.js"
 import fireStoreManager from "../../FireStoreAPI/manager.js"
 import { S_RunningState } from "../../FireStoreAPI/Collection/S_RunningState/manager.js";
 import { Timestamp, Transaction } from "firebase-admin/firestore";
 import { D_ReportRequest } from "../../FireStoreAPI/Collection/D_ReportRequest/class.js";
+import { M_Request } from "../../FireStoreAPI/Collection/M_Request/manager.js"
 
 /**
  * エントリーポイント
@@ -75,19 +76,27 @@ async function runAsync(host, syncObj) {
         while (!systemInfo.sigterm && !syncObj.abort) {
             // ここだけトランザクション処理、以降は並列可能
             const obj = await getRequest(host);
-            const requestDoc = obj.D_ReportRequest;
-            if (!requestDoc) {
+            const drequestDoc = obj.D_ReportRequest;
+            if (!drequestDoc) {
                 logger.info(`[タスク終了][host(${host})]`);
             }
             /**
              * @type {D_ReportRequest}
              */
-            const request = requestDoc.data();
-            logger.info(`[リクエスト取得][${requestDoc.id}][${request.status}]`);
-            throw new Error("test");
+            const drequest = drequestDoc.data();
+            logger.info(`[リクエスト取得][${drequestDoc.id}][${drequest.status}]`);
+            // 実行
+            const mreqquestDoc = await collectiomManager.get(drequest.reportInfo.ref);
+            /**
+             * @type {M_Request}
+             */
+            const mrequest = mreqquestDoc.data();
+            const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
+            const status = mrequest.statuses.find(s => s.status == drequest.status);
+            await _.get(root, status.path.split("/"))(drequest, mrequest);
             // 開放処理
-            //request.ref.update({host: 100});
-            //logger.info(`[リクエスト開放][${requestDoc.id}][${request.status}]`);
+            await drequest.ref.update({host: 100});
+            logger.info(`[リクエスト開放][${drequestDoc.id}][${drequest.status}]`);
         }
     } catch (e) {
         syncObj.abort = true;

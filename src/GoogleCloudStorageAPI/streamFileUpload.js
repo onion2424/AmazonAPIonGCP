@@ -1,8 +1,8 @@
-import { utils } from '../Common/systemCommon.js';
+import { utils } from '../Common/common.js';
 import { Storage } from '@google-cloud/storage';
 import chain from "stream-chain";
 import { pipeline } from 'node:stream/promises';
-import { logger } from '../Common/systemCommon.js';
+import { logger } from '../Common/common.js';
 
 // Get a reference to the bucket
 

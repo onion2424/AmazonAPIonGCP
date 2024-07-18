@@ -1,5 +1,5 @@
 import root from "../../../../../root.js";
-import { _, logger } from "../../../../../Common/systemCommon.js";
+import { _, logger } from "../../../../../Common/common.js";
 import { initialize } from "./initialize.js";
 import M_TransactionManager from "../../manager.js" // import順を考慮
 

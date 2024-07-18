@@ -3,7 +3,7 @@ import manager from "../../manager.js"
 const reffer = await manager.getDocs("S_RunningState");
 console.log('%o', reffer);
 */
-import { dayjs } from "../../../Common/systemCommon.js"
+import { dayjs } from "../../../Common/common.js"
 import { Timestamp } from "firebase-admin/firestore";
 
 /**

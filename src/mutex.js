@@ -1,6 +1,6 @@
 import { v2 } from "@google-cloud/run";
 import { ExecutionsClient } from "@google-cloud/run";
-import { systemInfo } from "./Common/systemCommon.js";
+import { systemInfo } from "./Common/common.js";
   // Instantiates a client
  
   // IAMからamazon-api-reportリソースに対して、サービスアカウントにcloudRun管理者権限を付与したら使えた

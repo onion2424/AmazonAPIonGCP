@@ -6,7 +6,7 @@ import { getDocs, getQuery } from './getDocs.js'
 import { transaction } from './transaction.js';
 import { countDocs } from "./countDocs.js"
 import root from '../root.js';
-import { _, systemInfo, logger } from '../Common/systemCommon.js';
+import { _, systemInfo, logger } from '../Common/common.js';
 
 const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-semvr-dfdb5719d0.json';
 

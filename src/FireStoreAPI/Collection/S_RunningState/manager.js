@@ -1,5 +1,5 @@
 import root from "../../../root.js"
-import { _ } from "../../../Common/systemCommon.js";
+import { _ } from "../../../Common/common.js";
 import { create } from "./create.js";
 export { S_RunningState } from "./class.js";
 import collectionManaer from "../manager.js" // import順を考慮

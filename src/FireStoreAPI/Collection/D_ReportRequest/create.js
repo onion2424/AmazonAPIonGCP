@@ -2,7 +2,7 @@ import { D_ReportRequest } from "./class.js";
 import { M_Request } from "../M_Request/class.js";
 import { M_Account } from "../M_Account/class.js";
 import { DocumentReference, DocumentSnapshot, Timestamp } from "firebase-admin/firestore";
-import { _, utils, dayjs} from "../../../Common/systemCommon.js";
+import { _, utils, dayjs} from "../../../Common/common.js";
 import root from "../../../root.js"
 
 /**

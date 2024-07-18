@@ -51,7 +51,7 @@ class utilsClass {
     }
 
     /**
-     * スレッド待機
+     * スレッド待機。
      * @param {*} sec 
      * @returns 
      */
@@ -61,8 +61,53 @@ class utilsClass {
             //setTimeout(() => {reject(new Error("エラー！"))}, sec*1000);
         });
     };
+
 }
 export const utils = new utilsClass();
+
+class amazonCommonClass{
+    constructor(){
+
+    }
+
+    /**
+     * URLエンドポイントを取得。
+     * @param {string} api SP|ADS
+     * @param {string} marketPlaceId 
+     */
+    getURLEndPoint(api, marketPlaceId){
+        const fe = ["A1VC38T7YXB528", "A19VAU5U5O7RUS", "A39IBJ37TRP1C6"];
+        const eu = ["A2VIGQ35RCS4UG", "A1PA6795UKMFR9", "ARBP9OOSHTCHU", "A1RKKUPIHCS9HS", "A13V1IB3VIYZZH", "A13V1IB3VIYZZH", "A1F83G8C2ARO7P", "A21TJRUUN4KGV", "APJ6JRA9NG5V4", "A1805IZSGTT6HS", "A1C3SOZRARQ6R3", "A17E79C6D8DWNP", "A2NODRKZP88ZB9", "A33AVAJ2PDY3EV"];
+        const na = ["A2Q3Y263D00KWC", "A2EUQ1WTGCTBG2", "A1AM78C64UM0Y8", "ATVPDKIKX0DER"];
+        if(fe.includes(marketPlaceId)){
+            return "-fe";
+        }
+        else if(er.includes(marketPlaceId)){
+            return "-eu"
+        }
+        else if(na.includes(marketPlaceId)){
+            return api == "SP" ? "-na" : "";
+        }
+        return "";
+    }
+}
+export const amazonCommon = new amazonCommonClass();
+
+class gcpCommonClass{
+    constructor(){
+        /** 
+         * AmazonAdsAPI
+         * @type {string}
+         */
+        this.AMAZON_ADS_API = "AmazonAdsApiReport";
+        /** 
+         * AmazonAdsAPI
+         * @type {string}
+         */
+        this.AMAZON_SP_API_REPORT = "AmazonSpApiReport";
+    }
+}
+export const gcpCommon = new gcpCommonClass();
 
 class systemInfoClass {
     constructor() {

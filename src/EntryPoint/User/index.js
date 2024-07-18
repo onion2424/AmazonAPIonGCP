@@ -1,4 +1,4 @@
-import { _, utils, dayjs, logger, systemInfo } from "../../Common/systemCommon.js"; { }
+import { _, utils, dayjs, logger, systemInfo } from "../../Common/common.js"; { }
 import root from "./import.js";
 import factoryMethod from "./factory.js"
 import * as path from "path";

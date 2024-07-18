@@ -1,4 +1,4 @@
-import { systemInfo } from './systemCommon.js'
+import { systemInfo } from './common.js'
 import { readFile } from 'fs/promises';
 
 export * from "node:test";

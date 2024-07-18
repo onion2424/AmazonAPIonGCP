@@ -1,5 +1,5 @@
 import { D_Transaction } from "./class.js";
-import { _ } from "../../../Common/systemCommon.js";
+import { _ } from "../../../Common/common.js";
 import { D_Schedule } from "../D_Schedule/class.js";
 import { M_Transaction } from "../M_Transaction/class.js";
 

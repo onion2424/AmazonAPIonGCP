@@ -1,5 +1,5 @@
 import root from "../../../root.js"
-import { _, logger } from "../../../Common/systemCommon.js";
+import { _, logger } from "../../../Common/common.js";
 import { create } from "./create.js";
 export { D_Token } from "./class.js";
 import collectionManaer from "../manager.js" // import順を考慮

@@ -1,11 +1,11 @@
-import { systemInfo, utils } from "../Common/systemCommon.js";
+import { systemInfo, utils } from "../Common/common.js";
 import { moveFile } from "./moveFile.js";
 import { streamFileUpload } from "./streamFileUpload.js";
 import { uploadFile } from "./uploadFile.js";
 import { listFilesByPrefix } from "./listFilesByPrefix.js";
 import { downloadIntoMemory } from "./downloadIntoMemory.js"
 import root from "../root.js"
-import { _, logger } from "../Common/systemCommon.js";
+import { _, logger } from "../Common/common.js";
 
 // Imports the Google Cloud client library
 import {Storage} from '@google-cloud/storage';

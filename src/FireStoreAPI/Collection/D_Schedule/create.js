@@ -1,5 +1,5 @@
 import { D_Schedule } from "./class.js";
-import { dayjs } from "../../../Common/systemCommon.js";
+import { dayjs } from "../../../Common/common.js";
 import { Timestamp } from "firebase-admin/firestore";
 /**
  * D_Scheduleを作成する

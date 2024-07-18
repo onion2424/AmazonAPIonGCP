@@ -3,7 +3,7 @@ import manager from "../../manager.js"
 const reffer = await manager.getDocs("D_Token");
 console.log('%o', reffer);
 */
-import { _, utils, dayjs} from "../../../Common/systemCommon.js";
+import { _, utils, dayjs} from "../../../Common/common.js";
 import { Timestamp } from "firebase-admin/firestore";
 
 /**

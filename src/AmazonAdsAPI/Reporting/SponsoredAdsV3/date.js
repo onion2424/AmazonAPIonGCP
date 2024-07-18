@@ -1,4 +1,4 @@
-import { _, utils, dayjs} from "../../../Common/systemCommon.js";
+import { _, utils, dayjs} from "../../../Common/common.js";
 
 /**
  * リクエスト用の日時を取得します。

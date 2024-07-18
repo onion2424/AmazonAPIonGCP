@@ -1,4 +1,4 @@
-import { _, logger } from "../../Common/systemCommon.js";
+import { _, logger } from "../../Common/common.js";
 export default class managerBase {
     constructor(check, save) {
         this.check = check;

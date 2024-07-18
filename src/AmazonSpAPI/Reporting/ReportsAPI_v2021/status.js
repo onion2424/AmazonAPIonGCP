@@ -1,5 +1,5 @@
 import root from '../../../root.js';
-import { _ , utils } from '../../../Common/systemCommon.js';
+import { _ , utils } from '../../../Common/common.js';
 
 export async function status(request) {
     const clientId = _.get(request, ["account", "sp_token", "client_id"]);

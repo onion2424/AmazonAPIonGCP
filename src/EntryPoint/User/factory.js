@@ -4,7 +4,7 @@ import createSchema from "./Create/schema.js"
 // import updateSchema from "./Delete/schema.js"
 // import deleteManager from "./Create/manager.js"
 // import deleteSchema from "./Delete/schema.js"
-import { _, logger } from "../../Common/systemCommon.js";
+import { _, logger } from "../../Common/common.js";
 
 import Ajv from 'ajv'
 

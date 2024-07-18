@@ -3,7 +3,7 @@ import authManager from "../../../AmazonAdsAPI/Auth/AccessTokenFromRefreshToken/
 import feesManager from "../../../AmazonSpAPI/Fees/GetMyFeesEstimateForASIN/manager.js"
 import spAuthManager from "../../../AmazonSpAPI/Auth/AccessTokenFromRefreshToken/manager.js"
 import fireStoreManager from "../../../FireStoreAPI/manager.js"
-import { _, utils, logger } from "../../../Common/systemCommon.js";
+import { _, utils, logger } from "../../../Common/common.js";
 import root from "../../Report/import.js"
 
 export default async function check(json) {

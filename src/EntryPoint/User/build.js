@@ -1,5 +1,5 @@
 import fs from "fs";
-import { systemInfo } from "../../Common/systemCommon.js";
+import { systemInfo } from "../../Common/common.js";
 
 const file = "./Dockerfile";
 
