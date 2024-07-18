@@ -4,8 +4,8 @@ import { toLocalDate } from './Helpers/Dayjs/toLocalDate.js';
 import 'dayjs/locale/ja.js'
 dayjs.locale('ja');
 dayjs.extend(toLocalDate);
-export {dayjs}
-import lodash  from "lodash";
+export { dayjs }
+import lodash from "lodash";
 export const _ = lodash;
 
 // timezoneをセット
@@ -41,12 +41,23 @@ class utilsClass {
      * @param {number} level 
      * @returns 
      */
-        nextVersion(str, level)
-        {
-            const arr = str.split(".");
-            arr[level] = String(Number(arr[level]) + 1);
-            return arr.join(".");
-        }
+    nextVersion(str, level) {
+        const arr = str.split(".");
+        arr[level] = String(Number(arr[level]) + 1);
+        return arr.join(".");
+    }
+
+    /**
+     * スレッド待機
+     * @param {*} sec 
+     * @returns 
+     */
+    wait = (sec) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, sec * 1000);
+            //setTimeout(() => {reject(new Error("エラー！"))}, sec*1000);
+        });
+    };
 }
 export const utils = new utilsClass();
 
@@ -72,39 +83,38 @@ export const systemInfo = new systemInfoClass();
 
 // https://zenn.dev/aiji42/articles/b41232aea7ca34
 import winston from 'winston';
-import {LoggingWinston} from "@google-cloud/logging-winston"
+import { LoggingWinston } from "@google-cloud/logging-winston"
 
 const severity = winston.format((info) => {
     info["severity"] = info.level.toUpperCase();
     return info;
-  });
-  
+});
+
 const errorReport = winston.format((info) => {
-if (info instanceof Error) {
-    info.err = {
-    name: info.name,
-    message: info.message,
-    stack: info.stack,
-    };
-}
-return info;
+    if (info instanceof Error) {
+        info.err = {
+            name: info.name,
+            message: info.message,
+            stack: info.stack,
+        };
+    }
+    return info;
 });
 
 export const logger = winston.createLogger({
-level: systemInfo.isTest() ? 'debug' : 'info',
-format: winston.format.combine(
-    severity(),
-    errorReport(),
-    winston.format.json()
-),
-transports: [
-    new winston.transports.Console(),
-    //new LoggingWinston()
-],
+    level: systemInfo.isTest() ? 'debug' : 'info',
+    format: winston.format.combine(
+        severity(),
+        errorReport(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.Console(),
+        //new LoggingWinston()
+    ],
 });
 
 process.once("SIGTERM", async () => {
     logger.warn("[SIGTERM検出][systemInfo.sigterm=true]");
     systemInfo.sigterm = true;
-  });
-  
+});

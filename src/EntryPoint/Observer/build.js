@@ -22,7 +22,7 @@ CMD [ "node", "./src/EntryPoint/Observer/index.js", "-release"]`
 ;
 
 // version up
-const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"]], 1);
+const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"]], [], 1);
 for await (const doc of docs) {
     /**
      * @type {S_RunningState}

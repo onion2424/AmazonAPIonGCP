@@ -5,10 +5,11 @@ import { Firestore, FieldPath, Filter, Query } from "firebase-admin/firestore";
  * @param {Firestore} db 
  * @param {string} collectionName 
  * @param {[any]} queries 
+ * @param {[order]} orderbyInfo
  * @param {number} limit
  * @returns {[FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>]}
  */
-export async function getDocs(db, collectionName, queries, limit) {
+export async function getDocs(db, collectionName, queries, orderbyInfo,  limit) {
     /*
     let collectionRef = db.collection(collectionName);
 
@@ -39,7 +40,7 @@ export async function getDocs(db, collectionName, queries, limit) {
 
     return ret;
     */
-    return getDocs_step(db, collectionName, queries, limit, true);
+    return getDocs_step(db, collectionName, queries, orderbyInfo, limit, true);
 };
 
 /**
@@ -47,11 +48,12 @@ export async function getDocs(db, collectionName, queries, limit) {
  * @param {Firestore} db 
  * @param {string} collectionName 
  * @param {[any]} queries 
+ * @param {[order]} orderbyInfo
  * @param {number} limit
  * @returns {FirebaseFirestore.Query<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>}
  */
-export async function getQuery(db, collectionName, queries, limit) {
-    return getDocs_step(db, collectionName, queries, limit, false);
+export async function getQuery(db, collectionName, queries, orderbyInfo, limit) {
+    return getDocs_step(db, collectionName, queries, orderbyInfo, limit, false);
 };
 
 /**
@@ -59,11 +61,12 @@ export async function getQuery(db, collectionName, queries, limit) {
  * @param {Firestore} db 
  * @param {string} collectionName 
  * @param {[any]} queries 
+ * @param {[order]} orderbyInfo
  * @param {number} limit
  * @param {boolean} get データをゲットするかどうか。
  * @returns {any}
  */
-export async function getDocs_step(db, collectionName, queries, limit, get) {
+export async function getDocs_step(db, collectionName, queries, orderbyInfo, limit, get) {
     let collectionRef = db.collection(collectionName);
 
     /**
@@ -74,6 +77,10 @@ export async function getDocs_step(db, collectionName, queries, limit, get) {
     if (queries) {
         const params = createQuery(queries);
         params.forEach(param => ref = ref.where(param));
+    }
+
+    if(orderbyInfo){
+        orderbyInfo.forEach(order => ref = ref.orderBy(order.column, order.direction));
     }
 
     if (limit) {

@@ -44,8 +44,7 @@ export async function streamFileUpload(storage, bucketName, destFileName, stream
         if ('on' in item) {
             item.on('error', (e) => {
                 ret = false;
-                logger.error('[GCPエラー][アップロード失敗][エラー内容表示]');
-                logger.error(e);
+                logger.error('[GCPエラー][アップロード失敗][エラー内容表示]', e);
             })
         }
     })
@@ -59,7 +58,7 @@ export async function streamFileUpload(storage, bucketName, destFileName, stream
         logger.info(`[アップロード完了][バケット名：${bucketName}][ファイル名：${destFileName}]`);
     }
     else {
-        logger.error('エラー時処理');
+        logger.error('エラー時処理を書く');
     }
 
     return ret;

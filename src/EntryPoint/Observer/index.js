@@ -24,7 +24,7 @@ async function observe(collection, dtranDoc) {
 async function main() {
     try {
         //const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"], ["nextTime", "<", Timestamp.fromMillis(dayjs())]], 1);
-        const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"]], 1);
+        const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"]], [], 1);
         for await (const doc of docs) {
             /**
              * @type {S_RunningState}
@@ -43,8 +43,7 @@ async function main() {
         }
     }
     catch (e) {
-        logger.info("[定時処理失敗][エラー内容表示]");
-        logger.error(e);
+        logger.error("[定時処理失敗][エラー内容表示]", e);
     }
     logger.info(`[定期監視処理開始]`);
     await runObserve();
@@ -166,25 +165,5 @@ async function runObserve() {
     }
 }
 
-async function testTransaction() {
-    //transactin試し
-    /**
-     * 
-     * @param {Transaction} tran 
-     * @param {object} obj 
-     */
-    const func = async (tran, obj) => {
-        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", "OBSERVER"], ["nextTime", "<", Timestamp.fromMillis(dayjs())]], 1);
-        const snapshot = await tran.get(query);
-        for await (const doc of snapshot.docs) {
-            /**
-             * @type {S_RunningState}
-             */
-            const data = doc.data();
-            tran.update(doc.ref, { tag: "tran exactly!!" });
-        }
-    }
-    await fireStoreManager.transaction([func]);
-}
 
 await main();

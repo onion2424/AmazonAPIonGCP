@@ -14,6 +14,13 @@
             "program": "${workspaceFolder}\\src\\EntryPoint\\Receiver\\index.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
+            ],
+            // https://github.com/winstonjs/winston/issues/1544
+            "outputCapture": "std",
+            // https://qiita.com/fsd_maclala/items/8f8bcd168e70ce0ab59c
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/**",
+                "!**/node_modules/**"
             ]
         }
     ]

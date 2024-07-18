@@ -39,22 +39,24 @@ export class manager {
      * ドキュメントを取得します。
      * @param {string} collectionName
      * @param {[any[]]} queries 
+     * @param {[order]} orderbyInfo
      * @param {number} limit
      * @returns 
      */
-    async getDocs(collectionName, queries, limit) {
-        return getDocs(db, collectionName, queries, limit)
+    async getDocs(collectionName, queries, orderbyInfo,  limit) {
+        return getDocs(db, collectionName, queries, orderbyInfo, limit)
     }
 
     /**
      * クエリを取得します。
      * @param {string} collectionName
      * @param {[any[]]} queries 
+     * @param {[order]} orderbyInfo
      * @param {number} limit
      * @returns 
      */
-    async getQuery(collectionName, queries, limit) {
-        return getQuery(db, collectionName, queries, limit)
+    async getQuery(collectionName, queries, orderbyInfo, limit) {
+        return getQuery(db, collectionName, queries, orderbyInfo, limit)
     }
 
     /**
@@ -69,11 +71,12 @@ export class manager {
 
     /**
      * トランザクション処理を実行します。
-     * @param {[(transaction: Transaction, obj: any) => Promise<void>]} functions 
+     * @param {[(transaction: Transaction, obj: any) => Promise<void>]} getFunctions 
+     * @param {[(transaction: Transaction, obj: any) => Promise<void>]} writeFunctions 
      */
-    async transaction(functions)
+    async transaction(getFunctions, writeFunctions)
     {
-        transaction(db, functions);
+        return transaction(db, getFunctions, writeFunctions);
     }
 }
 
