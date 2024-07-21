@@ -8,15 +8,15 @@ import { Timestamp } from "firebase-admin/firestore";
 
 /**
  * 
- * @typedef {object} D_Token
+ * @typedef {object} M_Token
  * @prop {Timestamp} expiration 有効期限
  * @prop {string} token トークン
  * @prop {delay} delay ディレイ
  */
 /**
- * @type D_Token
+ * @type M_Token
  */
-export const D_Token =
+export const M_Token =
 {
     expiration: null,
 

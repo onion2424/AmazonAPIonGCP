@@ -1,7 +1,7 @@
-import { _, utils, dayjs } from "../../../Common/common.js";
+import { _, utils, dayjs, logger } from "../../../Common/common.js";
 import fireStoreManager from "../../../FireStoreAPI/manager.js"
 import M_AccountManager from "../../../FireStoreAPI/Collection/M_Account/manager.js"
-import D_TokenManager from "../../../FireStoreAPI/Collection/D_Token/manager.js"
+import M_TokenManager from "../../../FireStoreAPI/Collection/M_Token/manager.js"
 import { D_Transaction } from '../../../FireStoreAPI/Collection/D_Transaction/class.js';
 import { M_Transaction } from '../../../FireStoreAPI/Collection/M_Transaction/class.js';
 import { Timestamp } from "firebase-admin/firestore";
@@ -10,12 +10,12 @@ export default async function save(json) {
     const date = dayjs().startOf("day");
     const batch = await fireStoreManager.createBatch();
 
-    const adsDocRef = await fireStoreManager.createRef("D_Token");
-    batch.set(adsDocRef, D_TokenManager.create(json['ads_token'].accessToken));
+    const adsDocRef = await fireStoreManager.createRef("M_Token");
+    batch.set(adsDocRef, M_TokenManager.create(json['ads_token'].accessToken));
     delete json.ads_token.accessToken;
 
-    const spDocRef = await fireStoreManager.createRef("D_Token");
-    batch.set(spDocRef, D_TokenManager.create(json['sp_token'].accessToken));
+    const spDocRef = await fireStoreManager.createRef("M_Token");
+    batch.set(spDocRef, M_TokenManager.create(json['sp_token'].accessToken));
     delete json.sp_token.accessToken;
 
     const accountDocRef = await fireStoreManager.createRef("M_Account");
@@ -47,7 +47,7 @@ export default async function save(json) {
 
     await batch.commit();
 
-    logger.info("【セーブ完了】");
+    logger.info("[セーブ完了]");
 
     return true;
 }

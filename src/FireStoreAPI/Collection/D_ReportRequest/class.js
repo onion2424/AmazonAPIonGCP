@@ -12,11 +12,11 @@ import { DocumentReference, Timestamp } from "firebase-admin/firestore";
  * @prop {DocumentReference} accountRef M_Accountのリファレンス
  * @prop {requestInfo} requestInfo リクエスト情報
  * @prop {string} status 現在のステータス
- * @prop {number} continue コンティニュー回数
  * @prop {number} host ホスト
  * @prop {[string]} statuses 遷移ステータス
  * @prop {reportInfo} reportInfo レポート情報
  * @prop {DocumentReference} transactionRef D_Transactionのリファレンス
+ * @prop {string} memo メモ
  */
 
 /**
@@ -39,7 +39,6 @@ export const D_ReportRequest = {
         date: {}
     },
     status: "",
-    continue: 0,
     host: 0,
     statuses: [],
 
@@ -51,6 +50,7 @@ export const D_ReportRequest = {
      * @prop {string} url URL
      * @prop {string} documentId ドキュメントID
      * @prop {Timestamp} created レポート作成日時
+     * @prop {number} continue コンティニュー回数
      */
     reportInfo: {
         reportId: "",
@@ -59,6 +59,8 @@ export const D_ReportRequest = {
         url: "",
         documentId: "",
         //created: null,
+        continue: 0,
     },
     transactionRef: null,
+    memo: "",
 }

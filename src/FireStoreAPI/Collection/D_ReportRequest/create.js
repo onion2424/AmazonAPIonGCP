@@ -22,7 +22,7 @@ export function create(requestDoc, refName, accountDoc, transactionDoc, basedate
     for (const span of spans) {
         // 日付
         const doc = structuredClone(D_ReportRequest);
-        doc.requestTime = Timestamp.fromMillis(basedate);
+        doc.requestTime = Timestamp.fromDate(basedate.toDate());
         doc.accountRef = accountDoc.ref;
         const requestInfo = {
             ref: requestDoc.ref,

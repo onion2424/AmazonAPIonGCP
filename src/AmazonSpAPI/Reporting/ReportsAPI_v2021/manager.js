@@ -4,7 +4,7 @@ import { create } from "./create.js";
 import { status } from "./status.js";
 import { get } from "./get.js";
 import { download } from "./download.js";
-import { getDate } from "./date.js";
+import { translate } from "./translate.js";
 
 class manager
 {
@@ -14,7 +14,7 @@ class manager
         this.get = get;
         this.status = status;
         this.download = download;
-        this.getDate = getDate;
+        this.translate = translate;
     }
 }
 

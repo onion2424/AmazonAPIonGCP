@@ -20,13 +20,13 @@ export const M_Request = {
      * @prop {object} body リクエストボディ
      * @prop {string} refName 参照名称
      * @prop {settings} settings 設定
-     * @prop {[path]} paths パス
      * @prop {string} tag タグ
      */
 
     /**
      * @typedef {object} settings
      * @prop {dateSettings} date 日付設定
+     * @prop {saveSettings} save 保存設定
      */
 
     /**
@@ -35,6 +35,13 @@ export const M_Request = {
      * @prop {string} granularity 粒度
      * @prop {[number]} spans スパン
      * @prop {number} dateback さかのぼり期間
+     */
+
+     /**
+     * @typedef {object} saveSettings
+     * @prop {string} fileName
+     * @prop {string} tableName
+     * @prop {[string]} translaters
      */
 
     details: [{
@@ -49,8 +56,15 @@ export const M_Request = {
                 spans: [],
                 granularity: "",
                 dateback: -1,
+            },
+            save:
+            {
+                fileName: "",
+                tableName: "",
+                translaters:[],
             }
         },
+        fileName: "",
         tag: "",
     }],
 

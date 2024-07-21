@@ -1,4 +1,5 @@
 import { Firestore, FieldPath } from "firebase-admin/firestore";
+import L_ErrorManager from "./Collection/L_Error/manager.js";
 
 /**
  * 
@@ -20,6 +21,10 @@ export async function countDocs(db, collectionName, queries) {
             collectionRef = collectionRef.where(...query);
         });
 
-    const snapshot = await collectionRef.count().get();
+    const snapshot = await collectionRef.count().get()
+    .catch(async e => {
+        await L_ErrorManager.onFireStoreError(e, null);
+        throw e;
+    });
     return snapshot.data().count;
 };

@@ -1,13 +1,11 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Transaction, Timestamp } from 'firebase-admin/firestore';
 import FirestoreManager from "../../manager.js"
-
-
-const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-semvr-dfdb5719d0.json';
+import { systemInfo } from '../../../Common/common.js';
 
 {
 
-    let docRef = await FirestoreManager.createDoc("M_Request");
+    let docRef = await FirestoreManager.createRef("M_Request");
 
     let data = {
         details:
@@ -34,19 +32,22 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
                             "format": "GZIP_JSON"
                         }
                     },
-                    paths:
-                    {
-                        translate: "AmazonAdsAPI/Reporting/SponsoredAdsV3/SponsoredPruducts/MergedData/transalte",
-                        save: "AmazonAdsAPI/Reporting/SponsoredAdsV3/SponsoredPruducts/MergedData/save",
-                    },
                     refName: "mergedData",
                     settings: {
                         date:
                         {
-                            path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/getDate",
+                            path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/Settings/Date/getDate",
                             granularity: "DAY",
                             spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: 60,
+                            dateback: systemInfo.isTest() ? 1 : 60,
+                        },
+                        save:
+                        {
+                            fileName: "SPAdvertisedProduct.json",
+                            tableName: "SPAdvertisedProduct",
+                            translaters:[
+                                "gunzip", "ndjson",
+                            ],
                         }
                     },
                     tag: "マージ用レポート"
@@ -82,7 +83,7 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
 }
 {
 
-    let docRef = await FirestoreManager.createDoc("M_Request");
+    let docRef = await FirestoreManager.createRef("M_Request");
 
     let data = {
         details:
@@ -111,19 +112,22 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
                             "format": "GZIP_JSON"
                         }
                     },
-                    paths:
-                    {
-                        translate: "AmazonAdsAPI/Reporting/SponsoredAdsV3/SponsoredBrands/MergedData/transalte",
-                        save: "AmazonAdsAPI/Reporting/SponsoredAdsV3/SponsoredBrands/MergedData/save",
-                    },
                     refName: "mergedData",
                     settings: {
                         date:
                         {
-                            path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/getDate",
+                            path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/Settings/Date/getDate",
                             granularity: "DAY",
                             spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: 60,
+                            dateback: systemInfo.isTest() ? 1 : 60,
+                        },
+                        save:
+                        {
+                            fileName: "SBCampaigns.json",
+                            tableName: "SBCampaigns",
+                            translaters:[
+                                "gunzip", "ndjson",
+                            ],
                         }
                     },
                     tag: "マージ用レポート"
@@ -159,7 +163,7 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
 }
 {
 
-    let docRef = await FirestoreManager.createDoc("M_Request");
+    let docRef = await FirestoreManager.createRef("M_Request");
 
 
     let data = {
@@ -189,19 +193,22 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
                             "format": "GZIP_JSON"
                         }
                     },
-                    paths:
-                    {
-                        translate: "AmazonAdsAPI/Reporting/SponsoredAdsV3/SponsoredDisplay/MergedData/transalte",
-                        save: "AmazonAdsAPI/Reporting/SponsoredAdsV3/SponsoredDisplay/MergedData/save",
-                    },
                     refName: "mergedData",
                     settings: {
                         date:
                         {
-                            path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/getDate",
+                            path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/Settings/Date/getDate",
                             granularity: "DAY",
                             spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: 60,
+                            dateback: systemInfo.isTest() ? 1 : 60,
+                        },
+                        save:
+                        {
+                            fileName: "SDAdvertisedProduct.json",
+                            tableName: "SDAdvertisedProduct",
+                            translaters:[
+                                "gunzip", "ndjson",
+                            ],
                         }
                     },
                     tag: "マージ用レポート"
@@ -237,7 +244,7 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
 }
 
 {
-    let docRef = await FirestoreManager.createDoc("M_Request");
+    let docRef = await FirestoreManager.createRef("M_Request");
 
 
     let data = {
@@ -255,19 +262,21 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
                             "custom": "true",
                         }
                     },
-                    paths:
-                    {
-                        translate: "AmazonSpAPI/Reporting/ReportsAPI_v2021/GetFbaMyiAllInventoryData/MergedData/transalte",
-                        save: "AmazonSpAPI/Reporting/ReportsAPI_v2021/GetFbaMyiAllInventoryData/MergedData/save",
-                    },
-
                     refName: "mergedData",
                     settings: {
                         date:{
-                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/getDate",
+                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
                             granularity: "DAY",
                             spans: [1],
-                            dateBack: -1,
+                            dateBack: systemInfo.isTest() ? 1 : -1,
+                        },
+                        save:
+                        {
+                            fileName: "GetFbaMyiAllInventoryData.csv",
+                            tableName: "GetFbaMyiAllInventoryData",
+                            translaters:[
+                                "decodeSJIS", "encodeUTF-8",
+                            ],
                         }
                     },
                     tag: "マージ用レポート"
@@ -308,7 +317,7 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
 }
 
 {
-    let docRef = await FirestoreManager.createDoc("M_Request");
+    let docRef = await FirestoreManager.createRef("M_Request");
 
 
     let data = {
@@ -326,21 +335,25 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
                             "custom": "true",
                         }
                     },
-                    paths:
-                    {
-                        translate: "AmazonSpAPI/Reporting/ReportsAPI_v2021/GetFlatFileAllOrdersDataByOrderDateGeneral/MergedData/transalte",
-                        save: "AmazonSpAPI/Reporting/ReportsAPI_v2021/GetFlatFileAllOrdersDataByOrderDateGeneral/MergedData/save",
-                    },
                     refName: "mergedData",
                     settings: {
                         date:
                         {
-                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/getDate",
+                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
                             granularity: "DAY",
                             spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: 0,
+                            dateback: systemInfo.isTest() ? 1 : 0,
+                        },
+                        save:
+                        {
+                            fileName: "GetFlatFileAllOrdersDataByOrderDateGeneral.csv",
+                            tableName: "GetFlatFileAllOrdersDataByOrderDateGeneral",
+                            translaters:[
+                                "decodeSJIS", "encodeUTF-8",
+                            ],
                         }
                     },
+                    fileName: "GetFlatFileAllOrdersDataByOrderDateGeneral.csv",
                     tag: "マージ用レポート"
                 }
             ],
@@ -378,7 +391,7 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
 }
 
 {
-    let docRef = await FirestoreManager.createDoc("M_Request");
+    let docRef = await FirestoreManager.createRef("M_Request");
 
     let data = {
         details:
@@ -395,21 +408,26 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
                             "custom": "true",
                         }
                     },
-                    paths:
-                    {
-                        translate: "AmazonSpAPI/Reporting/ReportsAPI_v2021/GetSalesAndTrafficReport/MergedData/transalte",
-                        save: "AmazonSpAPI/Reporting/ReportsAPI_v2021/GetSalesAndTrafficReport/MergedData/save",
-                    },
                     refName: "mergedData",
                     settings: {
                         date:
                         {
-                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/getDate",
+                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
                             granularity: "DAY",
                             spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: 0,
+                            dateback: systemInfo.isTest() ? 1 : 0,
+                        },
+                        save:
+                        {
+                            fileName: "GetSalesAndTrafficReport.json",
+                            tableName: "GetSalesAndTrafficReport",
+                            translaters:[
+                                "getSalesAndTrafficReport",
+                            ],
                         }
+
                     },
+                    fileName: "GetSalesAndTrafficReport.json",
                     tag: "マージ用レポート"
                 }
             ],
@@ -447,7 +465,7 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
 }
 
 {
-    let docRef = await FirestoreManager.createDoc("M_Request");
+    let docRef = await FirestoreManager.createRef("M_Request");
 
     let data = {
         details:
@@ -464,21 +482,25 @@ const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-s
                             "custom": "true",
                         }
                     },
-                    paths:
-                    {
-                        translate: "AmazonSpAPI/Reporting/ReportsAPI_v2021/GetMerchantListingsAllData/MergedData/transalte",
-                        save: "AmazonSpAPI/Reporting/ReportsAPI_v2021/GetMerchantListingsAllData/MergedData/save",
-                    },
                     refName: "mergedData",
                     settings: {
                         date:
                         {
-                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/getDate",
+                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
                             granularity: "DAY",
                             spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: 1,
+                            dateback: systemInfo.isTest() ? 1 :  1,
+                        },
+                        save:
+                        {
+                            fileName: "GetMerchantListingsAllData.csv",
+                            tableName: "GetMerchantListingsAllData",
+                            translaters:[
+                                "decodeSJIS", "encodeUTF-8",
+                            ],
                         }
                     },
+                    fileName: "GetMerchantListingsAllData.csv",
                     tag: "マージ用レポート"
                 }
             ],

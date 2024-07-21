@@ -1,4 +1,5 @@
 import { Firestore } from "firebase-admin/firestore";
+import L_ErrorManager from "./Collection/L_Error/manager.js";
 
 /**
  * 
@@ -17,6 +18,9 @@ export async function transaction(db, getFunctions, writeFunctions) {
         for await (const func of writeFunctions) {
             await func(tran, obj);
         }
+    }).catch(async e => {
+        await L_ErrorManager.onFireStoreError(e, null);
+        throw e;
     });
     return obj;
 }

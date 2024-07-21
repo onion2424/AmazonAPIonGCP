@@ -22,6 +22,6 @@ export const S_RunningState = {
     tag: "",
     job: "",
     hosts: [],
-    nextTime: Timestamp.fromMillis(dayjs()),
+    nextTime: Timestamp.fromDate(dayjs().toDate()),
     version: "",
 }

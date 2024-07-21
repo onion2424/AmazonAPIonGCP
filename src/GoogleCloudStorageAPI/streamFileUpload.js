@@ -39,7 +39,12 @@ export async function streamFileUpload(storage, bucketName, destFileName, stream
     // pipeをつなぐ
     const end = new pipeline(readable, writable);
 
-    // エラーハンドリング
+    // エラーハンドリング https://www.npmjs.com/package/stream-chain
+    chain.on('error', (e) => {
+        ret = false;
+        logger.error('[GCPエラー][アップロード失敗][エラー内容表示]', e);
+    });
+    /*
     [...streams, writable].forEach((item) => {
         if ('on' in item) {
             item.on('error', (e) => {
@@ -48,11 +53,9 @@ export async function streamFileUpload(storage, bucketName, destFileName, stream
             })
         }
     })
+    */
 
-    //console.log('await ending');
     await end;
-    //console.log('await ended');
-
 
     if (ret) {
         logger.info(`[アップロード完了][バケット名：${bucketName}][ファイル名：${destFileName}]`);

@@ -6,5 +6,9 @@ import AmazonSpAPIAuthAccessTokenFromRefreshToken from "../../AmazonSpAPI/Auth/A
 import AmazonSpAPIFeedsGetMyFeesEstimateForASIN from "../../AmazonSpAPI/Fees/GetMyFeesEstimateForASIN/manager.js"
 import AmazonSpAPIReportingReportsAPI_v2021 from "../../AmazonSpAPI/Reporting/ReportsAPI_v2021/manager.js"
 
+// HandleとEqualをインポート
+import FireStoreAPICollectionM_ErrorEqual from "../../FireStoreAPI/Collection/M_Error/Equal/manager.js"
+import FireStoreAPICollectionM_ErrorHandle from "../../FireStoreAPI/Collection/M_Error/Handle/manager.js"
+
 import root from "../../root.js"
 export default root;

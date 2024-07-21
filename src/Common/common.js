@@ -99,7 +99,7 @@ class gcpCommonClass{
          * AmazonAdsAPI
          * @type {string}
          */
-        this.AMAZON_ADS_API = "AmazonAdsApiReport";
+        this.AMAZON_ADS_API_REPORT = "AmazonAdsApiReport";
         /** 
          * AmazonAdsAPI
          * @type {string}

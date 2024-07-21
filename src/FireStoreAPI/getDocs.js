@@ -1,4 +1,5 @@
 import { Firestore, FieldPath, Filter, Query } from "firebase-admin/firestore";
+import L_ErrorManager from "./Collection/L_Error/manager.js";
 
 /**
  * 
@@ -9,7 +10,7 @@ import { Firestore, FieldPath, Filter, Query } from "firebase-admin/firestore";
  * @param {number} limit
  * @returns {[FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>]}
  */
-export async function getDocs(db, collectionName, queries, orderbyInfo,  limit) {
+export async function getDocs(db, collectionName, queries, orderbyInfo, limit) {
     return getDocs_step(db, collectionName, queries, orderbyInfo, limit, true);
 };
 
@@ -49,7 +50,7 @@ export async function getDocs_step(db, collectionName, queries, orderbyInfo, lim
         params.forEach(param => ref = ref.where(param));
     }
 
-    if(orderbyInfo){
+    if (orderbyInfo) {
         orderbyInfo.forEach(order => ref = ref.orderBy(order.column, order.direction));
     }
 
@@ -59,7 +60,11 @@ export async function getDocs_step(db, collectionName, queries, orderbyInfo, lim
 
     if (get) {
         let ret = [];
-        const snapshot = await ref.get();
+        const snapshot = await ref.get()
+            .catch(async e => {
+                await L_ErrorManager.onFireStoreError(e, null);
+                throw e;
+            });
         for await (let doc of snapshot.docs) {
             //const data = doc.data();
             // documentIdを追加
@@ -90,8 +95,7 @@ function createQuery(queries) {
         ret.push(Filter[first](...createQuery(others)));
         return ret;
     }
-    else 
-    {
+    else {
         queries.forEach(query => {
             if (query[0] == "documentId") {
                 query[0] = FieldPath.documentId();

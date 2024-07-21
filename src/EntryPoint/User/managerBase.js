@@ -13,7 +13,7 @@ export default class managerBase {
             return false;
         }
 
-        logger.info("【アカウント作成完了】");
+        logger.info(`[アカウント作成完了][${json.tag}]`);
         return true;
     }
 }

@@ -3,8 +3,10 @@ import root from "./import.js";
 import factoryMethod from "./factory.js"
 import * as path from "path";
 import storageManager from "./../../GoogleCloudStorageAPI/manager.js"
+import L_ErrorManager from "../../FireStoreAPI/Collection/L_Error/manager.js";
 
 async function run() {
+    L_ErrorManager.initialize("USERSETTING", "WRITE");
 
     // まずファイルを探す
     // amazon-api-report/Environment/Firestore/user/
@@ -31,7 +33,7 @@ async function run() {
         return;
     }
 
-    logger.warn("ファイルが存在しません。");
+    logger.warn("[処理終了][ファイルなし]");
 
     // Typeを見る
     // CREATE|UPDATE|DELETE

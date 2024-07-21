@@ -20,24 +20,25 @@ export async function initialize(batch, mtranDoc, dtranDoc) {
     const dtran = dtranDoc.data();
     const mtran = mtranDoc.data();
     const accountDoc = await collectionManager.get(dtran.accountRef);
-    logger.info(`[初期化開始][ステータス(REGULARREPORT)][${accountDoc.data().tag}][${mtran.tag}]`);
+    logger.info(`[初期化開始][ステータス(FIRSTREPORT)][${accountDoc.data().tag}][${mtran.tag}]`);
     for (const requestInfo of mtran.requests){
+        const mrequestDoc = await collectionManager.get(requestInfo.ref);
         /**
          * @type {M_Request}
          */
-        const requestDoc = await collectionManager.get(requestInfo.ref);
-        const detail = requestDoc.data().details.find(d => d.refName == requestInfo.refName);
+        const mrequest = mrequestDoc.data();
+        const detail = mrequest.details.find(d => d.refName == requestInfo.refName);
         // 日付設定からFirstCallを展開
         const dateSettings = detail.settings.date;
         const spans = getSpans(dateSettings.dateback, dayjs(dtran.date.toDate()), dayjs(accountDoc.data().startDate));
-        const drequests = drequestManager.create(requestDoc, requestInfo.refName, accountDoc, dtranDoc, dayjs(dtran.date.toDate()), spans)
+        const drequests = drequestManager.create(mrequestDoc, requestInfo.refName, accountDoc, dtranDoc, dayjs(dtran.date.toDate()), spans)
         for (const drequest of drequests){
             const ref = await firestoreManager.createRef("D_ReportRequest");
             batch.set(ref, drequest);
         }
-        logger.info(`[D_Request][${drequests.length}件]`);
+        logger.info(`[D_ReportRequest][${mrequest.tag}][${detail.tag}][${drequests.length}件]`);
     }
-    logger.info(`[初期化終了][ステータス(REGULARREPORT)][${accountDoc.data().tag}][${mtran.tag}]`);
+    logger.info(`[初期化終了][ステータス(FIRSTREPORT)][${accountDoc.data().tag}][${mtran.tag}]`);
     return;
 }
 

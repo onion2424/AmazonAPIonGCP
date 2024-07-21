@@ -9,7 +9,7 @@ import { Timestamp, DocumentReference } from "firebase-admin/firestore";
  * @typedef {object} M_Account
  * @prop {string} tag アカウント名称
  * @prop {string} sellerId セラーID
- * @prop {TimeStamp} startDate 開始日
+ * @prop {Timestamp} startDate 開始日
  * @prop {token} token トークン
  * @prop {boolean} deleted 削除フラグ
  * @prop {boolean} valid 有効フラグ
@@ -32,6 +32,7 @@ export const M_Account = {
          * @prop {DocumentReference} ref 関連するD_Tokenのリファレンス
          * @prop {string} client_id クライアントID
          * @prop {string} client_secret クライアントシークレット
+         * @prop {string} refresh_token リフレッシュトークン
          * @prop {string} profileId  プロフィールID
          */
         ads_token:
@@ -39,7 +40,8 @@ export const M_Account = {
             ref: null,
             client_id: "",
             client_secret: "",
-            prifileId: "",
+            refresh_token: "",
+            profileId: "",
         },
 
         /**
@@ -47,6 +49,7 @@ export const M_Account = {
          * @prop {DocumentReference} ref 関連するD_Tokenのリファレンス
          * @prop {string} client_id クライアントID
          * @prop {string} client_secret クライアントシークレット
+         * @prop {string} refresh_token リフレッシュトークン
          * @prop {[string]} marketplaceIds マーケットプレイス
          */
         sp_token:
@@ -54,6 +57,7 @@ export const M_Account = {
             ref: null,
             client_id: "",
             client_secret: "",
+            refresh_token: "",
             marketplaceIds: [],
         }
     },

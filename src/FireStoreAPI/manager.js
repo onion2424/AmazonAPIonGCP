@@ -1,7 +1,7 @@
 import { cert, initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Transaction, Timestamp, Query} from 'firebase-admin/firestore';
-import { createRef } from './createRef.js';
-import { createBatch } from './createBatch.js'
+import { createRef, setRef, updateRef } from './createRef.js';
+import { createBatch, commitBatch } from './createBatch.js'
 import { getDocs, getQuery } from './getDocs.js'
 import { transaction } from './transaction.js';
 import { countDocs } from "./countDocs.js"
@@ -27,11 +27,38 @@ export class manager {
     }
 
     /**
+     * セットを実行します。
+     * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} doc 
+     * @param {*} data
+     */
+    async setRef(doc, data){
+        return setRef(doc, data);
+    }
+
+    /**
+     * アップデートを実行します。
+     * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} doc 
+     * @param {*} data
+     */
+    async updateRef(doc, data){
+        return updateRef(doc, data);
+    }
+
+    /**
      * バッチを作成します。
      * @returns 
      */
     async createBatch() {
         return createBatch(db);
+    }
+
+    /**
+     * バッチを作成します。
+     * @param {FirebaseFirestore.WriteBatch} batch 
+     * @returns 
+     */
+    async commitBatch(batch) {
+        return commitBatch(batch);
     }
 
     /**
@@ -80,8 +107,14 @@ export class manager {
 }
 
 logger.debug("import FireStoreAPI");
+const temp = _.get(root, ["FireStoreAPI"]);
 
 const instance = new manager();
+if(temp){
+    Object.assign(instance, temp);
+}
+
 _.set(root, ["FireStoreAPI"], instance);
+
 
 export default instance;
