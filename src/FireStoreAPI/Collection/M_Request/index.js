@@ -496,7 +496,7 @@ import { systemInfo } from '../../../Common/common.js';
                             fileName: "GetMerchantListingsAllData.csv",
                             tableName: "GetMerchantListingsAllData",
                             translaters:[
-                                "decodeSJIS", "encodeUTF-8",
+                                "decodeSJIS", "encodeUTF-8", "getMerchantListingsAllData",
                             ],
                         }
                     },

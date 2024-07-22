@@ -1,11 +1,13 @@
 import root from '../../../root.js';
-import { _, utils, amazonCommon, logger } from '../../../Common/common.js';
+import { _, utils, amazonCommon, logger, dayjs } from '../../../Common/common.js';
 import { M_Account } from '../../../FireStoreAPI/Collection/M_Account/manager.js';
 import { D_ReportRequest } from '../../../FireStoreAPI/Collection/D_ReportRequest/manager.js';
 import { M_Request } from '../../../FireStoreAPI/Collection/M_Request/manager.js';
 import storageManager from "../../../GoogleCloudStorageAPI/manager.js"
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
 import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
+import * as path from "path";
+
 /**
  * 
  * @param {D_ReportRequest} drequest 
@@ -32,7 +34,8 @@ export async function translate(drequest, mrequest) {
     }
 
     const file = list[0];
-    const destFileName = drequest.reportInfo.filepath.replace("/temp", "");
+    const extension = path.extname(file.name);
+    const destFileName = drequest.reportInfo.filepath.replace(extension, "").replace("/temp", "") + "_" + dayjs(drequest.reportInfo.created.toDate()).format("YYYYMMDD") + extension;
     const uploaded = await storageManager.streamFileUpload(destFileName, file.createReadStream(), detail.settings.save.translaters);
 
     // ステータス更新

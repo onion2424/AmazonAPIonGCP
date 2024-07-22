@@ -38,7 +38,6 @@ import { Timestamp } from "firebase-admin/firestore";
 
 {
     let docRef = await FirestoreManager.createDoc("S_RunningState");
-
     /**
      * @type {S_RunningState}
      */

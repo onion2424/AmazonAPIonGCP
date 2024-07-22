@@ -15,7 +15,7 @@ import { DocumentReference, Timestamp } from "firebase-admin/firestore";
  * @prop {number} host ホスト
  * @prop {[string]} statuses 遷移ステータス
  * @prop {reportInfo} reportInfo レポート情報
- * @prop {DocumentReference} transactionRef D_Transactionのリファレンス
+ * @prop {[DocumentReference]} transactionRefs D_Transactionのリファレンス
  * @prop {string} memo メモ
  */
 
@@ -61,6 +61,6 @@ export const D_ReportRequest = {
         //created: null,
         continue: 0,
     },
-    transactionRef: null,
+    transactionRefs: [],
     memo: "",
 }

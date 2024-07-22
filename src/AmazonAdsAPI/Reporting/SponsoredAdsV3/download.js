@@ -48,9 +48,7 @@ export async function download(drequest, mrequest) {
   // 成功
   if (response && "status" in response) {
     if (response.ok) {
-      // gz形式で保存
-      const fileName = detail.settings.save.fileName.replace(".json", ".json");
-      let destFileName = utils.combine(gcpCommon.AMAZON_ADS_API_REPORT, dayjs(drequest.requestInfo.date.start).format('YYYY-MM-DD'), account.tag, "temp", fileName);
+      let destFileName = utils.combine(gcpCommon.AMAZON_ADS_API_REPORT, dayjs(drequest.requestInfo.date.start).format('YYYY-MM-DD'), account.tag, "temp", detail.settings.save.fileName);
 
       //エラーハンドリングできない?
       // const noop = new Transform({objectMode: true, transform: function(chunk, encoding, callback)
@@ -77,7 +75,8 @@ export async function download(drequest, mrequest) {
       const data = await response.json();
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, JSON.stringify(data));
-      return { ok: "ng", error: error };
+      error.tag = `ステータス=${response.status}`;
+      return { ok: "ng", error: error, token: accesTokenDoc  };
     }
   }
 

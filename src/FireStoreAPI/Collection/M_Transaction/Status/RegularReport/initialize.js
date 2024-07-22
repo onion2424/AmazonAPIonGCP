@@ -8,7 +8,7 @@ import mrequestManager, { M_Request } from "../../../M_Request/manager.js"
 import { DocumentSnapshot } from "firebase-admin/firestore";
 
 /**
- * 
+ * RegularCallを展開
  * @param {FirebaseFirestore.WriteBatch} batch
  * @param {DocumentSnapshot} mtranDoc
  * @param {DocumentSnapshot} dtranDoc
@@ -20,15 +20,16 @@ export async function initialize(batch, mtranDoc, dtranDoc) {
     const accountDoc = await collectionManager.get(dtran.accountRef);
 
     logger.info(`[初期化開始][ステータス(REGULARREPORT)][${accountDoc.data().tag}][${mtran.tag}]`);
-    for (const requestInfo of mtran.requests){
+    for (const requestInfo of mtran.requests) {
         const requestDoc = await collectionManager.get(requestInfo.ref);
         const request = requestDoc.data();
         const detail = request.details.find(d => d.refName == requestInfo.refName);
-        // 日付設定からRegularCallを展開
         const dateSettings = detail.settings.date;
         const spans = dateSettings.spans;
-        const drequests = drequestManager.create(requestDoc, requestInfo.refName, accountDoc, dtranDoc, dayjs(dtran.date.toDate()), spans)
-        for (const drequest of drequests){
+        // その他のM_transactionからD_tranを作成
+        // Refを持たせる
+        const drequests = drequestManager.create(requestDoc, requestInfo.refName, accountDoc, [dtranDoc], dayjs(dtran.date.toDate()), spans)
+        for (const drequest of drequests) {
             const ref = await firestoreManager.createRef("D_ReportRequest");
             batch.set(ref, drequest);
         }

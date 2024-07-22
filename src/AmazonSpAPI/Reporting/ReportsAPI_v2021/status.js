@@ -7,7 +7,8 @@ import authManager from "../../Auth/AccessTokenFromRefreshToken/manager.js"
 import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
 import L_ErrorManager from '../../../FireStoreAPI/Collection/L_Error/manager.js';
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
-import { Timestamp } from 'firebase-admin/firestore';
+import R_DelayManager from '../../../FireStoreAPI/Collection/R_Delay/manager.js';
+import { Timestamp, Transaction } from "firebase-admin/firestore";
 
 /**
  * 
@@ -22,7 +23,18 @@ export async function status(drequest, mrequest) {
    */
   const account = accountDoc.data();
 
-  const accesToken = await authManager.get(account);
+  const accesTokenDoc = await authManager.get(account);
+  const accesToken = accesTokenDoc.data();
+
+  const delay = R_DelayManager.delay(accesTokenDoc);
+  if(delay){
+    if(dayjs(delay.time.toDate()) > dayjs()){
+      const error = M_ErrorManager.create();
+      error.handle = "FireStoreAPI/Collection/M_Error/Handle/delay";
+      error.tag = "リクエスト制限";
+      return { ok: "error", error: error, delay: delay};
+    }
+  }
 
   const urlSuffix = amazonCommon.getURLEndPoint("SP", account.token.sp_token.marketplaceIds[0]);
 
@@ -61,7 +73,7 @@ export async function status(drequest, mrequest) {
         return { ok: "ok", reportInfo: reportInfo, next: false };
       }
       else if (data.processingStatus == "DONE") {
-        reportInfo.created = Timestamp.fromDate(dayjs(data.createdTime).toDate());
+        reportInfo.created = Timestamp.fromDate(dayjs(data.createdTime.slice(0,-6)).toDate());
         reportInfo.documentId = data.reportDocumentId;
         reportInfo.continue = 0;
         return { ok: "ok", reportInfo: reportInfo, next: true };
@@ -72,7 +84,7 @@ export async function status(drequest, mrequest) {
       const data = await response.json();
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, JSON.stringify(data));
-      return { ok: "ng", error: error };
+      return { ok: "ng", error: error ,  token: accesTokenDoc };
     }
   }
   // エラー

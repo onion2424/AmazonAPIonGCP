@@ -8,7 +8,7 @@ import mrequestManager, { M_Request } from "../../../M_Request/manager.js"
 import { DocumentSnapshot } from "firebase-admin/firestore";
 
 /**
- * 
+ * FirstCallを展開
  * @param {FirebaseFirestore.WriteBatch} batch
  * @param {DocumentSnapshot} mtranDoc
  * @param {DocumentSnapshot} dtranDoc
@@ -28,10 +28,11 @@ export async function initialize(batch, mtranDoc, dtranDoc) {
          */
         const mrequest = mrequestDoc.data();
         const detail = mrequest.details.find(d => d.refName == requestInfo.refName);
-        // 日付設定からFirstCallを展開
         const dateSettings = detail.settings.date;
         const spans = getSpans(dateSettings.dateback, dayjs(dtran.date.toDate()), dayjs(accountDoc.data().startDate));
-        const drequests = drequestManager.create(mrequestDoc, requestInfo.refName, accountDoc, dtranDoc, dayjs(dtran.date.toDate()), spans)
+        // その他のM_transactionからD_tranを作成
+        // Refを持たせる
+        const drequests = drequestManager.create(mrequestDoc, requestInfo.refName, accountDoc, [dtranDoc], dayjs(dtran.date.toDate()), spans)
         for (const drequest of drequests){
             const ref = await firestoreManager.createRef("D_ReportRequest");
             batch.set(ref, drequest);

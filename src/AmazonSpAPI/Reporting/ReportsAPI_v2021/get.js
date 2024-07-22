@@ -7,6 +7,8 @@ import authManager from "../../Auth/AccessTokenFromRefreshToken/manager.js";
 import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
 import L_ErrorManager from '../../../FireStoreAPI/Collection/L_Error/manager.js';
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
+import R_DelayManager from '../../../FireStoreAPI/Collection/R_Delay/manager.js';
+
 import { Timestamp } from 'firebase-admin/firestore';
 /**
  * 
@@ -20,7 +22,19 @@ export async function get(drequest, mrequest) {
    * @type {M_Account}
    */
   const account = accountDoc.data();
-  const accesToken = await authManager.get(account);
+  const accesTokenDoc = await authManager.get(account);
+  const accesToken = accesTokenDoc.data();
+
+  const delay = R_DelayManager.delay(accesTokenDoc);
+  if(delay){
+    if(dayjs(delay.time.toDate()) > dayjs()){
+      const error = M_ErrorManager.create();
+      error.handle = "FireStoreAPI/Collection/M_Error/Handle/delay";
+      error.tag = "リクエスト制限";
+      return { ok: "error", error: error, delay: delay};
+    }
+  }
+
   const urlSuffix = amazonCommon.getURLEndPoint("SP", account.token.sp_token.marketplaceIds[0]);
 
   const response = await fetch(`https://sellingpartnerapi${urlSuffix}.amazon.com/reports/2021-06-30/documents/${drequest.reportInfo.documentId}`, {
@@ -50,7 +64,8 @@ export async function get(drequest, mrequest) {
       const data = await response.json();
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, JSON.stringify(data));
-      return { ok: "ng", error: error };
+      error.tag = `ステータス=${response.status}`;
+      return { ok: "ng", error: error,  token: accesTokenDoc  };
     }
   }
   // エラー

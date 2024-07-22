@@ -9,12 +9,12 @@ import root from "../../../root.js"
  * tokenInfo形式のjsonを受け取り、D_Tokenを返す
  * @param { DocumentSnapshot } requestDoc
  * @param { DocumentSnapshot } accountDoc
- * @param { DocumentSnapshot } transactionDoc
+ * @param { [DocumentSnapshot] } transactionDocs
  * @param { dayjs.Dayjs } basedate
  * @param { [number] } spans
  * @returns 
  */
-export function create(requestDoc, refName, accountDoc, transactionDoc, basedate, spans) {
+export function create(requestDoc, refName, accountDoc, transactionDocs, basedate, spans) {
     const ret = [];
     const request = requestDoc.data();
 
@@ -32,7 +32,7 @@ export function create(requestDoc, refName, accountDoc, transactionDoc, basedate
         doc.requestInfo = requestInfo;
         doc.statuses = _.map(request.statuses, (s) => s.status);
         doc.status = doc.statuses[0];
-        doc.transactionRef = transactionDoc.ref;
+        doc.transactionRefs = transactionDocs.map(d => d.ref);
         ret.push(doc);
     }
     return ret;

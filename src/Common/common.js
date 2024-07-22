@@ -122,6 +122,12 @@ class systemInfoClass {
          * @type {boolean}
          */
         this.sigterm = false;
+
+        /**
+         * 次回起動時間
+         * @type {dayjs.Dayjs}
+         */
+        this.nextTime = null;
     }
     isTest() {
         return this.mode == "TEST";

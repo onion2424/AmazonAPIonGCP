@@ -13,11 +13,25 @@ export function createRef(db, collectionName) {
 
 /**
  * 
- * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} doc 
+ * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} ref 
  * @param {*} data
  */
-export async function setRef(doc, data) {
-    return doc.set(data)
+export async function setRef(ref, data) {
+    return ref.set(data)
+        .catch(async e => {
+            await L_ErrorManager.onFireStoreError(e, null);
+            throw e;
+        });
+}
+
+
+/**
+ * 
+ * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} ref 
+ * @param {*} data
+ */
+export async function updateRef(ref, data) {
+    return ref.update(data)
         .catch(async e => {
             await L_ErrorManager.onFireStoreError(e, null);
             throw e;
@@ -26,11 +40,10 @@ export async function setRef(doc, data) {
 
 /**
  * 
- * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} doc 
- * @param {*} data
+ * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} ref 
  */
-export async function updateRef(doc, data) {
-    return doc.update(data)
+export async function deleteRef(ref) {
+    return ref.delete()
         .catch(async e => {
             await L_ErrorManager.onFireStoreError(e, null);
             throw e;

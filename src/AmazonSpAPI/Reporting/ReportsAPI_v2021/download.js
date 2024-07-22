@@ -67,7 +67,8 @@ export async function download(drequest, mrequest) {
       const data = await response.json();
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, JSON.stringify(data));
-      return { ok: "ng", error: error };
+      error.tag = `ステータス=${response.status}`;
+      return { ok: "ng", error: error,  token: accesTokenDoc  };
     }
   }
   // エラー

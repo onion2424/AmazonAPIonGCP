@@ -6,6 +6,7 @@ import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
 import authManager from "../../Auth/AccessTokenFromRefreshToken/manager.js";
 import L_ErrorManager from '../../../FireStoreAPI/Collection/L_Error/manager.js';
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
+import R_DelayManager from '../../../FireStoreAPI/Collection/R_Delay/manager.js';
 
 import root from '../../../root.js';
 
@@ -24,7 +25,18 @@ export async function create(drequest, mrequest) {
   const clientId = account.token.ads_token.client_id;
   const profileId = account.token.ads_token.profileId;
 
-  const accesToken = await authManager.get(account);
+  const accesTokenDoc = await authManager.get(account);
+  const accesToken = accesTokenDoc.data();
+
+  const delay = R_DelayManager.delay(accesTokenDoc);
+  if(delay){
+    if(dayjs(delay.time.toDate()) > dayjs()){
+      const error = M_ErrorManager.create();
+      error.handle = "FireStoreAPI/Collection/M_Error/Handle/delay";
+      error.tag = "リクエスト制限";
+      return { ok: "error", error: error, delay: delay};
+    }
+  }
 
   // 日付情報を付与
   const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
@@ -61,7 +73,8 @@ export async function create(drequest, mrequest) {
       const data = await response.json();
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, JSON.stringify(data));
-      return { ok: "ng", error: error };
+      error.tag = `ステータス=${response.status}`;
+      return { ok: "ng", error: error,  token: accesTokenDoc };
     }
   }
 

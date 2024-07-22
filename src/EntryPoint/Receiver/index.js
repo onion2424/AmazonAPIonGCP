@@ -8,6 +8,7 @@ import { D_ReportRequest } from "../../FireStoreAPI/Collection/D_ReportRequest/c
 import { M_Request } from "../../FireStoreAPI/Collection/M_Request/manager.js"
 import L_ErrorManager from "../../FireStoreAPI/Collection/L_Error/manager.js"
 import M_ErrorManager, {M_Error} from "../../FireStoreAPI/Collection/M_Error/manager.js";
+import R_DelayManager from "../../FireStoreAPI/Collection/R_Delay/manager.js"
 /**
  * エントリーポイント
  * @returns 
@@ -43,13 +44,17 @@ async function main() {
     // キャッシュ
     await collectiomManager.caching();
 
+    // サブスクライブ
+    R_DelayManager.subscribe();
+    logger.info(`[サブスクライブ開始][R_Delay]`);
+
     // host分起動する　いったんPromise.allで
     while (true) {
         if (systemInfo.sigterm) {
             logger.warn("[SIGTERM検出][処理中断]");
             break;
         }
-        const ret = await createTasks([1]);
+        const ret = await createTasks(state.hosts);
         if (ret.every(r => r.status == "fulfilled")) {
             logger.info("[全ホスト正常終了][リクエスト処理完了]");
             break;
@@ -119,24 +124,34 @@ async function runAsync(host, syncObj) {
             const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
             const status = mrequest.statuses.find(s => s.status == drequest.status);
             const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
+            if(res.ok == "error") {
+                const error = res.error;
+                const handled = await _.get(root, error.handle.split("/"))(drequest, res);
+                await fireStoreManager.updateRef(drequestDoc.ref, handled);
+                logger.warn(`[エラーハンドリング][${drequestDoc.id}][${error.tag}][${error.handle}]`);
+            }
             if(res.ok == "ok"){
                 const index = drequest.statuses.indexOf(drequest.status);
                 const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
                 const nextTime = Timestamp.fromDate(dayjs().add(2**res.reportInfo.continue, "second").toDate());
+                if("created" in res.reportInfo && res.reportInfo.created){
+                    // TimeStampに戻す https://stackoverflow.com/questions/57898146/firestore-timestamp-gets-saved-as-map
+                    res.reportInfo.created = new Timestamp(res.reportInfo.created._seconds, res.reportInfo.created._nanoseconds);
+                }
                 await fireStoreManager.updateRef(drequestDoc.ref, {requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, host: 0});
                 logger.info(`[リクエスト更新][${drequestDoc.id}][${drequest.status}⇒${nextStatus}]`);
             }
             // errorならPG上のエラーハンドリング
             else if (res.ok == "error") {
                 const error = res.error;
-                const handled = _.get(root, error.handle.split("/"))(drequest);
+                const handled = await _.get(root, error.handle.split("/"))(drequest, res);
                 await fireStoreManager.updateRef(drequestDoc.ref, handled);
                 logger.warn(`[エラーハンドリング][${drequestDoc.id}][${error.tag}][${error.handle}]`);
             }
             // ngならDBを参照してエラーハンドリング
             else if (res.ok == "ng") {
                 const error = await M_ErrorManager.getOrAdd(drequest, res.error);
-                const handled = _.get(root, error.handle.split("/"))(drequest);
+                const handled = _.get(root, error.handle.split("/"))(drequest, res);
                 await fireStoreManager.updateRef(drequestDoc.ref, handled);
                 logger.warn(`[エラーハンドリング][${drequestDoc.id}][${error.tag}][${error.handle}]`);
             }

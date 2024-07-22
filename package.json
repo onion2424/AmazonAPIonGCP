@@ -17,7 +17,6 @@
     "receiver:build_test": "run-s receiver:create_test receiver:image_test receiver:push_test receiver:job_test",
     "receiver": "node ./src/EntryPoint/Receiver/index.js",
     "receiver-p": "run-p receiver receiver",
-    
     "userSetting:create": "node ./src/EntryPoint/User/build.js -release",
     "userSetting:image": "docker build -t asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/user-setting-image .",
     "userSetting:push": "docker push asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/user-setting-image",
@@ -29,7 +28,6 @@
     "userSetting": "node ./src/EntryPoint/User/index.js",
     "userSetting:build": "run-s userSetting:create userSetting:image userSetting:push userSetting:job",
     "userSetting:build_test": "run-s userSetting:create_test userSetting:image_test userSetting:push_test userSetting:job_test",
-
     "observer:create": "node ./src/EntryPoint/Observer/build.js -release",
     "observer:image": "docker build -t asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/observer-image .",
     "observer:push": "docker push asia-northeast1-docker.pkg.dev/amazon-api-report/amazon-report-repository/observer-image",
@@ -41,7 +39,6 @@
     "observer": "node ./src/EntryPoint/Observer/index.js",
     "observer:build": "run-s observer:create observer:image observer:push observer:job",
     "observer:build_test": "run-s observer:create_test observer:image_test observer:push_test observer:job_test",
-
     "test:build": "node ./src/EntryPoint/TestRunner/index.js -release",
     "test:build_test": "node ./src/EntryPoint/TestRunner/index.js",
     "test": "node --test",
@@ -61,6 +58,7 @@
     "@types/lodash": "^4.17.6",
     "ajv": "^8.16.0",
     "dayjs": "^1.11.11",
+    "fast-csv": "^5.0.1",
     "firebase-admin": "^12.2.0",
     "iconv-lite": "^0.6.3",
     "lodash": "^4.17.21",

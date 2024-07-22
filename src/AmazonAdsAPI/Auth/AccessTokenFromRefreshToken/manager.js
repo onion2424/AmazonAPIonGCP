@@ -12,7 +12,6 @@ class manager{
     }
     /**
      * @param {M_Account} account
-     * @returns {Promise<M_Token>}
      */
     async get(account){
         const tokenDoc = await collectionManager.get(account.token.ads_token.ref);
@@ -30,10 +29,10 @@ class manager{
             await fireStoreManager.updateRef(tokenDoc.ref, M_TokenManager.create(newToken));
             // キャッシュ削除（次回再キャッシュ）
             const doc = await collectionManager.recache(tokenDoc);
-            return doc.data();
+            return doc;
         }
         
-        return token;
+        return tokenDoc;
     }
 }
 

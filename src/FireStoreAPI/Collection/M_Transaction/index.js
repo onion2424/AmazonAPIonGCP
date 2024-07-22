@@ -21,7 +21,7 @@ let ref = await FirestoreManager.createRef("M_Transaction");
  * @type {M_Transaction}
  */
 let data = {
-    tag: 'マージ用レポート受信',
+    tag: '基本リクエスト',
     details:[
         {
             refName: "firstCall",

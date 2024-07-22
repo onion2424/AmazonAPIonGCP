@@ -10,7 +10,7 @@ import { Timestamp } from "firebase-admin/firestore";
  * @typedef {object} S_RunningState
  * @prop {string} tag タグ
  * @prop {string} job ジョブ
- * @prop {[number]} hosts
+ * @prop {[number]} hosts ホストのリスト
  * @prop {Timestamp} nextTime 次回実行時間
  * @prop {string} version バージョン
  */

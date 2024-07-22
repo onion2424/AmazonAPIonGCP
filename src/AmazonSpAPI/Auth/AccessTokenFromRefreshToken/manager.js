@@ -5,14 +5,15 @@ import { M_Account } from "../../../FireStoreAPI/Collection/M_Account/manager.js
 import M_TokenManager, { M_Token } from "../../../FireStoreAPI/Collection/M_Token/manager.js";
 import collectionManager from "../../../FireStoreAPI/Collection/manager.js"
 import fireStoreManager from "../../../FireStoreAPI/manager.js"
+import { DocumentSnapshot } from "firebase-admin/firestore";
 
 class manager{
     constructor(){
+        this.cache = [];
     }
 
      /**
      * @param {M_Account} account
-     * @returns {Promise<M_Token>}
      */
      async get(account){
         const tokenDoc = await collectionManager.get(account.token.sp_token.ref);
@@ -30,10 +31,10 @@ class manager{
 
             // キャッシュ削除（次回再キャッシュ）
             const doc = await collectionManager.recache(tokenDoc);
-            return doc.data();
+            return doc;
         }
         
-        return token;
+        return tokenDoc;
     }
 }
 

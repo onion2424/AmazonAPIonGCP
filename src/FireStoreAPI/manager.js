@@ -1,12 +1,13 @@
 import { cert, initializeApp } from 'firebase-admin/app';
-import { getFirestore, FieldValue, Transaction, Timestamp, Query} from 'firebase-admin/firestore';
-import { createRef, setRef, updateRef } from './createRef.js';
+import { getFirestore, FieldValue, Transaction, Timestamp, Query } from 'firebase-admin/firestore';
+import { createRef, setRef, updateRef, deleteRef } from './createRef.js';
 import { createBatch, commitBatch } from './createBatch.js'
 import { getDocs, getQuery } from './getDocs.js'
 import { transaction } from './transaction.js';
 import { countDocs } from "./countDocs.js"
 import root from '../root.js';
 import { _, systemInfo, logger } from '../Common/common.js';
+import { subscribe } from './subscribe.js';
 
 const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-semvr-dfdb5719d0.json';
 
@@ -28,20 +29,28 @@ export class manager {
 
     /**
      * セットを実行します。
-     * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} doc 
+     * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} ref 
      * @param {*} data
      */
-    async setRef(doc, data){
-        return setRef(doc, data);
+    async setRef(ref, data) {
+        return setRef(ref, data);
     }
 
     /**
      * アップデートを実行します。
-     * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} doc 
+     * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} ref 
      * @param {*} data
      */
-    async updateRef(doc, data){
-        return updateRef(doc, data);
+    async updateRef(ref, data) {
+        return updateRef(ref, data);
+    }
+
+    /**
+     * 削除を実行します。
+     * @param {FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>} ref 
+     */
+    async deleteRef(ref) {
+        return deleteRef(ref);
     }
 
     /**
@@ -69,7 +78,7 @@ export class manager {
      * @param {number} limit
      * @returns 
      */
-    async getDocs(collectionName, queries, orderbyInfo,  limit) {
+    async getDocs(collectionName, queries, orderbyInfo, limit) {
         return getDocs(db, collectionName, queries, orderbyInfo, limit)
     }
 
@@ -100,9 +109,19 @@ export class manager {
      * @param {[(transaction: Transaction, obj: any) => Promise<void>]} getFunctions 
      * @param {[(transaction: Transaction, obj: any) => Promise<void>]} writeFunctions 
      */
-    async transaction(getFunctions, writeFunctions)
-    {
+    async transaction(getFunctions, writeFunctions) {
         return transaction(db, getFunctions, writeFunctions);
+    }
+
+    /**
+     * 購読します。
+     * @param {string} collectionName 
+     * @param {[any[]]} queries
+     * @param {*} func 
+     * @returns 
+     */
+    async subscribe(collectionName, queries, func) {
+        return subscribe(db, collectionName, queries, func);
     }
 }
 
@@ -110,7 +129,7 @@ logger.debug("import FireStoreAPI");
 const temp = _.get(root, ["FireStoreAPI"]);
 
 const instance = new manager();
-if(temp){
+if (temp) {
     Object.assign(instance, temp);
 }
 

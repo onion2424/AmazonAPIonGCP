@@ -7,7 +7,10 @@ import { finished } from 'node:stream/promises';
 import { createGunzip } from 'zlib';
 import parser from "stream-json";
 import streamArray from "stream-json/streamers/StreamArray.js"
+import streamValue from "stream-json/streamers/StreamValues.js"
+import streamObject from "stream-json/streamers/StreamObject.js"
 import iconv from 'iconv-lite';
+import * as csv from 'fast-csv'
 // Get a reference to the bucket
 
 
@@ -111,7 +114,7 @@ function getTranslaters(translaters) {
                 ret.push(new streamArray());
                 ret.push(async function* (source) {
                     for await (const { value } of source) {
-                        yield JSON.stringify(value);
+                        yield JSON.stringify(value) + "\n";
                     }
                 });
                 break;
@@ -127,27 +130,107 @@ function getTranslaters(translaters) {
                 break;
             }
             case "getSalesAndTrafficReport": {
+                ret.push(createGunzip());
                 ret.push(parser());
-                ret.push(new streamArray());
+                ret.push(new streamObject());
                 ret.push(async function* (source) {
                     let reportSpecification = {};
                     for await (const { value } of source) {
-                        if ("reportSpecification" in value) {
+                        let ret = "";
+                        if ("reportType" in value) {
                             reportSpecification = value;
-                            yield "";
                         }
-                        else if ("salesAndTrafficByDate" in value) {
-                            yield "";
+                        else if ("date" in value[0]) {
                         }
-                        else if ("salesAndTrafficByAsin" in value) {
-                            yield JSON.stringify(value);
+                        else {
+                            value.forEach(v => v.reportSpecification = reportSpecification);
+                            ret = value.map(v => JSON.stringify(v)).join("\n");
                         }
-                        yield JSON.stringify(value);
+                        yield ret;
                     }
                 });
+                break;
+            }
+            case "getMerchantListingsAllData": {
+                const map = {
+                    "商品名": "item-name",
+                    "商品の説明": "item-description",
+                    "出品ID": "listing-id",
+                    "出品者SKU": "seller-sku",
+                    "価格": "price",
+                    "数量": "quantity",
+                    "出品日": "open-date",
+                    //"":"image-url",
+                    //"":"item-is-marketplace",
+                    "商品IDタイプ": "product-id-type",
+                    //"":"zshop-shipping-fee",
+                    "コンディション説明": "item-note",
+                    "コンディション": "item-condition",
+                    //"":"zshop-category1",
+                    //"":"zshop-browse-path",
+                    //"":"zshop-storefront-feature",
+                    "ASIN 1": "asin1",
+                    "ASIN 2": "asin2",
+                    "ASIN 3": "asin3",
+                    "国外へ配送可": "will-ship-internationally",
+                    "迅速な配送": "expedited-shipping",
+                    //"":"zshop-boldface",
+                    "商品ID": "product-id",
+                    //"":"bid-for-featured-placement",
+                    //"":"add-delete",
+                    "在庫数": "pending-quantity",
+                    "フルフィルメント・チャンネル": "fulfillment-channel",
+                    "法人価格": "Business Price",
+                    "数量割引のタイプ": "Quantity Price Type",
+                    "数量の下限1": "Quantity Lower Bound 1",
+                    "数量割引1": "Quantity Price 1",
+                    "数量の下限2": "Quantity Lower Bound 2",
+                    "数量割引2": "Quantity Price 2",
+                    "数量の下限3": "Quantity Lower Bound 3",
+                    "数量割引3": "Quantity Price 3",
+                    "数量の下限4": "Quantity Lower Bound 4",
+                    "数量割引4": "Quantity Price 4",
+                    "数量の下限5": "Quantity Lower Bound 5",
+                    "数量割引5": "Quantity Price 5",
+                    "merchant-shipping-group": "merchant-shipping-group",
+                    "出品価格の上限累積購入割引価格タイプ": "Progressive Price Type",
+                    "累積購入割引下限": "Progressive Lower Bound 1",
+                    "累積購入割引価格1": "Progressive Price 1",
+                    "累積購入割引下限2": "Progressive Lower Bound 2",
+                    "累積購入割引価格2": "Progressive Price 2",
+                    "累積購入割引下限3": "Progressive Lower Bound 3",
+                    "累積購入割引価格3": "Progressive Price 3",
+                    "ステータス": "status",
+                }
+                ret.push(csv.parse({
+                    delimiter: '\t',
+                }));
+                ret.push(async function* (source) {
+                    let head = true;
+                    const pattern = /[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/g;
+                    for await (const data of source) {
+                        if (head && data.some(d => Object.keys(map).includes(d))) {
+                            head = false;
+                            yield data.map(d => map[d]).join(",") + "\n";
+                        }
+                        else{
+                            const arr = data.map(d => {
+                                if(d.length >= 19 && pattern.test(d)){
+                                    return `${d.slice(19)} ${d.slice(0, 19)}`.trim();
+                                }
+                                return d;
+                            })
+                            yield arr.join(",") + "\n";
+                        }
+                    }
+                });
+                break;
+            }
+            case "SBCampaign": {
                 break;
             }
         }
     });
     return ret;
+    // AmazonSpApiReport/シロクロ/2024-07-20/temp/GetMerchantListingsAllData.csv
 }

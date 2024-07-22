@@ -2,6 +2,8 @@ import root from "../../../../root.js"
 import { _, logger, systemInfo, dayjs } from "../../../../Common/common.js";
 import { D_ReportRequest } from "../../D_ReportRequest/manager.js";
 import { Timestamp } from "firebase-admin/firestore";
+import collectionManager from "../../manager.js"
+import R_DelayManager from "../../R_Delay/manager.js";
 
 export class manager {
     constructor() {
@@ -11,7 +13,7 @@ export class manager {
      * 
      * @param {D_ReportRequest} drequest 
      */
-    skipOnce(drequest) {
+    async skipOnce(drequest) {
         // 日付のみ更新
         return {
             requestTime: Timestamp.fromDate(systemInfo.nextTime.toDate()),
@@ -25,7 +27,7 @@ export class manager {
      * 
      * @param {D_ReportRequest} drequest 
      */
-    cancel(drequest) {
+    async cancel(drequest) {
         // statusを更新
         return {
             status: "COMPLETED",
@@ -38,7 +40,7 @@ export class manager {
      * 
      * @param {D_ReportRequest} drequest 
      */
-    createStatus(drequest) {
+    async createStatus(drequest) {
         // statusを更新
         return {
             status: "CREATE",
@@ -50,10 +52,37 @@ export class manager {
      * 
      * @param {D_ReportRequest} drequest 
      */
-    downloadStatus(drequest) {
+    async downloadStatus(drequest) {
         // statusを更新
         return {
             status: "DOWNLOAD",
+            host: 0,
+        }
+    }
+
+    /**
+     * 
+     * @param {D_ReportRequest} drequest 
+     */
+    async rateLimit(drequest, res) {
+        const rdelay = await R_DelayManager.add(res.token);
+        return {
+            // 10秒後にする
+            nextTime: rdelay.time,
+            host: 0,
+        }
+    }
+
+    /**
+     * 
+     * @param {D_ReportRequest} drequest 
+     * @param {*} res 
+     * @returns 
+     */
+    async delay(drequest, res){
+        return {
+            // 10秒後にする
+            nextTime: res.delay.time,
             host: 0,
         }
     }
