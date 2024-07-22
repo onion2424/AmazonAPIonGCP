@@ -43,7 +43,7 @@ export async function get(drequest, mrequest) {
       reportInfo.url = data.url;
       reportInfo.expiration = Timestamp.fromDate(dayjs().add(3, 'minute').toDate());
       reportInfo.continue = 0;
-      return { ok: "ok", reportInfo: reportInfo };
+      return { ok: "ok", reportInfo: reportInfo, next: true };
     }
     // 失敗
     else {

@@ -58,13 +58,13 @@ export async function status(drequest, mrequest) {
       }
       else if (data.processingStatus == "IN_PROGRESS" || data.processingStatus == "IN_QUEUE") {
         reportInfo.continue = reportInfo.continue + 1;
-        return { ok: "ok", reportInfo: reportInfo };
+        return { ok: "ok", reportInfo: reportInfo, next: false };
       }
       else if (data.processingStatus == "DONE") {
         reportInfo.created = Timestamp.fromDate(dayjs(data.createdTime).toDate());
         reportInfo.documentId = data.reportDocumentId;
         reportInfo.continue = 0;
-        return { ok: "ok", reportInfo: reportInfo };
+        return { ok: "ok", reportInfo: reportInfo, next: true };
       }
     }
     // 失敗

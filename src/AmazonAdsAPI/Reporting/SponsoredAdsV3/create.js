@@ -54,7 +54,7 @@ export async function create(drequest, mrequest) {
       const reportInfo = structuredClone(drequest.reportInfo);
       reportInfo.reportId = data.reportId;
       reportInfo.continue = 0;
-      return { ok: "ok", reportInfo: reportInfo };
+      return { ok: "ok", reportInfo: reportInfo, next: true };
     }
     // 失敗
     else {

@@ -6,13 +6,14 @@ import { M_Request } from '../../../FireStoreAPI/Collection/M_Request/manager.js
 import storageManager from "../../../GoogleCloudStorageAPI/manager.js"
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
 import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
+
 /**
  * 
  * @param {D_ReportRequest} drequest 
  * @param {M_Request} mrequest
  * @returns 
  */
-export async function translate(drequest, mrequest) {
+export async function save(drequest, mrequest) {
     const accountDoc = await collectionManager.get(drequest.accountRef);
     /**
      * @type {M_Account}
@@ -31,20 +32,11 @@ export async function translate(drequest, mrequest) {
         return { ok: "error", error: error };
     }
 
-    const file = list[0];
-    const destFileName = drequest.reportInfo.filepath.replace("/temp", "");
-    const uploaded = await storageManager.streamFileUpload(destFileName, file.createReadStream(), detail.settings.save.translaters);
-
     // ステータス更新
     const reportInfo = structuredClone(drequest.reportInfo);
-    if (uploaded) {
-        // ファイル削除もここ
-        reportInfo.filepath = destFileName;
+    //if (uploaded) {
         reportInfo.continue = 0;
         return { ok: "ok", reportInfo: reportInfo, next: true };
-    }
-    // エラー
-    const error = M_ErrorManager.create();
-    error.tag = "不明なエラー";
-    return { ok: "error", error: error };
+    //}
+
 }

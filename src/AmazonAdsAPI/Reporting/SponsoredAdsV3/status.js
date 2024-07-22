@@ -48,13 +48,22 @@ export async function status(drequest, mrequest) {
     if (response.ok) {
       const data = await response.json();
       const reportInfo = structuredClone(drequest.reportInfo);
-      if (data.status && data.status == "COMPLETED") {
+      if(data.status == "FAILED"){
+        error.handle = "FireStoreAPI/Collection/M_Error/Handle/cancel";
+        error.tag = "CANCEL";
+        return { ok: "error", error: error };
+      }
+      else if (data.status == "PENDING" || data.status == "PROCESSING") {
+        reportInfo.continue = reportInfo.continue + 1;
+        return { ok: "ok", reportInfo: reportInfo, next: false };
+      }
+      else if (data.status == "COMPLETED") {
         reportInfo.url = data.url;
         reportInfo.created = Timestamp.fromDate(dayjs(data.createdAt).toDate());
         reportInfo.continue = 0;
         reportInfo.expiration = Timestamp.fromDate(dayjs(data.urlExpiresAt).add(-5, "minute").toDate());
+        return { ok: "ok", reportInfo: reportInfo, next: true };
       }
-      return { ok: "ok", reportInfo: reportInfo };
     }
     // 失敗
     else {

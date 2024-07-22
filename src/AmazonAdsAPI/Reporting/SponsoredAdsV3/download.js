@@ -1,7 +1,7 @@
 import root from "../../../root.js"
 import { _, dayjs, gcpCommon, utils, amazonCommon } from "../../../Common/common.js";
 import { createGunzip } from 'zlib';
-import { Readable } from 'node:stream';
+import { Readable, Transform } from 'node:stream';
 import parser from "stream-json";
 import streamArray from "stream-json/streamers/StreamArray.js"
 import { D_ReportRequest } from '../../../FireStoreAPI/Collection/D_ReportRequest/manager.js';
@@ -30,7 +30,7 @@ export async function download(drequest, mrequest) {
   if (dayjs(drequest.reportInfo.expiration.toDate()) < dayjs()) {
     // エラー
     const error = M_ErrorManager.create();
-    error.handle = "FireStoreAPI/Collection/M_Error/Handle/firstStatus";
+    error.handle = "FireStoreAPI/Collection/M_Error/Handle/createStatus";
     error.tag = "URL期限切れ";
     return { ok: "error", error: error };
   }
@@ -49,16 +49,26 @@ export async function download(drequest, mrequest) {
   if (response && "status" in response) {
     if (response.ok) {
       // gz形式で保存
-      const fileName = detail.settings.save.fileName.replace(".json", ".gz");
+      const fileName = detail.settings.save.fileName.replace(".json", ".json");
       let destFileName = utils.combine(gcpCommon.AMAZON_ADS_API_REPORT, dayjs(drequest.requestInfo.date.start).format('YYYY-MM-DD'), account.tag, "temp", fileName);
-      let streams = [Readable.fromWeb(response.body)];
-      const uploaded = await storageManager.streamFileUpload(destFileName, streams);
+
+      //エラーハンドリングできない?
+      // const noop = new Transform({objectMode: true, transform: function(chunk, encoding, callback)
+      //   {
+      //     const error = new Error("noop");
+      //     callback(error, JSON.stringify(chunk) + '\n');
+      //   }});
+      //   noop.on("error", (e) => {
+      //     console.log(e);
+      //     return true;
+      //   })
+      const uploaded = await storageManager.streamFileUpload(destFileName, Readable.fromWeb(response.body), []);
       // ステータス更新
       const reportInfo = structuredClone(drequest.reportInfo);
       if (uploaded) {
         reportInfo.filepath = destFileName;
         reportInfo.continue = 0;
-        return { ok: "ok", reportInfo: reportInfo };
+        return { ok: "ok", reportInfo: reportInfo, next: true };
       }
       // ここに来た場合はエラーで返す
     }

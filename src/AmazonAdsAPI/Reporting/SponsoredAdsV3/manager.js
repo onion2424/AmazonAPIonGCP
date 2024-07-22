@@ -4,6 +4,7 @@ import { create } from "./create.js";
 import { status } from "./status.js";
 import { download } from "./download.js";
 import { translate } from "./translate.js";
+import { save } from "./save.js";
 
 class manager
 {
@@ -13,7 +14,7 @@ class manager
         this.status = status;
         this.download = download;
         this.translate = translate;
-        //this.save = save;
+        this.save = save;
     }
 }
 

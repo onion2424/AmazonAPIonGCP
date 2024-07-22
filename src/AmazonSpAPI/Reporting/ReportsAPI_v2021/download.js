@@ -33,7 +33,7 @@ export async function download(drequest, mrequest) {
   if(dayjs(drequest.reportInfo.expiration.toDate()) < dayjs()){
       // エラー
       const error = M_ErrorManager.create();
-      error.handle = "FireStoreAPI/Collection/M_Error/Handle/firstStatus";
+      error.handle = "FireStoreAPI/Collection/M_Error/Handle/createStatus";
       error.tag = "URL期限切れ";
       return { ok: "error", error: error };
   }
@@ -54,15 +54,12 @@ export async function download(drequest, mrequest) {
     if (response.ok) {
       //let readable = Readable.fromWeb(res.body);
       let destFileName = utils.combine(gcpCommon.AMAZON_SP_API_REPORT, account.tag, dayjs(drequest.requestInfo.date.start).format('YYYY-MM-DD'), "temp", detail.settings.save.fileName);
-      let streams =
-        [
-          Readable.fromWeb(response.body),
-        ];
-      const uploaded = await storageManager.streamFileUpload(destFileName, streams);
+
+      const uploaded = await storageManager.streamFileUpload(destFileName, Readable.fromWeb(response.body), []);
       if (uploaded) {
         const reportInfo = structuredClone(drequest.reportInfo);
         reportInfo.filepath = destFileName;
-        return { ok: "ok", reportInfo: reportInfo };
+        return { ok: "ok", reportInfo: reportInfo, next: true };
       }
     }
     // 失敗

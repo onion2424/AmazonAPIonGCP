@@ -39,11 +39,12 @@ class manager
     /**
      * ファイルをストリーミングアップロードします。
      * @param {string} destFileName 
-     * @param {Array<ReadableStream|any>} stream 
+     * @param {ReadableStream} readable
+     * @param {[string]} translaters
      */
-    async streamFileUpload(destFileName, stream)
+    async streamFileUpload(destFileName, readable, translaters)
     {
-        return streamFileUpload(storage, bucketName, utils.combine(test, destFileName), stream);
+        return streamFileUpload(storage, bucketName, utils.combine(test, destFileName), readable, translaters);
     }
 
     /**

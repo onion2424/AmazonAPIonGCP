@@ -95,7 +95,7 @@ async function runAsync(host, syncObj) {
             const obj = await getRequest(host);
             const drequestDoc = obj.D_ReportRequest;
             if (!drequestDoc) {
-                logger.info(`[タスク終了][host(${host})]`);
+                logger.info(`[タスク終了][host=${host}]`);
                 break;
             }
             currentDoc = drequestDoc;
@@ -121,7 +121,7 @@ async function runAsync(host, syncObj) {
             const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
             if(res.ok == "ok"){
                 const index = drequest.statuses.indexOf(drequest.status);
-                const nextStatus = drequest.statuses[index + 1] || "COMPLETED";
+                const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
                 const nextTime = Timestamp.fromDate(dayjs().add(2**res.reportInfo.continue, "second").toDate());
                 await fireStoreManager.updateRef(drequestDoc.ref, {requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, host: 0});
                 logger.info(`[リクエスト更新][${drequestDoc.id}][${drequest.status}⇒${nextStatus}]`);
