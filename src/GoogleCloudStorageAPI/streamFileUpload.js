@@ -209,9 +209,13 @@ function getTranslaters(translaters) {
                     let head = true;
                     const pattern = /[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/g;
                     for await (const data of source) {
-                        if (head && data.some(d => Object.keys(map).includes(d))) {
+                        if (head){
                             head = false;
-                            yield data.map(d => map[d]).join(",") + "\n";
+                            if(data.some(d => d == "商品名")){
+                                yield data.map((d, i) => map[d] || `column${i}`).join(",") + "\n";
+                            }else{
+                                yield data.join(",") + "\n";
+                            }
                         }
                         else{
                             const arr = data.map(d => {

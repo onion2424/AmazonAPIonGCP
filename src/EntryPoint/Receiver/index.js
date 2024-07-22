@@ -54,7 +54,7 @@ async function main() {
             logger.warn("[SIGTERM検出][処理中断]");
             break;
         }
-        const ret = await createTasks(state.hosts);
+        const ret = await createTasks([1]);
         if (ret.every(r => r.status == "fulfilled")) {
             logger.info("[全ホスト正常終了][リクエスト処理完了]");
             break;
@@ -115,6 +115,8 @@ async function runAsync(host, syncObj) {
             if(diff > 0)
                 await utils.wait(diff);
 
+            utils.wait(3);
+
             // 実行
             const mrequestDoc = await collectiomManager.get(drequest.requestInfo.ref);
             /**
@@ -124,12 +126,7 @@ async function runAsync(host, syncObj) {
             const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
             const status = mrequest.statuses.find(s => s.status == drequest.status);
             const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
-            if(res.ok == "error") {
-                const error = res.error;
-                const handled = await _.get(root, error.handle.split("/"))(drequest, res);
-                await fireStoreManager.updateRef(drequestDoc.ref, handled);
-                logger.warn(`[エラーハンドリング][${drequestDoc.id}][${error.tag}][${error.handle}]`);
-            }
+
             if(res.ok == "ok"){
                 const index = drequest.statuses.indexOf(drequest.status);
                 const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
@@ -151,7 +148,7 @@ async function runAsync(host, syncObj) {
             // ngならDBを参照してエラーハンドリング
             else if (res.ok == "ng") {
                 const error = await M_ErrorManager.getOrAdd(drequest, res.error);
-                const handled = _.get(root, error.handle.split("/"))(drequest, res);
+                const handled = await _.get(root, error.handle.split("/"))(drequest, res);
                 await fireStoreManager.updateRef(drequestDoc.ref, handled);
                 logger.warn(`[エラーハンドリング][${drequestDoc.id}][${error.tag}][${error.handle}]`);
             }

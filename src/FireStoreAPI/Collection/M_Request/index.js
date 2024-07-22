@@ -478,6 +478,7 @@ import { systemInfo } from '../../../Common/common.js';
                         "dataEndTime": "",
                         "marketplaceIds": [],
                         "reportOptions": {
+                            "asinGranularity":"CHILD",
                             "dateGranularity": "DAY",
                             "custom": "true",
                         }

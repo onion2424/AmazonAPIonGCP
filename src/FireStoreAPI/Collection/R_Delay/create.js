@@ -11,7 +11,7 @@ export function create(mtokenDoc)
 {
     const ret = structuredClone(R_Delay);
     ret.ref = mtokenDoc.ref;
-    ret.time = Timestamp.fromDate(dayjs().add(10, "second").toDate())
+    ret.time = Timestamp.fromDate(dayjs().add(30, "second").toDate())
     ret.count = 1;
     return ret;
 }
