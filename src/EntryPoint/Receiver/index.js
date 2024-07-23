@@ -66,7 +66,12 @@ async function main() {
         logger.info("[エラー検知][全ホスト再起動]");
     }
 
+    // サブスクライブ
+    R_DelayManager.unsubscribe();
+    logger.info(`[サブスクライブ終了][R_Delay]`);
+
     logger.info(`[定期受信終了]`);
+    return;
 }
 
 /**
@@ -114,8 +119,6 @@ async function runAsync(host, syncObj) {
             const diff = dayjs(drequest.requestTime.toDate()).diff(dayjs(), "second");
             if(diff > 0)
                 await utils.wait(diff);
-
-            utils.wait(3);
 
             // 実行
             const mrequestDoc = await collectiomManager.get(drequest.requestInfo.ref);

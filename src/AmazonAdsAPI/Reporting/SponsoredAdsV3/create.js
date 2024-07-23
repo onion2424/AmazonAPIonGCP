@@ -28,8 +28,9 @@ export async function create(drequest, mrequest) {
   const accesTokenDoc = await authManager.get(account);
   const accesToken = accesTokenDoc.data();
 
-  const delay = R_DelayManager.delay(accesTokenDoc);
-  if(delay){
+  const delayDoc = R_DelayManager.delay(accesTokenDoc);
+  if(delayDoc){
+    const delay = delayDoc.data();
     if(dayjs(delay.time.toDate()) > dayjs()){
       const error = M_ErrorManager.create();
       error.handle = "FireStoreAPI/Collection/M_Error/Handle/delay";
@@ -62,6 +63,8 @@ export async function create(drequest, mrequest) {
   // 成功
   if (response && "status" in response) {
     if (response.ok) {
+      // ディレイレベルを下げる
+      if(delayDoc) R_DelayManager.remove(delayDoc);
       const data = await response.json();
       const reportInfo = structuredClone(drequest.reportInfo);
       reportInfo.reportId = data.reportId;

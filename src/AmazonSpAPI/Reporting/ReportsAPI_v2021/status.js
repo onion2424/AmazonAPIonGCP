@@ -26,13 +26,16 @@ export async function status(drequest, mrequest) {
   const accesTokenDoc = await authManager.get(account);
   const accesToken = accesTokenDoc.data();
 
-  const delay = R_DelayManager.delay(accesTokenDoc);
-  if(delay){
-    if(dayjs(delay.time.toDate()) > dayjs()){
+  const delayDoc = R_DelayManager.delay(accesTokenDoc);
+  if (delayDoc) {
+    // ディレイを開放
+    if (delayDoc) R_DelayManager.remove(delayDoc);
+    const delay = delayDoc.data();
+    if (dayjs(delay.time.toDate()) > dayjs()) {
       const error = M_ErrorManager.create();
       error.handle = "FireStoreAPI/Collection/M_Error/Handle/delay";
       error.tag = "リクエスト制限";
-      return { ok: "error", error: error, delay: delay};
+      return { ok: "error", error: error, delay: delay };
     }
   }
 
@@ -65,6 +68,7 @@ export async function status(drequest, mrequest) {
       else if (data.processingStatus == "FATAL") {
         // パスさせる
         const error = M_ErrorManager.create();
+        error.handle = "FireStoreAPI/Collection/M_Error/Handle/createStatus";
         error.tag = "FATAL";
         return { ok: "error", error: error };
       }
@@ -73,7 +77,7 @@ export async function status(drequest, mrequest) {
         return { ok: "ok", reportInfo: reportInfo, next: false };
       }
       else if (data.processingStatus == "DONE") {
-        reportInfo.created = Timestamp.fromDate(dayjs(data.createdTime.slice(0,-6)).toDate());
+        reportInfo.created = Timestamp.fromDate(dayjs(data.createdTime.slice(0, -6)).toDate());
         reportInfo.documentId = data.reportDocumentId;
         reportInfo.continue = 0;
         return { ok: "ok", reportInfo: reportInfo, next: true };
@@ -84,7 +88,7 @@ export async function status(drequest, mrequest) {
       const data = await response.json();
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, JSON.stringify(data));
-      return { ok: "ng", error: error ,  token: accesTokenDoc };
+      return { ok: "ng", error: error, token: accesTokenDoc };
     }
   }
   // エラー

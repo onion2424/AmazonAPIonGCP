@@ -12,9 +12,8 @@ import { getQuery } from "./getDocs.js";
  */
 export async function subscribe(db, collectionName, queries, func) {
     const query = await getQuery(db, collectionName, queries);
-
     return query.onSnapshot(function (snapshot) {
-        snapshot.docChanges().forEach(func)
+        snapshot.docChanges().forEach(func);
     }, (async e => {
         await L_ErrorManager.onFireStoreError(e, null);
         throw e;

@@ -29,13 +29,14 @@ export async function status(drequest, mrequest) {
   const accesTokenDoc = await authManager.get(account);
   const accesToken = accesTokenDoc.data();
 
-  const delay = R_DelayManager.delay(accesTokenDoc);
-  if(delay){
-    if(dayjs(delay.time.toDate()) > dayjs()){
+  const delayDoc = R_DelayManager.delay(accesTokenDoc);
+  if (delayDoc) {
+    const delay = delayDoc.data();
+    if (dayjs(delay.time.toDate()) > dayjs()) {
       const error = M_ErrorManager.create();
       error.handle = "FireStoreAPI/Collection/M_Error/Handle/delay";
       error.tag = "リクエスト制限";
-      return { ok: "error", error: error, delay: delay};
+      return { ok: "error", error: error, delay: delay };
     }
   }
 
@@ -58,9 +59,11 @@ export async function status(drequest, mrequest) {
   // 成功
   if (response && "status" in response) {
     if (response.ok) {
+      // ディレイを開放
+      if (delayDoc) R_DelayManager.remove(delayDoc);
       const data = await response.json();
       const reportInfo = structuredClone(drequest.reportInfo);
-      if(data.status == "FAILED"){
+      if (data.status == "FAILED") {
         error.handle = "FireStoreAPI/Collection/M_Error/Handle/cancel";
         error.tag = "CANCEL";
         return { ok: "error", error: error };

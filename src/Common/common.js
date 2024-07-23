@@ -116,7 +116,7 @@ class systemInfoClass {
          * @type {string}
          */
         this.mode = process.argv.some(arg => arg == "-release") ? "RELEASE" : "TEST";
-
+        //this.mode = "RELEASE";
         /**
          * SIGTERMを受信しているかどうか
          * @type {boolean}

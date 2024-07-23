@@ -177,7 +177,7 @@ async function runObserve() {
  * @param {D_Transaction} doc
 */
 async function observe(collection, dtranDoc) {
-    const count = await fireStoreManager.countDocs(collection, [["transactionRef", "array-contains", dtranDoc.ref], ["status", "!=", "COMPLETED"]]);
+    const count = await fireStoreManager.countDocs(collection, [["transactionRefs", "array-contains", dtranDoc.ref], ["status", "!=", "COMPLETED"]]);
 
     logger.info(`[継続中][${collection}][残り${count}レコード]`);
 

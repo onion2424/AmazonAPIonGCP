@@ -1,5 +1,5 @@
 import root from "../../../../root.js"
-import { _, logger, systemInfo, dayjs } from "../../../../Common/common.js";
+import { _, logger, systemInfo, dayjs, utils } from "../../../../Common/common.js";
 import { D_ReportRequest } from "../../D_ReportRequest/manager.js";
 import { Timestamp } from "firebase-admin/firestore";
 import collectionManager from "../../manager.js"
@@ -44,6 +44,7 @@ export class manager {
         // statusを更新
         return {
             status: "CREATE",
+            requestTime: Timestamp.fromDate(systemInfo.nextTime.toDate()),
             host: 0,
         }
     }
@@ -66,9 +67,9 @@ export class manager {
      */
     async rateLimit(drequest, res) {
         const rdelay = await R_DelayManager.add(res.token);
+        await utils.wait(3);
         return {
-            // 10秒後にする
-            nextTime: rdelay.time,
+            requestTime: rdelay.time,
             host: 0,
         }
     }
@@ -82,7 +83,7 @@ export class manager {
     async delay(drequest, res){
         return {
             // 10秒後にする
-            nextTime: res.delay.time,
+            requestTime: res.delay.time,
             host: 0,
         }
     }

@@ -27,9 +27,7 @@ export class manager {
        * @type {R_Delay}
        */
       const rdelay = find.data();
-      if (dayjs(rdelay.time.toDate()) > dayjs()) {
-        return rdelay;
-      }
+      return find;
     }
     return false;
   }
@@ -37,15 +35,15 @@ export class manager {
   /**
    * 購読します。
    */
-  subscribe() {
+  async subscribe() {
     const self = this;
     const func = function (change) {
       // 追加時
       if (change.type === 'added') {
         let index = self.cache.findIndex(c => c.data().ref.id == change.doc.data().ref.id);
-        if(index > 0){
+        if (index >= 0) {
           self.cache[index] = change.doc;
-        }else{
+        } else {
           self.cache.push(change.doc);
         }
         //console.log(change.doc.data());
@@ -59,18 +57,38 @@ export class manager {
         //console.log(change.doc.data());
       }
     }
-    fireStoreManager.subscribe("R_Delay", [["time", ">", Timestamp.fromDate(dayjs().toDate())]], func);
+    this.unsubscribe = await fireStoreManager.subscribe("R_Delay", [["time", ">", Timestamp.fromDate(dayjs().toDate())]], func);
+  }
+
+  unsubscribe() {
+    this.unsubscribe();
   }
 
   /**
    * 追加します。
    * @param {DocumentSnapshot} mtokenDoc
    */
-  async add(mtokenDoc){
+  async add(mtokenDoc) {
     const rdelay = this.create(mtokenDoc);
+    const find = this.delay(mtokenDoc);
+    if (find) {
+      rdelay.count = find.data().count + 1;
+    }
+    // countにつき、30秒ずつ追加
+    rdelay.time = Timestamp.fromDate(dayjs().add(rdelay.count * 30, "second").toDate());
     const ref = await fireStoreManager.createRef("R_Delay");
     await fireStoreManager.setRef(ref, rdelay);
     return rdelay;
+  }
+
+  /**
+   * 削除します。
+   * @param {*} delayDoc 
+   */
+  remove(delayDoc) {
+    let index = this.cache.findIndex(c => c.data().ref.id == delayDoc.data().ref.id);
+    if (index >= 0)
+      this.cache.splice(index, 1);
   }
 
   /**
@@ -79,7 +97,7 @@ export class manager {
   async clear() {
     const docs = await fireStoreManager.getDocs("R_Delay");
     const batch = await fireStoreManager.createBatch();
-    for (const doc of docs){
+    for (const doc of docs) {
       batch.delete(doc.ref);
     }
     await fireStoreManager.commitBatch(batch);

@@ -10,18 +10,18 @@ const text = systemInfo.isTest() ?
 WORKDIR /app
 COPY . .
 RUN npm install
-CMD [ "node", "./src/Main/reportReceive.js"]`
+CMD [ "node", "./src/EntryPoint/Receiver/index.js"]`
 :
 `FROM node:22-alpine
 WORKDIR /app
 COPY . .
 RUN npm install
-CMD [ "node", "./src/Main/reportReceive.js", "-release" ]`
+CMD [ "node", "./src/EntryPoint/Receiver/index.js", "-release" ]`
 ;
 
 
 // version up
-const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "RECEIVER"]], [], 1);
+const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "RECEIVER"]]);
 for await (const doc of docs) {
     /**
      * @type {S_RunningState}
