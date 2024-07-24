@@ -27,8 +27,6 @@ export async function get(drequest, mrequest) {
 
   const delayDoc = R_DelayManager.delay(accesTokenDoc);
   if (delayDoc) {
-    // ディレイを開放
-    if (delayDoc) R_DelayManager.remove(delayDoc);
     const delay = delayDoc.data();
     if (dayjs(delay.time.toDate()) > dayjs()) {
       const error = M_ErrorManager.create();
