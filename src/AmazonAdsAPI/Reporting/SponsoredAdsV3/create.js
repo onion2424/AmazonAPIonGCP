@@ -63,8 +63,8 @@ export async function create(drequest, mrequest) {
   // 成功
   if (response && "status" in response) {
     if (response.ok) {
-      // ディレイレベルを下げる
-      if(delayDoc) R_DelayManager.remove(delayDoc);
+      // ディレイを開放
+      if (delayDoc) R_DelayManager.remove(delayDoc);
       const data = await response.json();
       const reportInfo = structuredClone(drequest.reportInfo);
       reportInfo.reportId = data.reportId;

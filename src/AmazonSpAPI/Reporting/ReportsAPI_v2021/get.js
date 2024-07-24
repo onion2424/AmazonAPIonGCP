@@ -54,6 +54,8 @@ export async function get(drequest, mrequest) {
   if (response && "status" in response) {
     if (response.ok) {
       const data = await response.json();
+      // ディレイを開放
+      if (delayDoc) R_DelayManager.remove(delayDoc);
       const reportInfo = structuredClone(drequest.reportInfo);
       reportInfo.url = data.url;
       reportInfo.expiration = Timestamp.fromDate(dayjs().add(3, 'minute').toDate());

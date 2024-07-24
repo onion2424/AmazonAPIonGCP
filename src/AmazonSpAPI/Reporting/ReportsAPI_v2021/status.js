@@ -56,6 +56,8 @@ export async function status(drequest, mrequest) {
     if (response.ok) {
       const data = await response.json();
       const reportInfo = structuredClone(drequest.reportInfo);
+      // ディレイを開放
+      if (delayDoc) R_DelayManager.remove(delayDoc);
       if (data.processingStatus == "CANCELED") {
         // 作成できないので終了させる
         const error = M_ErrorManager.create();
