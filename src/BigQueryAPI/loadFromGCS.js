@@ -10,7 +10,7 @@ import * as path from "path";
  * @param {string} tableId 
  * @param {File} file 
  */
-export async function loadFromGCS(bigquery, datasetId, tableId, file) {
+export async function loadFromGCS(bigquery, datasetId, tableId, file, ) {
   tableId = datasetId + "_" + tableId;
   logger.info(`[テーブル作成開始][${tableId}]`);
   // Imports a GCS file into a table with manually defined schema.
@@ -19,36 +19,30 @@ export async function loadFromGCS(bigquery, datasetId, tableId, file) {
   const extension = path.extname(file.name).slice(1).toUpperCase();
   const metadata = {
     sourceFormat: extension == "JSON" ? "NEWLINE_DELIMITED_JSON" : extension,
-    autodetect: true,
+    autodetect: false,
+    ignoreUnknownValues: true,
+    writeDisposition: 'WRITE_TRUNCATE',
   };
 
   if (extension == "CSV") {
     metadata.skipLeadingRows = 1;
   }
 
-  // テスト時
-  if(systemInfo.isTest()){
-    datasetId = 'test';
+  const tableOptions = {
+    timePartitioning: {
+      type: "DAY"
+    }
   }
-  
-  // テーブル存在確認
-  const dataset = bigquery.dataset(datasetId);
-  try {
-    await dataset.table(tableId).get();
-    // 存在するなら削除
-    await bigquery
-      .dataset(datasetId)
-      .table(tableId)
-      .delete();
-    logger.info(`[テーブル削除(old)][${datasetId}][${tableId}]`);
 
-  } catch (e) {
+  // テスト時
+  if (systemInfo.isTest()) {
+    datasetId = 'test';
   }
 
   // Load data from a Google Cloud Storage file into the table
   const [job] = await bigquery
     .dataset(datasetId)
-    .table(tableId)
+    .table(tableId, tableOptions)
     .load(file, metadata);
 
 

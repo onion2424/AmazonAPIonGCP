@@ -35,7 +35,9 @@ export async function save(drequest, mrequest) {
 
     const file = list[0];
 
-    const created = await bigQueryManager.loadFromGCS(detail.settings.save.tableName, `${account.tag}_${dayjs(drequest.requestInfo.date.start).format("YYYYMMDD")}`, file);
+    const separate = "$";
+
+    const created = await bigQueryManager.loadFromGCS(detail.settings.save.tableName, `${account.tag}${separate}${dayjs(drequest.requestInfo.date.start).format("YYYYMMDD")}`, file);
 
     const reportInfo = structuredClone(drequest.reportInfo);
     if(file.metadata.size == "0"){

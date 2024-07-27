@@ -22,6 +22,23 @@ export class manager
             && error.status == info.status
             && error.response == info.response;
     }
+    /**
+     * 
+     * @param {M_Error} error キャッシュ
+     * @param {M_Error} info 
+     * @param {D_ReportRequest} drequest
+     * @returns 
+     */
+    replaceEqual(error, info, drequest){
+        const errorText = error.response;
+        const infoText = info.response;
+        for(const regStr in error.regs){
+            const reg = new RegExp(regStr);
+            errorText = errorText.replace(reg, "***");
+            infoText = infoText.replace(reg, "***");
+        }
+        return errorText == infoText;
+    }
 }
 
 logger.debug("import FireStoreAPI/Collection/M_Error/Equal");

@@ -42,7 +42,9 @@ export async function save(drequest, mrequest) {
         return { ok: "ok", reportInfo: reportInfo, next: true };
     }
 
-    const created = await bigQueryManager.loadFromGCS(detail.settings.save.tableName, `${account.tag}_${dayjs(drequest.requestInfo.date.start).format("YYYYMMDD")}`, file);
+    const separate = "$";
+
+    const created = await bigQueryManager.loadFromGCS(detail.settings.save.tableName, `${account.tag}${separate}${dayjs(drequest.requestInfo.date.start).format("YYYYMMDD")}`, file);
 
     // ステータス更新
     if (created) {

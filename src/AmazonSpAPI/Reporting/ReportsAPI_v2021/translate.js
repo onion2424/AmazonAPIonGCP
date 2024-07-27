@@ -35,8 +35,9 @@ export async function translate(drequest, mrequest) {
 
     const file = list[0];
     const extension = path.extname(file.name);
-    const destFileName = drequest.reportInfo.filepath.replace(extension, "").replace("/temp", "") + "_" + dayjs(drequest.reportInfo.created.toDate()).format("YYYYMMDD") + extension;
-    const uploaded = await storageManager.streamFileUpload(destFileName, file.createReadStream(), detail.settings.save.translaters);
+    const destFileName = drequest.reportInfo.filepath.replace(extension, "").replace("/temp", "") + "_" + dayjs(drequest.reportInfo.created.toDate()).format("YYYYMMDDHHmmss") + extension;
+    const date = drequest.requestInfo.date.start.slice(0, 10);
+    const uploaded = await storageManager.streamFileUpload(destFileName, file.createReadStream(), detail.settings.save.translaters, date);
 
     // ステータス更新
     const reportInfo = structuredClone(drequest.reportInfo);

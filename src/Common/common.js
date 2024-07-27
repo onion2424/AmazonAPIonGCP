@@ -44,8 +44,8 @@ class utilsClass {
     nextVersion(str, level) {
         const arr = str.split(".");
         arr[level] = String(Number(arr[level]) + 1);
-        for(let i = 3; i--; i > level){
-            arr[i] = 0;
+        for(let i = level + 1; i<arr.length; i++){
+            arr[i] = "0";
         }
         return arr.join(".");
     }

@@ -41,10 +41,11 @@ class manager
      * @param {string} destFileName 
      * @param {ReadableStream} readable
      * @param {[string]} translaters
+     * @param {string} dateStr
      */
-    async streamFileUpload(destFileName, readable, translaters)
+    async streamFileUpload(destFileName, readable, translaters, dateStr)
     {
-        return streamFileUpload(storage, bucketName, utils.combine(test, destFileName), readable, translaters);
+        return streamFileUpload(storage, bucketName, utils.combine(test, destFileName), readable, translaters, dateStr);
     }
 
     /**

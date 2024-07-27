@@ -1,6 +1,7 @@
 import { _, logger, systemInfo, utils } from "../Common/common.js";
 import root from "../root.js"
 import { loadFromGCS } from "./loadFromGCS.js"
+import { createPartitionTable } from "./createPartitionTable.js";
 import { BigQuery } from '@google-cloud/bigquery';
 
 const keyFilename = './AmazonApiServiceKey/amazon-api-report-48665c60d888.json';
@@ -17,7 +18,7 @@ class manager
     }
 
     /**
-     * 
+     * GCSからファイルをロードし、テーブルを作成します。
      * @param {string} datasetId 
      * @param {string} tableId 
      * @param {File} file 
@@ -25,6 +26,18 @@ class manager
     async loadFromGCS(datasetId, tableId, file){
         return loadFromGCS(bigquery, datasetId, tableId, file);
     }
+
+    /**
+     * パーティションテーブルを作成します。
+     * @param {string} datasetId 
+     * @param {string} tableId 
+     * @param {object} options 
+     * @returns 
+     */
+    async createPartitionTable(datasetId, tableId, options) {
+        return createPartitionTable(bigquery, datasetId, tableId, options)
+    }
+
 }
 
 logger.debug("import BigQueryAPI");

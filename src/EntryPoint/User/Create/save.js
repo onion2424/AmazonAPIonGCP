@@ -3,10 +3,14 @@ import fireStoreManager from "../../../FireStoreAPI/manager.js"
 import M_AccountManager from "../../../FireStoreAPI/Collection/M_Account/manager.js"
 import M_TokenManager from "../../../FireStoreAPI/Collection/M_Token/manager.js"
 import D_TransactionManager, { D_Transaction } from '../../../FireStoreAPI/Collection/D_Transaction/manager.js';
+import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
 import { M_Transaction } from '../../../FireStoreAPI/Collection/M_Transaction/class.js';
 import { Timestamp } from "firebase-admin/firestore";
+import bigQueryManager from "../../../BigQueryAPI/manager.js"
+import { M_Request } from "../../../FireStoreAPI/Collection/M_Request/manager.js";
 
 export default async function save(json) {
+
     const date = dayjs().startOf("day");
     const batch = await fireStoreManager.createBatch();
 
@@ -33,6 +37,27 @@ export default async function save(json) {
             const mtranData = mtranDoc.data();
             const firstCall = mtranData.details.find(d => d.refName == "firstCall");
             if(!firstCall) continue;
+            for await(const request of mtranData.requests){
+                const mrequestDoc = await collectionManager.get(request.ref);
+                /**
+                 * @type {M_Request}
+                 */
+                const mrequest = mrequestDoc.data();
+                const detail = mrequest.details.find(d => d.refName == request.refName);
+                if(detail.schema && detail.schema.length > 0){
+                    const options = {
+                        schema: detail.schema,
+                        timePartitioning: {
+                            type: 'DAY',
+                            field: 'partition_date',
+                        },
+                        clustering: {
+                            fields: ['cluster_asin'],
+                        },
+                    };
+                    await bigQueryManager.createPartitionTable(detail.settings.save.tableName, account.tag, options);
+                }
+            }
             batch.set(transactionDocRef, D_TransactionManager.create(mtranDoc, accountDocRef, "firstCall", date));
         }
     }
