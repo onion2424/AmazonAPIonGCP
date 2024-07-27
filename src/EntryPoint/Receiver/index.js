@@ -70,6 +70,10 @@ async function main() {
     R_DelayManager.unsubscribe();
     logger.info(`[サブスクライブ終了][R_Delay]`);
 
+    // R_Delayデータ全削除
+    await fireStoreManager.recursiveDelete("R_Delay");
+    logger.info(`[データ全削除完了][R_Delay]`);
+
     logger.info(`[定期受信終了]`);
     return;
 }

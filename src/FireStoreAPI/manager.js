@@ -8,6 +8,7 @@ import { countDocs } from "./countDocs.js"
 import root from '../root.js';
 import { _, systemInfo, logger } from '../Common/common.js';
 import { subscribe } from './subscribe.js';
+import { recursiveDelete } from './recursiveDelete.js';
 
 const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-semvr-dfdb5719d0.json';
 
@@ -102,6 +103,15 @@ export class manager {
      */
     async countDocs(collectionName, queries) {
         return countDocs(db, collectionName, queries);
+    }
+
+    /**
+     * ドキュメントの数を取得します。
+     * @param {string} collectionName
+     * @returns 
+     */
+    async recursiveDelete(collectionName){
+        return recursiveDelete(db, collectionName);
     }
 
     /**

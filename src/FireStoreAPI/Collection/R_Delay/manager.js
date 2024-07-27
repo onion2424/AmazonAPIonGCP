@@ -60,10 +60,6 @@ export class manager {
     this.unsubscribe = await fireStoreManager.subscribe("R_Delay", [["time", ">", Timestamp.fromDate(dayjs().toDate())]], func);
   }
 
-  unsubscribe() {
-    this.unsubscribe();
-  }
-
   /**
    * 追加します。
    * @param {DocumentSnapshot} mtokenDoc
