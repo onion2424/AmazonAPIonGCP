@@ -27,7 +27,7 @@ async function main() {
 
         if (state.nextTime.toDate() < dayjs().toDate()) {
             logger.info(`[定時処理開始][今回日時：${dayjs(state.nextTime.toDate()).format("YYYY-MM-DD HH:mm:ss")}]`);
-            const ret = await runSchedule();
+            const ret = true;//await runSchedule();
             if (ret) {
                 const nextTime = dayjs(state.nextTime.toDate()).add(1, 'day').startOf('day').add(90, 'minute');
                 await fireStoreManager.updateRef(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
@@ -100,19 +100,26 @@ async function runObserve() {
                 logger.warn("[SIGTERM検出][処理中断]");
                 return;
             }
-
+            /**
+             * @type {D_Transaction}
+             */
             const dtran = dtranDoc.data();
             /**
              * @type {M_Transaction}
              */
-            const mtranDoc = (await collectiomManager.get(dtran.transactionRef));
+            const mtranDoc = await collectiomManager.get(dtran.transactionRef);
             const mtran = mtranDoc.data();
             const status = mtran.statuses.find(s => s.status == dtran.status);
-            logger.info(`[監視開始][${dtranDoc.id}][${++count}/${dtranDocs.length}件]`);
-            if (dtran.status == "" || await observe(status.collection, dtranDoc)) {
+            const accountDoc = await collectiomManager.get(dtran.accountRef);
+            /**
+             * @type {M_Account}
+             */
+            const account = accountDoc.data();
+            logger.info(`[監視開始][${account.tag}][${dtranDoc.id}][${++count}/${dtranDocs.length}件]`);
+            if (dtran.status == "" || await observe(status.collection, dtranDoc, accountDoc)) {
                 if (status && status.finalize) {
                     // ファイナライズ処理
-                    await _.get(root, status.finalize.split("/"))(batch, mtranDoc, dtranDoc);
+                    await _.get(root, status.finalize.split("/"))(batch, mtranDoc, dtranDoc, accountDoc);
                 }
                 // 次に進めて初期化処理
                 const index = mtran.statuses.indexOf(status);
@@ -123,7 +130,7 @@ async function runObserve() {
                 const batch = await fireStoreManager.createBatch();
                 if (nextStatus) {
                     // イニシャライズ処理
-                    await _.get(root, nextStatus.initialize.split("/"))(batch, mtranDoc, dtranDoc);
+                    await _.get(root, nextStatus.initialize.split("/"))(batch, mtranDoc, dtranDoc, accountDoc);
                 }
                 // statusを進める
                 batch.update(dtranDoc.ref, { status: nextStatus?.status || "COMPLETED" });
@@ -131,7 +138,7 @@ async function runObserve() {
 
                 logger.info(`[ステータス更新][${status?.status || "empty"} ⇒ ${nextStatus?.status || "COMPLETED"}]`);
             }
-            logger.info(`[監視終了][${dtranDoc.id}][${count}/${dtranDocs.length}件]`);
+            logger.info(`[監視終了][${account.tag}][${dtranDoc.id}][${count}/${dtranDocs.length}件]`);
         }
     } catch (e) {
         await L_ErrorManager.onSystemError(e, currentDoc.data());
@@ -142,7 +149,7 @@ async function runObserve() {
  * 対象のテーブルを監視します。
  * @param {D_Transaction} doc
 */
-async function observe(collection, dtranDoc) {
+async function observe(collection, dtranDoc, accountDoc) {
     const count = await fireStoreManager.countDocs(collection, [["transactionRefs", "array-contains", dtranDoc.ref], ["status", "!=", "COMPLETED"]]);
 
     logger.info(`[継続中][${collection}][残り${count}レコード]`);

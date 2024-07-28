@@ -9,7 +9,7 @@ import lodash from "lodash";
 export const _ = lodash;
 
 // timezoneをセット
-//process.env.TZ = "Asia/Tokyo";
+process.env.TZ = "Asia/Tokyo";
 
 class utilsClass {
     constructor() {

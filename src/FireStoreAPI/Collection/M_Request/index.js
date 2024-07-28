@@ -37,9 +37,6 @@ import { systemInfo } from '../../../Common/common.js';
                         date:
                         {
                             path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/Settings/Date/getDate",
-                            granularity: "DAY",
-                            spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: systemInfo.isTest() ? 1 : 60,
                         },
                         save:
                         {
@@ -303,9 +300,6 @@ import { systemInfo } from '../../../Common/common.js';
                         date:
                         {
                             path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/Settings/Date/getDate",
-                            granularity: "DAY",
-                            spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: systemInfo.isTest() ? 1 : 60,
                         },
                         save:
                         {
@@ -604,9 +598,6 @@ import { systemInfo } from '../../../Common/common.js';
                         date:
                         {
                             path: "AmazonAdsAPI/Reporting/SponsoredAdsV3/Settings/Date/getDate",
-                            granularity: "DAY",
-                            spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: systemInfo.isTest() ? 1 : 60,
                         },
                         save:
                         {
@@ -878,9 +869,6 @@ import { systemInfo } from '../../../Common/common.js';
                     settings: {
                         date: {
                             path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
-                            granularity: "DAY",
-                            spans: [1],
-                            dateBack: systemInfo.isTest() ? 1 : -1,
                         },
                         save:
                         {
@@ -1073,9 +1061,6 @@ import { systemInfo } from '../../../Common/common.js';
                         date:
                         {
                             path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
-                            granularity: "DAY",
-                            spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: systemInfo.isTest() ? 1 : 0,
                         },
                         save:
                         {
@@ -1302,9 +1287,6 @@ import { systemInfo } from '../../../Common/common.js';
                         date:
                         {
                             path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
-                            granularity: "DAY",
-                            spans: [1, 2, 3, 4, 5, 6, 7, 30],
-                            dateback: systemInfo.isTest() ? 1 : 0,
                         },
                         save:
                         {
@@ -1653,9 +1635,6 @@ import { systemInfo } from '../../../Common/common.js';
                         date:
                         {
                             path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
-                            granularity: "DAY",
-                            spans: [1],
-                            dateback: systemInfo.isTest() ? 1 : 1,
                         },
                         save:
                         {
