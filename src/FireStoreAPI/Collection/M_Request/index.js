@@ -1654,7 +1654,7 @@ import { systemInfo } from '../../../Common/common.js';
                         {
                             path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
                             granularity: "DAY",
-                            spans: [1, 2, 3, 4, 5, 6, 7, 30],
+                            spans: [1],
                             dateback: systemInfo.isTest() ? 1 : 1,
                         },
                         save:

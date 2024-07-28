@@ -13,7 +13,6 @@ const requests = _.map(snapshot.docs, (doc) => {
     return { ref: doc.ref, refName: data.details[0].refName }
 });
 
-let ref = await FirestoreManager.createRef("M_Transaction");
 
 // テスト中はとりあえずもってこればいい。
 
@@ -21,34 +20,40 @@ let ref = await FirestoreManager.createRef("M_Transaction");
  * @type {M_Transaction}
  */
 let data = {
+    tag: 'ファーストリクエスト',
+    refName: "firstCall",
+    statuses:
+        [
+            {
+                status: "FIRSTREPORT",
+                collection: "D_ReportRequest",
+                initialize: "FireStoreAPI/Collection/M_Transaction/Status/FirstReport/initialize",
+                finalize: "",
+            }
+        ],
+    requests: requests,
+    valid: true,
+}
+let ref = await FirestoreManager.createRef("M_Transaction");
+await ref.set(data);
+
+data = {
     tag: '基本リクエスト',
-    details:[
+    refName: "regularCall",
+    statuses: 
+    [
         {
-            refName: "firstCall",
-            statuses: 
-            [
-                {
-                    status: "FIRSTREPORT",
-                    collection: "D_ReportRequest",
-                    path: "FireStoreAPI/Collection/M_Transaction/Status/FirstReport/initialize",
-                }
-            ]
-        },
-        {
-            refName: "regularCall",
-            statuses: 
-            [
-                {
-                    status: "REGULARREPORT",
-                    collection: "D_ReportRequest",
-                    path: "FireStoreAPI/Collection/M_Transaction/Status/RegularReport/initialize",
-                }
-            ]
-        },
+            status: "REGULARREPORT",
+            collection: "D_ReportRequest",
+            initialize: "FireStoreAPI/Collection/M_Transaction/Status/RegularReport/initialize",
+            finalize: "",
+        }
     ],
     requests: requests,
     valid: true,
 }
+
+ref = await FirestoreManager.createRef("M_Transaction");
 await ref.set(data);
 
 console.log("Success!")

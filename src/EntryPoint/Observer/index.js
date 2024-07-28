@@ -28,7 +28,7 @@ async function main() {
         if (state.nextTime.toDate() < dayjs().toDate()) {
             logger.info(`[定時処理開始][今回日時：${dayjs(state.nextTime.toDate()).format("YYYY-MM-DD HH:mm:ss")}]`);
             const ret = await runSchedule();
-            if(ret){
+            if (ret) {
                 const nextTime = dayjs(state.nextTime.toDate()).add(1, 'day').startOf('day').add(90, 'minute');
                 await fireStoreManager.updateRef(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
                 logger.info(`[定時処理終了][次回日時：${nextTime.format("YYYY-MM-DD HH:mm:ss")}]`);
@@ -67,7 +67,7 @@ async function runSchedule() {
                  */
                 const mtran = mtranDoc.data();
                 // transactionをスケジュールに展開
-                if (!mtran.details.some(d => d.refName == "regularCall")) continue;
+                if (mtran.refName != "regularCall") continue;
                 //該当するD_Scheduleを取得
                 let doc = (await fireStoreManager.getDocs("D_Schedule", [["accountRef", "==", accountDoc.ref], ["transactionRef", "==", mtranDoc.ref]]))[0];
                 if (!doc) {
@@ -78,7 +78,7 @@ async function runSchedule() {
 
                     // D_Transactionを作成
                     const dtranRef = await fireStoreManager.createRef("D_Transaction");
-                    batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, "regularCall", dayjs(dschedule.date.toDate())));
+                    batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, dayjs(dschedule.date.toDate())));
 
                     // 当日のは使用済みとし、翌日にする
                     dschedule.date = Timestamp.fromDate(date.add(1, 'day').toDate());
@@ -98,7 +98,7 @@ async function runSchedule() {
                         const batch = await fireStoreManager.createBatch();
                         // D_Transactionを作成
                         const dtranRef = await fireStoreManager.createRef("D_Transaction");
-                        batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, "regularCall", dayjs(dschedule.date.toDate())));
+                        batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, dayjs(dschedule.date.toDate())));
                         batch.update(doc.ref, { date: Timestamp.fromDate(dayjs(dschedule.date.toDate()).add(1, 'day').startOf('day').toDate()) });
                         await fireStoreManager.commitBatch(batch);
                         logger.info(`[更新][${mtran.tag}]`);
@@ -144,20 +144,24 @@ async function runObserve() {
              * @type {M_Transaction}
              */
             const mtranDoc = (await collectiomManager.get(dtran.transactionRef));
-            const call = mtranDoc.data().details.find(d => d.refName == dtran.refName);
-            const status = call.statuses.find(s => s.status == dtran.status);
+            const mtran = mtranDoc.data();
+            const status = mtran.statuses.find(s => s.status == dtran.status);
             logger.info(`[監視開始][${dtranDoc.id}][${++count}/${dtranDocs.length}件]`);
             if (dtran.status == "" || await observe(status.collection, dtranDoc)) {
+                if (status && status.finalize) {
+                    // ファイナライズ処理
+                    await _.get(root, status.finalize.split("/"))(batch, mtranDoc, dtranDoc);
+                }
                 // 次に進めて初期化処理
-                const index = call.statuses.indexOf(status);
-                const nextStatus = call.statuses[index + 1];
+                const index = mtran.statuses.indexOf(status);
+                const nextStatus = mtran.statuses[index + 1];
                 /**
                  * @type {FirebaseFirestore.WriteBatch}
                  */
                 const batch = await fireStoreManager.createBatch();
                 if (nextStatus) {
-                    // 初期化処理
-                    await _.get(root, nextStatus.path.split("/"))(batch, mtranDoc, dtranDoc);
+                    // イニシャライズ処理
+                    await _.get(root, nextStatus.initialize.split("/"))(batch, mtranDoc, dtranDoc);
                 }
                 // statusを進める
                 batch.update(dtranDoc.ref, { status: nextStatus?.status || "COMPLETED" });

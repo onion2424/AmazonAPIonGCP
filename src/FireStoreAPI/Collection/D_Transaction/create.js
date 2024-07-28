@@ -8,7 +8,7 @@ import { Timestamp } from "firebase-admin/firestore";
  * @param {dayjs.Dayjs} date 
  * @returns 
  */
-export function create(mtranDoc, accountDocRef, refName,  date)
+export function create(mtranDoc, accountDocRef, date)
 {   
     const ret = structuredClone(D_Transaction);
     /**
@@ -17,9 +17,8 @@ export function create(mtranDoc, accountDocRef, refName,  date)
     const data = mtranDoc.data();
     ret.transactionRef = mtranDoc.ref;
     ret.accountRef = accountDocRef;
-    const ref = data.details.find(d => d.refName == refName);
-    ret.statuses = ref.statuses.map(r => r.status);
-    ret.refName = refName;
+    ret.statuses = data.statuses.map(r => r.status);
+    ret.refName = data.refName;
     ret.date = Timestamp.fromDate(date.toDate());
     return ret;
 }

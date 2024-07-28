@@ -28,15 +28,14 @@ export default async function save(json) {
 
     const mtrans = await fireStoreManager.getDocs("M_Transaction", [["valid", "==", true]]);
     for (const mtranDoc of mtrans) {
-        const transactionDocRef = await fireStoreManager.createRef("D_Transaction");
         // 初期データ取得用のD_Tranを作成
         {
             /**
              * @type {M_Transaction}
              */
             const mtranData = mtranDoc.data();
-            const firstCall = mtranData.details.find(d => d.refName == "firstCall");
-            if(!firstCall) continue;
+            if(mtranData.refName != "firstCall") continue;
+            const transactionDocRef = await fireStoreManager.createRef("D_Transaction");
             for await(const request of mtranData.requests){
                 const mrequestDoc = await collectionManager.get(request.ref);
                 /**
@@ -58,7 +57,7 @@ export default async function save(json) {
                     await bigQueryManager.createPartitionTable(detail.settings.save.tableName, account.tag, options);
                 }
             }
-            batch.set(transactionDocRef, D_TransactionManager.create(mtranDoc, accountDocRef, "firstCall", date));
+            batch.set(transactionDocRef, D_TransactionManager.create(mtranDoc, accountDocRef, date));
         }
     }
 

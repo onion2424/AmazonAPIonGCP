@@ -9,9 +9,11 @@ import { DocumentReference } from "firebase-admin/firestore";
 /**
  * @typedef {object} M_Transaction
  * @prop {string} tag タグ
- * @prop {[detail]} details 詳細
  * @prop {[request]} requests リクエストIDs
  * @prop {boolean} valid 有効フラグ
+ * @prop {string} refName 参照名称
+ * @prop {[status]} statuses 全ステータス
+ * 
  */
 
 /**
@@ -22,36 +24,19 @@ export const M_Transaction = {
 
     /**
      * @typedef {object} status
-     * @prop {string} path パス
+     * @prop {string} initialize イニシャライズ
+     * @prop {string} finalize ファイナライズ
      * @prop {string} collection 監視対象のCollection - なければそのまま次のステータスへ
      * @prop {string} status ステータス
      */
-
-    /**
-     * @typedef {object} detail
-     * @prop {[status]} statuses 全ステータス
-     * @prop {string} refName 参照名称
-     */
-    details: [
+    refName: "",
+    statuses: [
         {
-            refName: "firstCall",
-            statuses: [
-                {
-                    path: "",
-                    collection: "",
-                    status: "",
-                }]
-        },
-        {
-            refName: "regularCall",
-            statuses: [
-                {
-                    path: "",
-                    collection: "",
-                    status: "",
-                }]
-        },
-    ],
+            initialize: "",
+            finalize: "",
+            collection: "",
+            status: "",
+        }],
 
     /**
      * @typedef {object} request
