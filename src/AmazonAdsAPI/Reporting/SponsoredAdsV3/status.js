@@ -24,7 +24,7 @@ export async function status(drequest, mrequest) {
    */
   const account = accountDoc.data();
   const clientId = account.token.ads_token.client_id;
-  const profileId = account.token.ads_token.profileId;
+  const profileId = account.profileId;
 
   const accesTokenDoc = await authManager.get(account);
   const accesToken = accesTokenDoc.data();
@@ -40,7 +40,7 @@ export async function status(drequest, mrequest) {
     }
   }
 
-  const urlSuffix = amazonCommon.getURLEndPoint("ADS", account.token.sp_token.marketplaceIds[0]);
+  const urlSuffix = amazonCommon.getURLEndPoint("ADS", account.marketplaceIds[0]);
 
   const response = await fetch(`https://advertising-api${urlSuffix}.amazon.com/reporting/reports/${drequest.reportInfo.reportId}`, {
     method: "get",

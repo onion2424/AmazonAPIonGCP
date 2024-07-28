@@ -36,7 +36,7 @@ export async function get(drequest, mrequest) {
     }
   }
 
-  const urlSuffix = amazonCommon.getURLEndPoint("SP", account.token.sp_token.marketplaceIds[0]);
+  const urlSuffix = amazonCommon.getURLEndPoint("SP", account.marketplaceIds[0]);
 
   const response = await fetch(`https://sellingpartnerapi${urlSuffix}.amazon.com/reports/2021-06-30/documents/${drequest.reportInfo.documentId}`, {
     method: "get",

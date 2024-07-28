@@ -26,9 +26,9 @@ export default async function check(json) {
 
     const profiles = await profileManager.get(ads["client_id"], accessToken.access_token);
 
-    var profile = _.find(profiles, (val => _.get(val, ["accountInfo", "id"]) == json.sellerId));
-    if (!profile) {
-        logger.warn("[チェック失敗][ADS-API][セラーID不整合]");
+    var profile = _.find(profiles, (val => _.get(val, ["profileId"]) == json.profileId));
+    if (!profile || profile.accountInfo.id != json.sellerId) {
+        logger.warn("[チェック失敗][ADS-API][プロフィールID不整合]");
         return false;
     }
 
@@ -53,7 +53,7 @@ export default async function check(json) {
     }
 
     // 多重防止
-    const docs = await fireStoreManager.getDocs("M_Account", [["sellerId", "==", json.sellerId]]);
+    const docs = await fireStoreManager.getDocs("M_Account", [["profileId", "==", json.sellerId]]);
     if (docs.length) {
         logger.warn("[チェック失敗][セラーID重複]");
         return false;

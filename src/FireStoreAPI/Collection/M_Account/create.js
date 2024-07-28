@@ -11,6 +11,8 @@ export function create(json, ref1, ref2)
     ret.tag = json.tag;
     ret.sellerId = json.sellerId;
     ret.startDate = json.sellerStartDate;
+    ret.profileId = json.profileId;
+    ret.marketplaceIds = json.marketplaceIds;
     ret.token.ads_token = json.ads_token;
     ret.token.ads_token.ref = ref1;
     ret.token.sp_token = json.sp_token;

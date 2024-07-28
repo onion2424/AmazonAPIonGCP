@@ -42,8 +42,8 @@ export async function create(drequest, mrequest) {
   const body = detail.body;
   body.dataStartTime = drequest.requestInfo.date.start;
   body.dataEndTime = drequest.requestInfo.date.end;
-  body.marketplaceIds = account.token.sp_token.marketplaceIds;
-  const urlSuffix = amazonCommon.getURLEndPoint("SP", account.token.sp_token.marketplaceIds[0]);
+  body.marketplaceIds = account.marketplaceIds;
+  const urlSuffix = amazonCommon.getURLEndPoint("SP", account.marketplaceIds[0]);
 
   const response = await fetch(`https://sellingpartnerapi${urlSuffix}.amazon.com/reports/2021-06-30/reports`, {
     method: "post",

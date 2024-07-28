@@ -7,6 +7,8 @@ const schema =
         "tag": { "type": "string" },
         "sellerId": { "type": "string" },
         "sellerStartDate": { "type": "string" },
+        "profileId": { "type": "string" },
+        "marketplaceIds": { "type": "array", "items": { "type": "string" } },
         "ads_token": {
             "type": "object",
             "additionalProperties": false,
@@ -14,10 +16,9 @@ const schema =
                 "client_id": { "type": "string" },
                 "client_secret": { "type": "string" },
                 "refresh_token": { "type": "string" },
-                "profileId": { "type": "string" },
             },
             "required" : [
-                "client_id", "client_secret", "refresh_token", "profileId"
+                "client_id", "client_secret", "refresh_token"
             ],
         },
 
@@ -29,15 +30,14 @@ const schema =
                 "client_id": { "type": "string" },
                 "client_secret": { "type": "string" },
                 "refresh_token": { "type": "string" },
-                "marketplaceIds": { "type": "array", "items": { "type": "string" } },
             },
             "required" : [
-                "client_id", "client_secret", "refresh_token", "marketplaceIds"
+                "client_id", "client_secret", "refresh_token"
             ],
         },
     },
     "required" : [
-        "command", "tag", "sellerId", "ads_token", "sp_token"
+        "command", "tag", "sellerId", "ads_token", "sp_token", "profileId", "marketplaceIds"
     ],
 }
 
