@@ -53,7 +53,7 @@ export async function download(drequest, mrequest) {
   if (response && "status" in response) {
     if (response.ok) {
       //let readable = Readable.fromWeb(res.body);
-      let destFileName = utils.combine(gcpCommon.AMAZON_SP_API_REPORT, account.tag, dayjs(drequest.requestInfo.date.start).format('YYYY-MM-DD'), "temp", detail.settings.save.fileName);
+      let destFileName = utils.combine(gcpCommon.AMAZON_REPORT, dayjs(drequest.requestInfo.date.start).format('YYYY-MM-DD'), account.tag, "temp", detail.settings.save.fileName);
 
       const uploaded = await storageManager.streamFileUpload(destFileName, Readable.fromWeb(response.body), []);
       if (uploaded) {

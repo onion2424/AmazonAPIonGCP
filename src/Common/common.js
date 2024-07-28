@@ -105,6 +105,12 @@ class gcpCommonClass{
          * @type {string}
          */
         this.AMAZON_SP_API_REPORT = "AmazonSpApiReport";
+
+        /**
+         * AmazonReport
+         * @type {string}
+         */
+        this.AMAZON_REPORT = "AmazonReport";
     }
 }
 export const gcpCommon = new gcpCommonClass();
