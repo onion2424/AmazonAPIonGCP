@@ -24,8 +24,8 @@ export default async function save(json) {
 
     const accountDocRef = await fireStoreManager.createRef("M_Account");
     const account = M_AccountManager.create(json, adsDocRef, spDocRef);
-    // regularCall追加
-    account.schedules.push("regularCall");
+    // regularCall追加はFirstCall終了時
+    //account.schedules.push("regularCall");
     batch.set(accountDocRef, account);
 
     const mtrans = await fireStoreManager.getDocs("M_Transaction", [["valid", "==", true]]);

@@ -119,7 +119,7 @@ async function runObserve() {
             if (dtran.status == "" || await observe(status.collection, dtranDoc, accountDoc)) {
                 if (status && status.finalize) {
                     // ファイナライズ処理
-                    await _.get(root, status.finalize.split("/"))(batch, mtranDoc, dtranDoc, accountDoc);
+                    await _.get(root, status.finalize.split("/"))(mtranDoc, dtranDoc, accountDoc);
                 }
                 // 次に進めて初期化処理
                 const index = mtran.statuses.indexOf(status);

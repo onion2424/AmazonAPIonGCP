@@ -36,7 +36,7 @@ const GetFlatFileAllOrdersDataByOrderDateGeneral = requests.find(r => r.tag == "
                     status: "FIRSTREPORT",
                     collection: "D_BatchReportRequest",
                     initialize: "FireStoreAPI/Collection/M_Transaction/Status/FirstReport/initialize",
-                    finalize: "",
+                    finalize: "FireStoreAPI/Collection/M_Transaction/Status/FirstReport/finalize",
                 }
             ],
         requests: [

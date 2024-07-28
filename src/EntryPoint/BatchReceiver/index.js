@@ -14,7 +14,7 @@ import R_DelayManager from "../../FireStoreAPI/Collection/R_Delay/manager.js"
  * @returns 
  */
 async function main() {
-    if (dayjs().minute() % 10 == 2) {
+    if (dayjs().minute() % 10 == 0) {
         logger.info("[処理終了][レート回復]");
         return;
     }
