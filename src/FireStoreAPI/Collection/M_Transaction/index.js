@@ -49,6 +49,7 @@ data = {
             finalize: "",
         }
     ],
+    schedulize: "FireStoreAPI/Collection/M_Transaction/Status/RegularReport/schedulize",
     requests: requests,
     valid: true,
 }

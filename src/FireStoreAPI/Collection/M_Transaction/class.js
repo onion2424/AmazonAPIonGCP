@@ -13,6 +13,7 @@ import { DocumentReference } from "firebase-admin/firestore";
  * @prop {boolean} valid 有効フラグ
  * @prop {string} refName 参照名称
  * @prop {[status]} statuses 全ステータス
+ * @prop {string} schedulize スケジュライズ
  * 
  */
 

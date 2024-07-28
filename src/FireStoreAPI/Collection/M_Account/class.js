@@ -13,6 +13,7 @@ import { Timestamp, DocumentReference } from "firebase-admin/firestore";
  * @prop {token} token トークン
  * @prop {boolean} deleted 削除フラグ
  * @prop {boolean} valid 有効フラグ
+ * @prop {[string]} schedules
  */
 
 /**
@@ -61,6 +62,7 @@ export const M_Account = {
             marketplaceIds: [],
         }
     },
+    schedules: [],
     deleted: false,
     valid: true,
 }
