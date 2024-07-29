@@ -27,7 +27,7 @@ async function main() {
 
         if (state.nextTime.toDate() < dayjs().toDate()) {
             logger.info(`[定時処理開始][今回日時：${dayjs(state.nextTime.toDate()).format("YYYY-MM-DD HH:mm:ss")}]`);
-            const ret = true;//await runSchedule();
+            const ret = await runSchedule();
             if (ret) {
                 const nextTime = dayjs(state.nextTime.toDate()).add(1, 'day').startOf('day').add(90, 'minute');
                 await fireStoreManager.updateRef(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
