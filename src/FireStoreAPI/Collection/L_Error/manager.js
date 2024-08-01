@@ -9,18 +9,20 @@ import collectionManaer from "../manager.js" // import順を考慮
 export class manager {
   constructor() {
     this.create = create;
-    this.onSystemError = async (error, doc) => onSystemError(this.job, this.mode, error, doc);
-    this.onFireStoreError = async (error, doc) => onFireStoreError(this.job, this.mode, error, doc);
-    this.onRequestError = async (error, doc) => onRequestError(this.job, this.mode, error, doc);
-    this.onGCSError = async (error, doc) => onGCSError(this.job, this.mode, error, doc);
+    this.onSystemError = async (error, doc) => onSystemError(this.job, this.version, this.mode, error, doc);
+    this.onFireStoreError = async (error, doc) => onFireStoreError(this.job, this.version, this.mode, error, doc);
+    this.onRequestError = async (error, doc) => onRequestError(this.job, this.version, this.mode, error, doc);
+    this.onGCSError = async (error, doc) => onGCSError(this.job, this.version, this.mode, error, doc);
   }
   /**
    * 
    * @param {string} job 
+   * @param {string} version
    * @param {string} mode WRITE|SAVE
    */
-  initialize(job, mode){
+  initialize(job, version, mode){
     this.job = job;
+    this.version = version;
     this.mode = mode;
   }
 }

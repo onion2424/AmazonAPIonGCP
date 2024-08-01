@@ -1,4 +1,4 @@
-import root from "./import.js"
+import root, { job, version } from "./import.js"
 import { _, utils, dayjs, logger, systemInfo } from "../../Common/common.js";
 import collectiomManager from "../../FireStoreAPI/Collection/manager.js"
 import fireStoreManager from "../../FireStoreAPI/manager.js"
@@ -7,14 +7,14 @@ import { Timestamp, Transaction } from "firebase-admin/firestore";
 import { D_ReportRequest } from "../../FireStoreAPI/Collection/D_ReportRequest/class.js";
 import { M_Request } from "../../FireStoreAPI/Collection/M_Request/manager.js"
 import L_ErrorManager from "../../FireStoreAPI/Collection/L_Error/manager.js"
-import M_ErrorManager, {M_Error} from "../../FireStoreAPI/Collection/M_Error/manager.js";
+import M_ErrorManager, { M_Error } from "../../FireStoreAPI/Collection/M_Error/manager.js";
 import R_DelayManager from "../../FireStoreAPI/Collection/R_Delay/manager.js"
 /**
  * エントリーポイント
  * @returns 
  */
 async function main() {
-    L_ErrorManager.initialize("RECEIVER", "WRITE");
+    L_ErrorManager.initialize(job, version, "WRITE");
 
     // 次回起動時間を保存
     systemInfo.nextTime = dayjs().add(60, 'minute').startOf('hour');
@@ -34,7 +34,7 @@ async function main() {
      */
     const state = doc.data();
 
-    logger.info(`[起動][${state.tag}][Version = ${state.version}]`);
+    logger.info(`[起動][${state.tag}][Version = ${version}]`);
 
     logger.info(`[定期受信開始]`);
 
@@ -121,7 +121,7 @@ async function runAsync(host, syncObj) {
 
             // 待機時間(10分以上空くなら終了等？)
             const diff = dayjs(drequest.requestTime.toDate()).diff(dayjs(), "second");
-            if(diff > 0)
+            if (diff > 0)
                 await utils.wait(diff);
 
             // 実行
@@ -134,15 +134,15 @@ async function runAsync(host, syncObj) {
             const status = mrequest.statuses.find(s => s.status == drequest.status);
             const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
 
-            if(res.ok == "ok"){
+            if (res.ok == "ok") {
                 const index = drequest.statuses.indexOf(drequest.status);
                 const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
-                const nextTime = Timestamp.fromDate(dayjs().add(2**res.reportInfo.continue, "second").toDate());
-                if("created" in res.reportInfo && res.reportInfo.created){
+                const nextTime = Timestamp.fromDate(dayjs().add(2 ** res.reportInfo.continue, "second").toDate());
+                if ("created" in res.reportInfo && res.reportInfo.created) {
                     // TimeStampに戻す https://stackoverflow.com/questions/57898146/firestore-timestamp-gets-saved-as-map
                     res.reportInfo.created = new Timestamp(res.reportInfo.created._seconds, res.reportInfo.created._nanoseconds);
                 }
-                await fireStoreManager.updateRef(drequestDoc.ref, {requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, host: 0});
+                await fireStoreManager.updateRef(drequestDoc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, host: 0 });
                 logger.info(`[リクエスト更新][${drequestDoc.id}][${drequest.status}⇒${nextStatus}]`);
             }
             // errorならPG上のエラーハンドリング
@@ -221,7 +221,7 @@ async function release(host) {
 async function startup() {
     //transactin
     const getfunc = async (tran, obj) => {
-        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", "RECEIVER"], ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]], [], 1);
+        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", job], ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]], [], 1);
         const snapshot = await tran.get(query);
         for await (const doc of snapshot.docs) {
             obj.S_RunningState = doc;
@@ -232,7 +232,7 @@ async function startup() {
         const doc = obj.S_RunningState;
         if (doc) {
             const nextTime = systemInfo.nextTime;
-            if(!systemInfo.isTest())
+            if (!systemInfo.isTest())
                 tran.update(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
         }
     }

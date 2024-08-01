@@ -12,7 +12,6 @@ import { Timestamp } from "firebase-admin/firestore";
  * @prop {string} job ジョブ
  * @prop {[number]} hosts ホストのリスト
  * @prop {Timestamp} nextTime 次回実行時間
- * @prop {string} version バージョン
  */
 
 /**
@@ -23,5 +22,4 @@ export const S_RunningState = {
     job: "",
     hosts: [],
     nextTime: Timestamp.fromDate(dayjs().toDate()),
-    version: "",
 }

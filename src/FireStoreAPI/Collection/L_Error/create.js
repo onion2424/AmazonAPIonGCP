@@ -7,10 +7,11 @@ import { dayjs } from "../../../Common/common.js";
  * @param {*} json 
  * @returns 
  */
-export function create(job, error, doc)
+export function create(job, version, error, doc)
 {
     const ret = structuredClone(L_Error);
     ret.job = job;
+    ret.version = version;
     ret.error = error.message;
     if(doc) ret.snapshot = doc;
     ret.timestamp = Timestamp.fromDate(dayjs().toDate());

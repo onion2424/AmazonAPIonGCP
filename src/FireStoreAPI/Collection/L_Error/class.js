@@ -10,6 +10,7 @@ import { DocumentReference, Timestamp } from "firebase-admin/firestore";
  * 
  * @typedef {object} L_Error
  * @prop {string} job ジョブ
+ * @prop {string} version バージョン
  * @prop {string} error エラー内容
  * @prop {string} snapshot スナップショット
  * @prop {Timestamp} timestamp タイムスタンプ
@@ -20,6 +21,7 @@ import { DocumentReference, Timestamp } from "firebase-admin/firestore";
 export const L_Error =
 {
     job: "",
+    version: "",
     error: "",
     snapshot: "",
     timestamp: null,

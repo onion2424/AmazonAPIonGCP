@@ -1,4 +1,4 @@
-import root from "./import.js"
+import root, {job, version} from "./import.js"
 import { _, utils, dayjs, logger, systemInfo } from "../../Common/common.js";
 import collectiomManager from "../../FireStoreAPI/Collection/manager.js"
 import fireStoreManager from "../../FireStoreAPI/manager.js"
@@ -19,7 +19,7 @@ async function main() {
         return;
     }
 
-    L_ErrorManager.initialize("BATCHRECEIVER", "WRITE");
+    L_ErrorManager.initialize(job, version, "WRITE");
 
     // 次回起動時間を保存
     systemInfo.nextTime = dayjs().add(1, 'minute').startOf('minute');
@@ -39,7 +39,7 @@ async function main() {
      */
     const state = doc.data();
 
-    logger.info(`[起動][${state.tag}][Version = ${state.version}]`);
+    logger.info(`[起動][${state.tag}][Version = ${version}]`);
 
     logger.info(`[バッチ受信開始]`);
 
@@ -206,7 +206,7 @@ async function release(host) {
 async function startup() {
     //transactin
     const getfunc = async (tran, obj) => {
-        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", "BATCHRECEIVER"], ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]], [], 1);
+        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", job], ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]], [], 1);
         const snapshot = await tran.get(query);
         for await (const doc of snapshot.docs) {
             obj.S_RunningState = doc;

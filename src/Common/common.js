@@ -36,21 +36,6 @@ class utilsClass {
     }
 
     /**
-     * Version up
-     * @param {string} str 
-     * @param {number} level 
-     * @returns 
-     */
-    nextVersion(str, level) {
-        const arr = str.split(".");
-        arr[level] = String(Number(arr[level]) + 1);
-        for(let i = level + 1; i<arr.length; i++){
-            arr[i] = "0";
-        }
-        return arr.join(".");
-    }
-
-    /**
      * スレッド待機。
      * @param {*} sec 
      * @returns 
@@ -82,7 +67,7 @@ class amazonCommonClass{
         if(fe.includes(marketPlaceId)){
             return "-fe";
         }
-        else if(er.includes(marketPlaceId)){
+        else if(eu.includes(marketPlaceId)){
             return "-eu"
         }
         else if(na.includes(marketPlaceId)){

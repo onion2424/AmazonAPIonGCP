@@ -14,6 +14,5 @@ export function create(tag, job, hosts)
     ret.job = job;
     ret.hosts = hosts;
     ret.nextTime = Timestamp.now();
-    ret.version = "1.0.0.0";
     return ret;
 }
