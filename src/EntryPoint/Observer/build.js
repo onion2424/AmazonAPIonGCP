@@ -24,13 +24,8 @@ CMD [ "node", "./src/EntryPoint/Observer/index.js", "-release"]`
 // version up
 const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"]], [], 1);
 for await (const doc of docs) {
-    /**
-     * @type {S_RunningState}
-     */
-    const state = doc.data();
-    const nextVersion = utils.nextVersion(state.version, 3);
-    await doc.ref.update({version: nextVersion});
-    console.log(nextVersion);
+    const version = "1.0.0.0";
+    await doc.ref.update({version: version});
 }
 
 fs.writeFileSync(file , text);

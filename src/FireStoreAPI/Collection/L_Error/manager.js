@@ -1,7 +1,7 @@
 import root from "../../../root.js"
 import { _, logger } from "../../../Common/common.js";
 import { create } from "./create.js";
-import { onSystemError, onFireStoreError, onRequestError } from "./onError.js";
+import { onSystemError, onFireStoreError, onRequestError, onGCSError } from "./onError.js";
 export { L_Error } from "./class.js"
 import collectionManaer from "../manager.js" // import順を考慮
 
@@ -12,7 +12,7 @@ export class manager {
     this.onSystemError = async (error, doc) => onSystemError(this.job, this.mode, error, doc);
     this.onFireStoreError = async (error, doc) => onFireStoreError(this.job, this.mode, error, doc);
     this.onRequestError = async (error, doc) => onRequestError(this.job, this.mode, error, doc);
-    this.job = "";
+    this.onGCSError = async (error, doc) => onGCSError(this.job, this.mode, error, doc);
   }
   /**
    * 

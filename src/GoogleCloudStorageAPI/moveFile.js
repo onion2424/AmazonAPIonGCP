@@ -1,8 +1,5 @@
-import { utils } from '../Common/common.js';
 import { Storage } from '@google-cloud/storage';
-import chain from "stream-chain";
-import { pipeline } from 'node:stream/promises';
-import { logger } from '../Common/common.js';
+import L_ErrorManager from "../FireStoreAPI/Collection/L_Error/manager.js";
 
 /**
  * 
@@ -30,5 +27,9 @@ export async function moveFile(storage, bucketName, srcFileName, destFileName) {
   await storage
     .bucket(bucketName)
     .file(srcFileName)
-    .move(destFileName, moveOptions);
+    .move(destFileName, moveOptions)
+    .catch(async e => {
+      await L_ErrorManager.onGCSError(e, null);
+      throw e;
+  });
 }

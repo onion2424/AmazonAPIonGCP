@@ -47,10 +47,10 @@ export async function onRequestError(job, mode, error, doc) {
  * @param {string} error 
  * @param {*} doc 
  */
-export async function onGCPError(job, mode, error, doc) {
+export async function onGCSError(job, mode, error, doc) {
     if (error.logged) return;
     if (mode.includes("WRITE")) {
-        logger.error(`[GCPエラー発生][エラー内容表示]`, error);
+        logger.error(`[GCSエラー発生][エラー内容表示]`, error);
     }
     if (mode.includes("SAVE")) {
         const ref = await fireStoreManager.createRef("L_Error");

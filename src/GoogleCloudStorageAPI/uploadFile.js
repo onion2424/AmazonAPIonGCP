@@ -1,11 +1,12 @@
-import {Storage} from '@google-cloud/storage';
-import {readdirSync} from 'fs';
+import { Storage } from '@google-cloud/storage';
+import { readdirSync } from 'fs';
+import L_ErrorManager from "../FireStoreAPI/Collection/L_Error/manager.js";
 
 // Change to your bucket name
 const keyFilename = './AmazonApiServiceKey/amazon-api-report-48665c60d888.json';
 const bucketName = 'amazon-api-report';
 
-const storage = new Storage({keyFilename: keyFilename});
+const storage = new Storage({ keyFilename: keyFilename });
 
 export async function uploadFile(path, filename) {
   // Path where to save the file in Google Cloud Storage.
@@ -23,5 +24,9 @@ export async function uploadFile(path, filename) {
     //preconditionOpts: {ifGenerationMatch: generationMatchPrecondition},
   };
   // The `path` here is the location of the file that you want to upload.
-  await storage.bucket(bucketName).upload(path, options);
+  await storage.bucket(bucketName).upload(path, options)
+    .catch(async e => {
+      await L_ErrorManager.onGCSError(e, null);
+      throw e;
+    });
 }

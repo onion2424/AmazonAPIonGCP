@@ -1,5 +1,5 @@
-import { utils } from "../Common/common.js";
 import { Storage } from "@google-cloud/storage";
+import L_ErrorManager from "../FireStoreAPI/Collection/L_Error/manager.js";
 
 /**
  * 
@@ -20,7 +20,11 @@ export async function listFilesByPrefix(storage, bucketName, prefix, delimiter) 
   }
 
   // Lists files in the bucket, filtered by a prefix
-  let [files] = await storage.bucket(bucketName).getFiles(options);
+  let [files] = await storage.bucket(bucketName).getFiles(options)
+  .catch(async e => {
+    await L_ErrorManager.onGCSError(e, null);
+    throw e;
+  });
 
   //console.log('Files:');
   files = files.filter(file => file.name.slice(-1) !== "/");

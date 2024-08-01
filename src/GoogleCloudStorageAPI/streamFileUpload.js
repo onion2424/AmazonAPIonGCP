@@ -10,7 +10,9 @@ import streamArray from "stream-json/streamers/StreamArray.js"
 import streamValue from "stream-json/streamers/StreamValues.js"
 import streamObject from "stream-json/streamers/StreamObject.js"
 import iconv from 'iconv-lite';
-import * as csv from 'fast-csv'
+import * as csv from 'fast-csv';
+import L_ErrorManager from "../FireStoreAPI/Collection/L_Error/manager.js";
+
 // Get a reference to the bucket
 
 
@@ -74,10 +76,11 @@ export async function streamFileUpload(storage, bucketName, destFileName, readab
     // https://stackoverflow.com/questions/72469767/nodejs-stream-pipeline-the-val-argument-must-be-an-instance-of-readable-ite
     // https://zenn.dev/dev_commune/articles/46d0abd2ab93c0
     await pipeline(readable, ...getTranslaters(translaters, dateStr), writable)
-        .catch((e) => {
+        .catch(async (e) => {
             ret = false;
             writable.end();
-            logger.error('[GCPエラー][アップロード失敗][エラー内容表示]', e);
+            await L_ErrorManager.onGCSError(e, null);
+            throw e;
         });
 
     /*
