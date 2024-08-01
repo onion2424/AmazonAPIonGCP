@@ -45,18 +45,8 @@ export default async function save(json) {
                  */
                 const mrequest = mrequestDoc.data();
                 const detail = mrequest.details.find(d => d.refName == request.refName);
-                if(detail.schema && detail.schema.length > 0){
-                    const options = {
-                        schema: detail.schema,
-                        timePartitioning: {
-                            type: 'DAY',
-                            field: 'partition_date',
-                        },
-                        clustering: {
-                            fields: ['cluster_asin'],
-                        },
-                    };
-                    await bigQueryManager.createPartitionTable(detail.settings.save.tableName, account.tag, options);
+                if(detail.settings.save.tableOptions){
+                    await bigQueryManager.createPartitionTable(detail.settings.save.tableName, account.tag, detail.settings.save.tableOptions);
                 }
             }
             batch.set(transactionDocRef, D_TransactionManager.create(mtranDoc, accountDocRef, date));

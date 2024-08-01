@@ -20,7 +20,6 @@ export const M_Request = {
      * @prop {object} body リクエストボディ
      * @prop {string} refName 参照名称
      * @prop {settings} settings 設定
-     * @prop {[object]} schema スキーマ
      * @prop {string} tag タグ
      */
 
@@ -43,6 +42,7 @@ export const M_Request = {
      * @prop {string} fileName
      * @prop {string} tableName
      * @prop {[string]} translaters
+     * @prop {{}} tableOptions
      */
 
     details: [{
@@ -63,9 +63,9 @@ export const M_Request = {
                 fileName: "",
                 tableName: "",
                 translaters:[],
+                tableOptions: {},
             }
         },
-        schema: [{}],
         fileName: "",
         tag: "",
     }],
