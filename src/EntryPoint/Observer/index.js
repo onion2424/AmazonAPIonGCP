@@ -1,4 +1,4 @@
-import root from "./import.js"
+import root, {job, version} from "./import.js"
 import { _, utils, dayjs, logger, systemInfo } from "../../Common/common.js";
 import collectiomManager from "../../FireStoreAPI/Collection/manager.js"
 import fireStoreManager from "../../FireStoreAPI/manager.js"
@@ -15,15 +15,15 @@ import L_ErrorManager from "../../FireStoreAPI/Collection/L_Error/manager.js";
 async function main() {
     // 次回起動時間を保存
     systemInfo.nextTime = dayjs().add(5, 'minute').startOf('minute');
-    L_ErrorManager.initialize("OBSERVER", "WRITE|SAVE");
-    const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"]], [], 1);
+    L_ErrorManager.initialize(job, version, "WRITE|SAVE");
+    const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", job]], [], 1);
     for await (const doc of docs) {
         /**
          * @type {S_RunningState}
          */
         const state = doc.data();
 
-        logger.info(`[起動][${state.tag}][Version=${state.version}]`);
+        logger.info(`[起動][${state.tag}][Version=${version}]`);
 
         if (state.nextTime.toDate() < dayjs().toDate()) {
             logger.info(`[定時処理開始][今回日時：${dayjs(state.nextTime.toDate()).format("YYYY-MM-DD HH:mm:ss")}]`);
