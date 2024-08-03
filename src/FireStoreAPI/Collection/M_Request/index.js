@@ -97,7 +97,7 @@ import FirestoreManager from "../../manager.js"
                                     {
                                         "mode": "NULLABLE",
                                         "name": "adGroupId",
-                                        "type": "BIGNUMERIC"
+                                        "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
@@ -167,7 +167,7 @@ import FirestoreManager from "../../manager.js"
                                     {
                                         "mode": "NULLABLE",
                                         "name": "campaignId",
-                                        "type": "BIGNUMERIC"
+                                        "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
@@ -334,7 +334,7 @@ import FirestoreManager from "../../manager.js"
                                     {
                                         "mode": "NULLABLE",
                                         "name": "campaignId",
-                                        "type": "BIGNUMERIC"
+                                        "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
@@ -671,7 +671,7 @@ import FirestoreManager from "../../manager.js"
                                     {
                                         "mode": "NULLABLE",
                                         "name": "campaignId",
-                                        "type": "BIGNUMERIC"
+                                        "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
@@ -756,7 +756,7 @@ import FirestoreManager from "../../manager.js"
                                     {
                                         "mode": "NULLABLE",
                                         "name": "adGroupId",
-                                        "type": "BIGNUMERIC"
+                                        "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
@@ -929,7 +929,7 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "product-name",
+                                        "name": "product_name",
                                         "type": "STRING"
                                     },
                                     {
@@ -939,82 +939,82 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "your-price",
+                                        "name": "your_price",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "mfn-listing-exists",
+                                        "name": "mfn_listing_exists",
                                         "type": "BOOLEAN"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "mfn-fulfillable-quantity",
+                                        "name": "mfn_fulfillable_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-listing-exists",
+                                        "name": "afn_listing_exists",
                                         "type": "BOOLEAN"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-warehouse-quantity",
+                                        "name": "afn_warehouse_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-fulfillable-quantity",
+                                        "name": "afn_fulfillable_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-unsellable-quantity",
+                                        "name": "afn_unsellable_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-reserved-quantity",
+                                        "name": "afn_reserved_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-total-quantity",
+                                        "name": "afn_total_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "per-unit-volume",
+                                        "name": "per_unit_volume",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-inbound-working-quantity",
+                                        "name": "afn_inbound_working_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-inbound-shipped-quantity",
+                                        "name": "afn_inbound_shipped_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-inbound-receiving-quantity",
+                                        "name": "afn_inbound_receiving_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-researching-quantity",
+                                        "name": "afn_researching_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-reserved-future-supply",
+                                        "name": "afn_reserved_future_supply",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "afn-future-supply-buyable",
+                                        "name": "afn_future_supply_buyable",
                                         "type": "BIGNUMERIC"
                                     }
                                 ],
@@ -1112,52 +1112,52 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "amazon-order-id",
+                                        "name": "amazon_order_id",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "merchant-order-id",
+                                        "name": "merchant_order_id",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "purchase-date",
+                                        "name": "purchase_date",
                                         "type": "TIMESTAMP"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "last-updated-date",
+                                        "name": "last_updated_date",
                                         "type": "TIMESTAMP"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "order-status",
+                                        "name": "order_status",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "fulfillment-channel",
+                                        "name": "fulfillment_channel",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "sales-channel",
+                                        "name": "sales_channel",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "order-channel",
+                                        "name": "order_channel",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "ship-service-level",
+                                        "name": "ship_service_level",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "product-name",
+                                        "name": "product_name",
                                         "type": "STRING"
                                     },
                                     {
@@ -1172,7 +1172,7 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "item-status",
+                                        "name": "item_status",
                                         "type": "STRING"
                                     },
                                     {
@@ -1187,67 +1187,67 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "item-price",
+                                        "name": "item_price",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "item-tax",
+                                        "name": "item_tax",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "shipping-price",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "shipping-tax",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "gift-wrap-price",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "gift-wrap-tax",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "item-promotion-discount",
+                                        "name": "shipping_price",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "ship-promotion-discount",
+                                        "name": "shipping_tax",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "gift_wrap_price",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "gift_wrap_tax",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "item_promotion_discount",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "ship_promotion_discount",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "ship_city",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "ship-city",
+                                        "name": "ship_state",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "ship-state",
+                                        "name": "ship_postal_code",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "ship-postal-code",
+                                        "name": "ship_country",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "ship-country",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "promotion-ids",
+                                        "name": "promotion_ids",
                                         "type": "STRING"
                                     }
                                 ],
@@ -1334,289 +1334,289 @@ import FirestoreManager from "../../manager.js"
                             translaters: [
                                 "gunzip", "getSalesAndTrafficReport",
                             ],
+                            tableOptions:{
+                                schema: [
+                                    {
+                                        "mode": "Required",
+                                        "name": "partition_date",
+                                        "type": "DATE"
+                                    }, {
+                                        "mode": "Required",
+                                        "name": "cluster_asin",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "fields": [
+                                            {
+                                                "mode": "REPEATED",
+                                                "name": "marketplaceIds",
+                                                "type": "STRING"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "dataEndTime",
+                                                "type": "DATE"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "dataStartTime",
+                                                "type": "DATE"
+                                            },
+                                            {
+                                                "fields": [
+                                                    {
+                                                        "mode": "NULLABLE",
+                                                        "name": "asinGranularity",
+                                                        "type": "STRING"
+                                                    },
+                                                    {
+                                                        "mode": "NULLABLE",
+                                                        "name": "dateGranularity",
+                                                        "type": "STRING"
+                                                    }
+                                                ],
+                                                "mode": "NULLABLE",
+                                                "name": "reportOptions",
+                                                "type": "RECORD"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "reportType",
+                                                "type": "STRING"
+                                            }
+                                        ],
+                                        "mode": "NULLABLE",
+                                        "name": "reportSpecification",
+                                        "type": "RECORD"
+                                    },
+                                    {
+                                        "fields": [
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "unitSessionPercentageB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "buyBoxPercentage",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "mobileAppPageViewsPercentage",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "pageViewsPercentage",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "buyBoxPercentageB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "browserPageViewsPercentageB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "browserPageViewsPercentage",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "browserSessions",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "mobileAppPageViewsPercentageB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "pageViewsB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "pageViewsPercentageB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "browserSessionPercentageB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "pageViews",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "mobileAppPageViewsB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "sessionPercentage",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "unitSessionPercentage",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "browserSessionPercentage",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "mobileAppPageViews",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "browserPageViews",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "sessionsB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "sessionPercentageB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "mobileAppSessions",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "mobileAppSessionPercentageB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "mobileAppSessionsB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "sessions",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "browserPageViewsB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "mobileAppSessionPercentage",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "browserSessionsB2B",
+                                                "type": "BIGNUMERIC"
+                                            }
+                                        ],
+                                        "mode": "NULLABLE",
+                                        "name": "trafficByAsin",
+                                        "type": "RECORD"
+                                    },
+                                    {
+                                        "fields": [
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "totalOrderItemsB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "fields": [
+                                                    {
+                                                        "mode": "NULLABLE",
+                                                        "name": "currencyCode",
+                                                        "type": "STRING"
+                                                    },
+                                                    {
+                                                        "mode": "NULLABLE",
+                                                        "name": "amount",
+                                                        "type": "BIGNUMERIC"
+                                                    }
+                                                ],
+                                                "mode": "NULLABLE",
+                                                "name": "orderedProductSalesB2B",
+                                                "type": "RECORD"
+                                            },
+                                            {
+                                                "fields": [
+                                                    {
+                                                        "mode": "NULLABLE",
+                                                        "name": "currencyCode",
+                                                        "type": "STRING"
+                                                    },
+                                                    {
+                                                        "mode": "NULLABLE",
+                                                        "name": "amount",
+                                                        "type": "BIGNUMERIC"
+                                                    }
+                                                ],
+                                                "mode": "NULLABLE",
+                                                "name": "orderedProductSales",
+                                                "type": "RECORD"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "unitsOrderedB2B",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "totalOrderItems",
+                                                "type": "BIGNUMERIC"
+                                            },
+                                            {
+                                                "mode": "NULLABLE",
+                                                "name": "unitsOrdered",
+                                                "type": "BIGNUMERIC"
+                                            }
+                                        ],
+                                        "mode": "NULLABLE",
+                                        "name": "salesByAsin",
+                                        "type": "RECORD"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "childAsin",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "parentAsin",
+                                        "type": "STRING"
+                                    }
+                                ],
+                                timePartitioning: {
+                                    type: 'DAY',
+                                    field: 'partition_date',
+                                },
+                                clustering: {
+                                    fields: ['cluster_asin'],
+                                },
+                            }
                         },
-                        tableOptions:{
-                            schema: [
-                                {
-                                    "mode": "Required",
-                                    "name": "partition_date",
-                                    "type": "DATE"
-                                }, {
-                                    "mode": "Required",
-                                    "name": "cluster_asin",
-                                    "type": "STRING"
-                                },
-                                {
-                                    "fields": [
-                                        {
-                                            "mode": "REPEATED",
-                                            "name": "marketplaceIds",
-                                            "type": "STRING"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "dataEndTime",
-                                            "type": "DATE"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "dataStartTime",
-                                            "type": "DATE"
-                                        },
-                                        {
-                                            "fields": [
-                                                {
-                                                    "mode": "NULLABLE",
-                                                    "name": "asinGranularity",
-                                                    "type": "STRING"
-                                                },
-                                                {
-                                                    "mode": "NULLABLE",
-                                                    "name": "dateGranularity",
-                                                    "type": "STRING"
-                                                }
-                                            ],
-                                            "mode": "NULLABLE",
-                                            "name": "reportOptions",
-                                            "type": "RECORD"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "reportType",
-                                            "type": "STRING"
-                                        }
-                                    ],
-                                    "mode": "NULLABLE",
-                                    "name": "reportSpecification",
-                                    "type": "RECORD"
-                                },
-                                {
-                                    "fields": [
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "unitSessionPercentageB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "buyBoxPercentage",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "mobileAppPageViewsPercentage",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "pageViewsPercentage",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "buyBoxPercentageB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "browserPageViewsPercentageB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "browserPageViewsPercentage",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "browserSessions",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "mobileAppPageViewsPercentageB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "pageViewsB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "pageViewsPercentageB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "browserSessionPercentageB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "pageViews",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "mobileAppPageViewsB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "sessionPercentage",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "unitSessionPercentage",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "browserSessionPercentage",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "mobileAppPageViews",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "browserPageViews",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "sessionsB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "sessionPercentageB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "mobileAppSessions",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "mobileAppSessionPercentageB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "mobileAppSessionsB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "sessions",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "browserPageViewsB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "mobileAppSessionPercentage",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "browserSessionsB2B",
-                                            "type": "BIGNUMERIC"
-                                        }
-                                    ],
-                                    "mode": "NULLABLE",
-                                    "name": "trafficByAsin",
-                                    "type": "RECORD"
-                                },
-                                {
-                                    "fields": [
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "totalOrderItemsB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "fields": [
-                                                {
-                                                    "mode": "NULLABLE",
-                                                    "name": "currencyCode",
-                                                    "type": "STRING"
-                                                },
-                                                {
-                                                    "mode": "NULLABLE",
-                                                    "name": "amount",
-                                                    "type": "BIGNUMERIC"
-                                                }
-                                            ],
-                                            "mode": "NULLABLE",
-                                            "name": "orderedProductSalesB2B",
-                                            "type": "RECORD"
-                                        },
-                                        {
-                                            "fields": [
-                                                {
-                                                    "mode": "NULLABLE",
-                                                    "name": "currencyCode",
-                                                    "type": "STRING"
-                                                },
-                                                {
-                                                    "mode": "NULLABLE",
-                                                    "name": "amount",
-                                                    "type": "BIGNUMERIC"
-                                                }
-                                            ],
-                                            "mode": "NULLABLE",
-                                            "name": "orderedProductSales",
-                                            "type": "RECORD"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "unitsOrderedB2B",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "totalOrderItems",
-                                            "type": "BIGNUMERIC"
-                                        },
-                                        {
-                                            "mode": "NULLABLE",
-                                            "name": "unitsOrdered",
-                                            "type": "BIGNUMERIC"
-                                        }
-                                    ],
-                                    "mode": "NULLABLE",
-                                    "name": "salesByAsin",
-                                    "type": "RECORD"
-                                },
-                                {
-                                    "mode": "NULLABLE",
-                                    "name": "childAsin",
-                                    "type": "STRING"
-                                },
-                                {
-                                    "mode": "NULLABLE",
-                                    "name": "parentAsin",
-                                    "type": "STRING"
-                                }
-                            ],
-                            timePartitioning: {
-                                type: 'DAY',
-                                field: 'partition_date',
-                            },
-                            clustering: {
-                                fields: ['cluster_asin'],
-                            },
-                        }
                     },
                     fileName: "GetSalesAndTrafficReport.json",
                     tag: "マージ用レポート"
@@ -1704,7 +1704,7 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "seller-sku",
+                                        "name": "seller_sku",
                                         "type": "STRING"
                                     },
                                     {
@@ -1714,23 +1714,23 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "item-name",
+                                        "name": "item_name",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "item-description",
+                                        "name": "item_description",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "listing-id",
+                                        "name": "listing_id",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
                                         "name": "price",
-                                        "type": "STRING"
+                                        "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
@@ -1739,128 +1739,128 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "open-date",
+                                        "name": "open_date",
+                                        "type": "TIMESTAMP"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "product_id_type",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "product-id-type",
+                                        "name": "item_note",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "item-note",
+                                        "name": "item_condition",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "item-condition",
+                                        "name": "will_ship_internationally",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "will-ship-internationally",
+                                        "name": "expedited_shipping",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "product_id",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "pending_quantity",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "expedited-shipping",
+                                        "name": "fulfillment_channel",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "product-id",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "pending-quantity",
+                                        "name": "Business_Price",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "fulfillment-channel",
+                                        "name": "Quantity_Price_Type",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Business Price",
+                                        "name": "Quantity_Lower_Bound_1",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Price_1",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Lower_Bound_2",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Price_2",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Lower_Bound_3",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Price_3",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Lower_Bound_4",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Price_4",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Lower_Bound_5",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "Quantity_Price_5",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "optional_payment_type_exclusion",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Quantity Price Type",
+                                        "name": "scheduled_delivery_sku_set",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Quantity Lower Bound 1",
+                                        "name": "merchant_shipping_group",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Quantity Price 1",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "Quantity Lower Bound 2",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "Quantity Price 2",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "Quantity Lower Bound 3",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "Quantity Price 3",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "Quantity Lower Bound 4",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "Quantity Price 4",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "Quantity Lower Bound 5",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "Quantity Price 5",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "optional-payment-type-exclusion",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "scheduled-delivery-sku-set",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "merchant-shipping-group",
-                                        "type": "STRING"
-                                    },
-                                    {
-                                        "mode": "NULLABLE",
-                                        "name": "standard-price-point",
-                                        "type": "STRING"
+                                        "name": "standard_price_point",
+                                        "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
@@ -1874,52 +1874,52 @@ import FirestoreManager from "../../manager.js"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "minimum-seller-allowed-price",
+                                        "name": "minimum_seller_allowed_price",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "maximum-seller-allowed-price",
+                                        "name": "maximum_seller_allowed_price",
                                         "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Progressive Price Type",
+                                        "name": "Progressive_Price_Type",
                                         "type": "STRING"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Progressive Lower Bound 1",
-                                        "type": "STRING"
+                                        "name": "Progressive_Lower_Bound_1",
+                                        "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Progressive Price 1",
-                                        "type": "STRING"
+                                        "name": "Progressive_Price_1",
+                                        "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Progressive Lower Bound 2",
-                                        "type": "STRING"
+                                        "name": "Progressive_Lower_Bound_2",
+                                        "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Progressive Price 2",
-                                        "type": "STRING"
+                                        "name": "Progressive_Price_2",
+                                        "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Progressive Lower Bound 3",
-                                        "type": "STRING"
+                                        "name": "Progressive_Lower_Bound_3",
+                                        "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Progressive Price 3",
-                                        "type": "STRING"
+                                        "name": "Progressive_Price_3",
+                                        "type": "BIGNUMERIC"
                                     },
                                     {
                                         "mode": "NULLABLE",
-                                        "name": "Sourcing Type",
+                                        "name": "Sourcing_Type",
                                         "type": "STRING"
                                     },
                                     {

@@ -197,18 +197,18 @@ function getTranslaters(translaters, dateStr) {
                     delimiter: '\t',
                     headers: (headerArray) => {
                         if (headerArray.some(d => d == "商品名")) {
-                            return [...headerArray.map((d) => map2[map1.indexOf(d)]), "partition_date"];
+                            return [...headerArray.map((d) => replace(map2[map1.indexOf(d)])), "partition_date"];
                         } else {
-                            return [...headerArray, "partition_date"];
+                            return [...headerArray.map((d) => replace(d)), "partition_date"];
                         }
                     }
                 }));
                 ret.push(async function* (source) {
-                    let head = false;
-                    const pattern = /[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/g;
+                    //const pattern = /[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/g;
                     for await (const data of source) {
                         data.cluster_asin = data.asin1;
                         data.partition_date = dateStr;
+                        data.open_date = data.open_date.slice(0, 19);
                         yield `${JSON.stringify(data)}` + "\n";
                     }
                 });
@@ -218,7 +218,7 @@ function getTranslaters(translaters, dateStr) {
             case "GetFbaMyiAllInventoryData": {
                 ret.push(csv.parse({
                     delimiter: '\t',
-                    headers: (headderArray) => [...headderArray, "partition_date"]
+                    headers: (headerArray) => [...headerArray.map((d) => replace(d)), "partition_date"]
                 }));
                 ret.push(async function* (source) {
                     for await (const data of source) {
@@ -232,4 +232,8 @@ function getTranslaters(translaters, dateStr) {
         }
     });
     return ret;
+}
+
+function replace(str) {
+    return str.replace(/\W/g, "_");
 }

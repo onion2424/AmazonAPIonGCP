@@ -41,20 +41,23 @@ export default async function save(json) {
              * @type {M_Transaction}
              */
             const mtranData = mtranDoc.data();
-            if (mtranData.refName != "firstCall") continue;
-            const transactionDocRef = await fireStoreManager.createRef("D_Transaction");
-            for await (const request of mtranData.requests) {
-                const mrequestDoc = await collectionManager.get(request.ref);
-                /**
-                 * @type {M_Request}
-                 */
-                const mrequest = mrequestDoc.data();
-                const detail = mrequest.details.find(d => d.refName == request.refName);
-                if (detail.settings.save.tableOptions) {
-                    await bigQueryManager.createPartitionTable(detail.settings.save.tableName, account.tag, detail.settings.save.tableOptions);
+            if (mtranData.refName == "firstCall") {
+                const transactionDocRef = await fireStoreManager.createRef("D_Transaction");
+                batch.set(transactionDocRef, D_TransactionManager.create(mtranDoc, accountDocRef, date));
+            }
+            else if (mtranData.refName == "regularCall") {
+                for await (const request of mtranData.requests) {
+                    const mrequestDoc = await collectionManager.get(request.ref);
+                    /**
+                     * @type {M_Request}
+                     */
+                    const mrequest = mrequestDoc.data();
+                    const detail = mrequest.details.find(d => d.refName == request.refName);
+                    if (detail.settings.save.tableOptions) {
+                        await bigQueryManager.createPartitionTable(detail.settings.save.tableName, account.tag, detail.settings.save.tableOptions);
+                    }
                 }
             }
-            batch.set(transactionDocRef, D_TransactionManager.create(mtranDoc, accountDocRef, date));
         }
     }
 
