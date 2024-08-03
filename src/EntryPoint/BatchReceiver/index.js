@@ -82,7 +82,7 @@ async function runAsync(accountRef, syncObj) {
          * @type {D_ReportRequest}
          */
         let currentDoc;
-        const date = dayjs();
+        const date = dayjs().startOf("minute");
         try {
             // 残件
             const count = await getAllRequest(date, accountRef);
@@ -119,11 +119,11 @@ async function runAsync(accountRef, syncObj) {
             }
         } catch (e) {
             // 握りつぶす
-            await L_ErrorManager.onSystemError(e, currentDoc.data());
+            await L_ErrorManager.onSystemError(e, currentDoc?.data());
         }
         // ここだけトランザクション処理、以降は並列可能
         const docs = await getRequest(date, accountRef);
-        if (!docs) {
+        if (!docs.length) {
             logger.info(`[タスク終了][${accountRef.path}]`);
             return;
         }
@@ -174,11 +174,11 @@ async function runAsync(accountRef, syncObj) {
                 }
             } catch (e) {
                 // 握りつぶす
-                await L_ErrorManager.onSystemError(e, currentDoc.data());
+                await L_ErrorManager.onSystemError(e, currentDoc?.data());
             }
         }
     } catch (e) {
-        await L_ErrorManager.onSystemError(e, currentDoc.data());
+        await L_ErrorManager.onSystemError(e, currentDoc?.data());
         throw e;
     }
 }
@@ -221,7 +221,7 @@ async function getMaxDate(date, accountRef) {
 async function startup() {
     //transactin
     const getfunc = async (tran, obj) => {
-        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", job], ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]], [], 1);
+        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", job]/*, ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]*/], [], 1);
         const snapshot = await tran.get(query);
         for await (const doc of snapshot.docs) {
             obj.S_RunningState = doc;
