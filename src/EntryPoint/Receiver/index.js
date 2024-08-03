@@ -269,7 +269,7 @@ async function getNextRequest(date, accountRef, info) {
 async function startup() {
     //transactin
     const getfunc = async (tran, obj) => {
-        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", job]/*, ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]*/], [], 1);
+        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", job], ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]], [], 1);
         const snapshot = await tran.get(query);
         for await (const doc of snapshot.docs) {
             obj.S_RunningState = doc;
