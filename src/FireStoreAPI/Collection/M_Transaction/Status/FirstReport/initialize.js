@@ -64,7 +64,7 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
     }
     // 時間を設定
     map.forEach((v, k, m) => {
-        for(const drequest of v){
+        for(const drequest of _.sortBy(v, (d) => d.requestInfo.date.start)){
             drequest.requestTime = Timestamp.fromDate(date.add(allocation(k), "minute").toDate());
         }
     });
