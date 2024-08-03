@@ -34,14 +34,17 @@ export async function translate(drequest, mrequest) {
 
     const file = list[0];
     const extension = path.extname(file.name);
-    const destFileName = drequest.reportInfo.filepath.replace(extension, "").replace("/temp", "") + "_" + dayjs(drequest.reportInfo.created.toDate()).format("YYYYMMDDHHmmss") + extension;
+    const destFileName = drequest.reportInfo.filepath.replace(extension, "").replace("/temp", "") + extension;
     const date = drequest.requestInfo.date.start.slice(0, 10);
     const uploaded = await storageManager.streamFileUpload(destFileName, file.createReadStream(), detail.settings.save.translaters, date);
 
     // ステータス更新
     const reportInfo = structuredClone(drequest.reportInfo);
     if (uploaded) {
-        // ファイル削除もここ
+        try{
+            await file.delete();
+        }
+        catch(e){ }
         reportInfo.filepath = destFileName;
         reportInfo.continue = 0;
         return { ok: "ok", reportInfo: reportInfo, next: true };
