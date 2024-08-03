@@ -40,11 +40,11 @@ const GetFlatFileAllOrdersDataByOrderDateGeneral = requests.find(r => r.tag == "
                 }
             ],
         requests: [
-            { ref: spAdvertisedProduct.ref, refName: spAdvertisedProduct.refName, settings: { dateback: 60} },
-            { ref: sbCampaigns.ref, refName: sbCampaigns.refName, settings: { dateback: 60 } },
-            { ref: sdAdvertisedProduct.ref, refName: sdAdvertisedProduct.refName, settings: { dateback: 60 } },
-            { ref: getSalesAndTrafficReport.ref, refName: getSalesAndTrafficReport.refName, settings: { dateback: 0 } },
-            { ref: GetFlatFileAllOrdersDataByOrderDateGeneral.ref, refName: GetFlatFileAllOrdersDataByOrderDateGeneral.refName, settings: { dateback: 0 } },
+            { ref: spAdvertisedProduct.ref, refName: spAdvertisedProduct.refName, settings: { dateback: systemInfo.isTest() ? 1 : 60} },
+            { ref: sbCampaigns.ref, refName: sbCampaigns.refName, settings: { dateback: systemInfo.isTest() ? 1 : 60 } },
+            { ref: sdAdvertisedProduct.ref, refName: sdAdvertisedProduct.refName, settings: { dateback: systemInfo.isTest() ? 1 : 60 } },
+            { ref: getSalesAndTrafficReport.ref, refName: getSalesAndTrafficReport.refName, settings: { dateback: systemInfo.isTest() ? 1 : 0 } },
+            { ref: GetFlatFileAllOrdersDataByOrderDateGeneral.ref, refName: GetFlatFileAllOrdersDataByOrderDateGeneral.refName, settings: { dateback: systemInfo.isTest() ? 1 : 0 } },
         ],
         valid: true,
     }
