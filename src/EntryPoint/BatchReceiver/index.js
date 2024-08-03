@@ -101,7 +101,7 @@ async function runAsync(accountRef, syncObj) {
                 if (docs.length) {
                     const maxDoc = await getMaxDate(date, accountRef);
                     const maxDate = dayjs(maxDoc[0].data().requestTime.toDate());
-                    const firstDate = maxDate > dayjs() ? maxDate : dayjs();
+                    const firstDate = maxDate > date ? maxDate : date;
                     const batch = await fireStoreManager.createBatch();
                     const allocation = D_RequestManager.allocation();
                     for await (const doc of docs) {
@@ -223,7 +223,7 @@ async function getMaxDate(date, accountRef) {
 async function startup() {
     //transactin
     const getfunc = async (tran, obj) => {
-        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", job]/*, ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]*/], [], 1);
+        const query = await fireStoreManager.getQuery("S_RunningState", [["job", "==", job], ["nextTime", "<", Timestamp.fromDate(dayjs().toDate())]], [], 1);
         const snapshot = await tran.get(query);
         for await (const doc of snapshot.docs) {
             obj.S_RunningState = doc;

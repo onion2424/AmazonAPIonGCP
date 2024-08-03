@@ -44,7 +44,7 @@ export async function schedulize(date, accountDoc, mtranDoc) {
          */
         const dschedule = doc.data();
 
-        if (dayjs(dschedule.date.toDate()) <= date) {
+        if (dayjs(dschedule.date.toDate()).startOf("second") <= date.startOf("second")) {
             const batch = await fireStoreManager.createBatch();
             // D_Transactionを作成
             const dtranRef = await fireStoreManager.createRef("D_Transaction");
