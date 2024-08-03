@@ -18,7 +18,7 @@ import { M_Account } from "../../../M_Account/class.js";
  * @returns {FirebaseFirestore.WriteBatch}
  */
 export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
-    const date = dayjs().startOf('minute');
+    const date = dayjs().add(1, "hour").startOf('hour');
     const mtran = mtranDoc.data();
     const dtran = dtranDoc.data();
     /**
