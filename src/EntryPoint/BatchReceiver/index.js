@@ -86,15 +86,15 @@ async function runAsync(accountRef, syncObj) {
         try {
             // 残件
             const count = await getAllRequest(date, accountRef);
-            if(count == 0){
-                await fireStoreManager.updateRef(syncObj.stateDoc.ref, {accountRefs: FieldValue.arrayRemove(accountRef)});
+            if (count == 0) {
+                await fireStoreManager.updateRef(syncObj.stateDoc.ref, { accountRefs: FieldValue.arrayRemove(accountRef) });
                 logger.info(`[バッチ完了][${accountRef.path}]`);
                 return;
             }
-            else{
+            else {
                 logger.info(`[残り${count}件][${accountRef.path}]`);
             }
-            
+
             logger.info(`[タスク開始][${accountRef.path}]`);
             if (date.minute == 0) {
                 const docs = await getPreviewRequest(date, accountRef);
@@ -124,7 +124,7 @@ async function runAsync(accountRef, syncObj) {
         // ここだけトランザクション処理、以降は並列可能
         const docs = await getRequest(date, accountRef);
         if (!docs.length) {
-            logger.info(`[タスク終了][${accountRef.path}]`);
+            logger.info(`[タスクなし][${accountRef.path}]`);
             return;
         }
         for await (const doc of docs) {
@@ -177,6 +177,7 @@ async function runAsync(accountRef, syncObj) {
                 await L_ErrorManager.onSystemError(e, currentDoc?.data());
             }
         }
+        logger.info(`[タスク完了][${accountRef.path}]`);
     } catch (e) {
         await L_ErrorManager.onSystemError(e, currentDoc?.data());
         throw e;
