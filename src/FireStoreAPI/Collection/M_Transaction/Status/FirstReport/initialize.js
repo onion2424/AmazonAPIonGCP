@@ -44,7 +44,7 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
         // その他のM_transactionからD_tranを作成
         // Refを持たせる
         const drequests = drequestManager.create(mrequestDoc, requestInfo.refName, accountDoc, [dtranDoc], dayjs(dtran.date.toDate()), spans)
-        for (const drequest of drequests) {
+        for (const drequest of drequests.reverse()) {
             drequest.requestTime = Timestamp.fromDate(date.add(allocation(mrequest, drequest), "minute").toDate());
             const ref = await firestoreManager.createRef(`D_BatchReportRequest`);
             batch.set(ref, drequest);
