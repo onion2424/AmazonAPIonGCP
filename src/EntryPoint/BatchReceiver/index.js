@@ -142,7 +142,7 @@ async function runAsync(accountRef, syncObj) {
                 const mrequest = mrequestDoc.data();
                 const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
 
-                logger.info(`[リクエスト取得][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}]`);
+                logger.info(`[リクエスト取得][${accountRef.path}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}]`);
                 // 実行
                 const status = mrequest.statuses.find(s => s.status == drequest.status);
                 const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
@@ -157,21 +157,21 @@ async function runAsync(accountRef, syncObj) {
                         res.reportInfo.created = new Timestamp(res.reportInfo.created._seconds, res.reportInfo.created._nanoseconds);
                     }
                     await fireStoreManager.updateRef(doc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus });
-                    logger.info(`[リクエスト更新][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}⇒${nextStatus}]`);
+                    logger.info(`[リクエスト更新][${accountRef.path}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}⇒${nextStatus}]`);
                 }
                 // errorならPG上のエラーハンドリング
                 else if (res.ok == "error") {
                     const error = res.error;
                     const handled = await _.get(root, error.handle.split("/"))(drequest, res);
                     await fireStoreManager.updateRef(doc.ref, handled);
-                    logger.warn(`[エラーハンドリング][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
+                    logger.warn(`[エラーハンドリング][${accountRef.path}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
                 // ngならDBを参照してエラーハンドリング
                 else if (res.ok == "ng") {
                     const error = await M_ErrorManager.getOrAdd(drequest, res.error);
                     const handled = await _.get(root, error.handle.split("/"))(drequest, res);
                     await fireStoreManager.updateRef(doc.ref, handled);
-                    logger.warn(`[エラーハンドリング][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
+                    logger.warn(`[エラーハンドリング][${accountRef.path}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
             } catch (e) {
                 // 握りつぶす
