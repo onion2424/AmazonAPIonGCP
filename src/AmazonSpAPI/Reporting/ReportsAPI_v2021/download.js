@@ -10,6 +10,7 @@ import { M_Request } from '../../../FireStoreAPI/Collection/M_Request/manager.js
 import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
 import L_ErrorManager from '../../../FireStoreAPI/Collection/L_Error/manager.js';
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
+import * as path from "path";
 
 // CommonJs
 const { encodeStream } = iconv;

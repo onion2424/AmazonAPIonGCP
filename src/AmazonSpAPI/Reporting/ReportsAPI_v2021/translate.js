@@ -6,7 +6,6 @@ import { M_Request } from '../../../FireStoreAPI/Collection/M_Request/manager.js
 import storageManager from "../../../GoogleCloudStorageAPI/manager.js"
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
 import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
-import * as path from "path";
 
 /**
  * 

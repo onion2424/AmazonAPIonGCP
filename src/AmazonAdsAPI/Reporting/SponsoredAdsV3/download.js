@@ -11,6 +11,7 @@ import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
 import storageManager from "../../../GoogleCloudStorageAPI/manager.js"
 import L_ErrorManager from '../../../FireStoreAPI/Collection/L_Error/manager.js';
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
+import * as path from "path";
 
 /**
  * 
