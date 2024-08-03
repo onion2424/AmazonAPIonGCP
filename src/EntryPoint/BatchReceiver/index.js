@@ -43,14 +43,14 @@ async function main() {
         }
         const ret = await createTasks(doc);
         if (ret.every(r => r.status == "fulfilled")) {
-            logger.info("[全ホスト正常終了][リクエスト処理完了]");
+            logger.info("[全タスク正常終了][リクエスト処理完了]");
             break;
         }
         if (ret.every(r => r.status == "rejected")) {
-            logger.error("[全ホスト異常終了][今回処理中断]");;
+            logger.error("[全タスク異常終了][今回処理中断]");;
             break;
         }
-        logger.info("[エラー検知][全ホスト再起動]");
+        logger.info("[エラー検知][全タスク再起動]");
     }
 
     logger.info(`[バッチ受信終了]`);
@@ -134,15 +134,16 @@ async function runAsync(accountRef, syncObj) {
                  * @type {D_ReportRequest}
                  */
                 const drequest = doc.data();
-                logger.info(`[リクエスト取得][${doc.id}][${drequest.status}]`);
 
-                // 実行
                 const mrequestDoc = await collectiomManager.get(drequest.requestInfo.ref);
                 /**
                  * @type {M_Request}
                  */
                 const mrequest = mrequestDoc.data();
                 const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
+
+                logger.info(`[リクエスト取得][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}]`);
+                // 実行
                 const status = mrequest.statuses.find(s => s.status == drequest.status);
                 const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
 
@@ -156,21 +157,21 @@ async function runAsync(accountRef, syncObj) {
                         res.reportInfo.created = new Timestamp(res.reportInfo.created._seconds, res.reportInfo.created._nanoseconds);
                     }
                     await fireStoreManager.updateRef(doc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus });
-                    logger.info(`[リクエスト更新][${doc.id}][${drequest.status}⇒${nextStatus}]`);
+                    logger.info(`[リクエスト更新][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}⇒${nextStatus}]`);
                 }
                 // errorならPG上のエラーハンドリング
                 else if (res.ok == "error") {
                     const error = res.error;
                     const handled = await _.get(root, error.handle.split("/"))(drequest, res);
                     await fireStoreManager.updateRef(doc.ref, handled);
-                    logger.warn(`[エラーハンドリング][${doc.id}][${error.tag}][${error.handle}]`);
+                    logger.warn(`[エラーハンドリング][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
                 // ngならDBを参照してエラーハンドリング
                 else if (res.ok == "ng") {
                     const error = await M_ErrorManager.getOrAdd(drequest, res.error);
                     const handled = await _.get(root, error.handle.split("/"))(drequest, res);
                     await fireStoreManager.updateRef(doc.ref, handled);
-                    logger.warn(`[エラーハンドリング][${doc.id}][${error.tag}][${error.handle}]`);
+                    logger.warn(`[エラーハンドリング][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
             } catch (e) {
                 // 握りつぶす
