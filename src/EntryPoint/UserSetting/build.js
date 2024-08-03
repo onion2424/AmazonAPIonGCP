@@ -12,13 +12,13 @@ const text = systemInfo.isTest() ?
 WORKDIR /app
 COPY . .
 RUN npm install
-CMD [ "node", "./src/EntryPoint/User/index.js"]`
+CMD [ "node", "./src/EntryPoint/UserSetting/index.js"]`
 :
 `FROM node:22-alpine
 WORKDIR /app
 COPY . .
 RUN npm install
-CMD [ "node", "./src/EntryPoint/User/index.js", "-release"]`
+CMD [ "node", "./src/EntryPoint/UserSetting/index.js", "-release"]`
 ;
 
 
