@@ -37,8 +37,8 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
         // Refを持たせる
         const drequests = drequestManager.create(mrequestDoc, requestInfo.refName, accountDoc, [dtranDoc], dayjs(dtran.date.toDate()), spans, granularity);
         for (const drequest of drequests.reverse()) {
-            drequest.requestTime = Timestamp.fromDate(date.add(allocation(mrequest, drequest), "minute").toDate());
-            const ref = await firestoreManager.createRef("D_ReportRequest");
+            drequest.requestTime = Timestamp.fromDate(date.add(allocation(mrequest.statuses.find(drequest.status).path), "minute").toDate());
+            const ref = firestoreManager.createRef("D_ReportRequest");
             batch.set(ref, drequest);
         }
         logger.info(`[D_ReportRequest][${mrequest.tag}][${detail.tag}][${drequests.length}件]`);

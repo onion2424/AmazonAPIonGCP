@@ -56,7 +56,7 @@ export class manager {
 
       const writefunc = async (tran, obj) => {
         if (!obj.doc) {
-          const ref = await fireStoreManager.createRef("M_Error");
+          const ref = fireStoreManager.createRef("M_Error");
           tran.set(ref, info);
           // トランザクション内でキャッシュはできない
           // this.cache.push(await ref.get());

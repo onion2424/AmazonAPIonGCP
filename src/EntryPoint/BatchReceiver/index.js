@@ -111,7 +111,7 @@ async function runAsync(accountRef, syncObj) {
                          * @type {M_Request}
                          */
                         const mrequest = mrequestDoc.data();
-                        batch.update(doc.ref, { requestTime: Timestamp.fromDate(firstDate.add(allocation(mrequest, drequest), "minute").toDate()) });
+                        batch.update(doc.ref, { requestTime: Timestamp.fromDate(firstDate.add(allocation(mrequest.statuses.find(drequest.status).path), "minute").toDate()) });
                     }
                     await fireStoreManager.commitBatch(batch);
                     logger.info(`[リクエスト復活][${docs.length}件]`);

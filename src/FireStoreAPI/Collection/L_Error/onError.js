@@ -16,7 +16,7 @@ export async function onSystemError(job, version, mode, error, doc) {
         logger.error(`[システムエラー発生][エラー内容表示]`, error);
     }
     if (mode.includes("SAVE")) {
-        const ref = await fireStoreManager.createRef("L_Error");
+        const ref = fireStoreManager.createRef("L_Error");
         await fireStoreManager.setRef(ref, create(job, version, error, doc));
     }
     error.logged = true;
@@ -36,7 +36,7 @@ export async function onRequestError(job, version, mode, error, doc) {
         logger.error(`[リクエストエラー発生][エラー内容表示]`, error);
     }
     if (mode.includes("SAVE")) {
-        const ref = await fireStoreManager.createRef("L_Error");
+        const ref = fireStoreManager.createRef("L_Error");
         await fireStoreManager.setRef(ref, create(job, version, error, doc));
     }
     error.logged = true;
@@ -56,7 +56,7 @@ export async function onGCSError(job, version, mode, error, doc) {
         logger.error(`[GCSエラー発生][エラー内容表示]`, error);
     }
     if (mode.includes("SAVE")) {
-        const ref = await fireStoreManager.createRef("L_Error");
+        const ref = fireStoreManager.createRef("L_Error");
         await fireStoreManager.setRef(ref, create(job, version, error, doc));
     }
     error.logged = true;
@@ -77,7 +77,7 @@ export async function onFireStoreError(job, version, mode, error, doc) {
     }
     if (mode.includes("SAVE")) {
         try {
-            const ref = await fireStoreManager.createRef("L_Error");
+            const ref = fireStoreManager.createRef("L_Error");
             // FireStoreエラーの時はキャッチなし
             //await ref.set(create(job, error, doc));
             await fireStoreManager.setRef(ref, create(job, version, error, doc));

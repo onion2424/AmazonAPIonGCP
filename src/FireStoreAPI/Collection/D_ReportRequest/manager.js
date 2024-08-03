@@ -20,12 +20,10 @@ export class manager {
   allocation() {
     const add = new Map();
     /**
-     * @param {M_Request} mrequest
-     * @param {D_ReportRequest} drequest
+     * @param {string} path
      */
-    return (mrequest, drequest) => {
+    return (path) => {
       // 時間を計算
-      const path = mrequest.statuses.find(s => s.status == drequest.status).path;
       if (!add.has(path)) {
         add.set(path, 0);
         return 0;

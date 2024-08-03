@@ -25,7 +25,7 @@ export class manager {
      * @param {string} collectionName 
      * @returns 
      */
-    async createRef(collectionName) {
+    createRef(collectionName) {
         return createRef(db, collectionName);
     }
 
