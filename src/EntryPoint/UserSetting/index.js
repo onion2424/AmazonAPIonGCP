@@ -30,7 +30,7 @@ async function run() {
 
         if(ret && !systemInfo.isTest()){
             // _oldに入れる
-            //await storageManager.moveFile(file.name, file.name.replace(fileName, `_old/${fileName}`));
+            await storageManager.moveFile(file.name, file.name.replace(fileName, `_old/${fileName}`));
         }
         return;
     }
