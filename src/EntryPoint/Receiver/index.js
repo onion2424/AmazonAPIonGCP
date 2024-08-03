@@ -282,8 +282,7 @@ async function startup() {
         const doc = obj.S_RunningState;
         if (doc) {
             const nextTime = systemInfo.nextTime;
-            if (!systemInfo.isTest())
-                tran.update(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
+            tran.update(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
         }
     }
 
