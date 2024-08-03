@@ -82,6 +82,8 @@ async function createTasks(syncObj, first) {
         if(first)
             syncObj.delay.set(accountRef.path, {delay: 0});
         tasks.push(runAsync(accountRef, syncObj, first));
+        // 5秒待機
+        await utils.wait(5);
     }
     return Promise.allSettled(tasks);
 }
