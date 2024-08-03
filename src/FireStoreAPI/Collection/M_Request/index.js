@@ -883,7 +883,7 @@ import FirestoreManager from "../../manager.js"
                         "dataStartTime": "",
                         "dataEndTime": "",
                         "marketplaceIds": [],
-                        "reporttableOptions": {
+                        "reportOptions": {
                             "dateGranularity": "DAY",
                             "custom": "true",
                         }
@@ -1081,7 +1081,7 @@ import FirestoreManager from "../../manager.js"
                         "dataStartTime": "",
                         "dataEndTime": "",
                         "marketplaceIds": [],
-                        "reporttableOptions": {
+                        "reportOptions": {
                             "dateGranularity": "DAY",
                             "custom": "true",
                         }
@@ -1315,7 +1315,7 @@ import FirestoreManager from "../../manager.js"
                         "dataStartTime": "",
                         "dataEndTime": "",
                         "marketplaceIds": [],
-                        "reporttableOptions": {
+                        "reportOptions": {
                             "asinGranularity": "CHILD",
                             "dateGranularity": "DAY",
                             "custom": "true",
@@ -1377,7 +1377,7 @@ import FirestoreManager from "../../manager.js"
                                                 }
                                             ],
                                             "mode": "NULLABLE",
-                                            "name": "reporttableOptions",
+                                            "name": "reportOptions",
                                             "type": "RECORD"
                                         },
                                         {
@@ -1672,7 +1672,7 @@ import FirestoreManager from "../../manager.js"
                         "dataStartTime": "",
                         "dataEndTime": "",
                         "marketplaceIds": [],
-                        "reporttableOptions": {
+                        "reportOptions": {
                             "dateGranularity": "DAY",
                             "custom": "true",
                         }
