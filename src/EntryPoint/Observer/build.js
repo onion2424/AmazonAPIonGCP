@@ -20,12 +20,4 @@ COPY . .
 RUN npm install
 CMD [ "node", "./src/EntryPoint/Observer/index.js", "-release"]`
 ;
-
-// version up
-const docs = await fireStoreManager.getDocs("S_RunningState", [["job", "==", "OBSERVER"]], [], 1);
-for await (const doc of docs) {
-    const version = "1.0.0.0";
-    await doc.ref.update({version: version});
-}
-
 fs.writeFileSync(file , text);
