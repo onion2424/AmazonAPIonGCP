@@ -74,12 +74,21 @@ async function runSchedule() {
             logger.info(`[スケジューリング終了][${account.tag}]`);
         }
         currentDoc = null;
-        // ファイル削除処理
 
-        // リクエスト削除処理何日分？
+        // レコード削除
+        const requestDocs = await fireStoreManager.getDocs("D_ReportRequest", [["transactionRefs", "==", []]]);
+        await fireStoreManager.deleteDocs(requestDocs);
+        logger.info(`[D_ReportRequest削除][${requestDocs.length}件]`);
+        const batchDocs = await fireStoreManager.getDocs("D_BatchReportRequest", [["transactionRefs", "==", []]]);
+        await fireStoreManager.deleteDocs(batchDocs);
+        logger.info(`[D_BatchReportRequest削除][${requestDocs.length}件]`);
+        const transactionDocs = await fireStoreManager.getDocs("D_Transaction", [["status", "==", "COMPLETED"]]);
+        await fireStoreManager.deleteDocs(transactionDocs);
+        logger.info(`[D_Transaction削除][${requestDocs.length}件]`);
+
         return true;
     } catch (e) {
-        await L_ErrorManager.onSystemError(e, currentDoc.data());
+        await L_ErrorManager.onSystemError(e, currentDoc?.data());
         return false;
     }
 }

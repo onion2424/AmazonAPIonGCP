@@ -3,6 +3,7 @@ import { getFirestore, FieldValue, Transaction, Timestamp, Query } from 'firebas
 import { createRef, setRef, updateRef, deleteRef } from './createRef.js';
 import { createBatch, commitBatch } from './createBatch.js'
 import { getDocs, getQuery } from './getDocs.js'
+import { deleteDocs } from './deleteDocs.js';
 import { transaction } from './transaction.js';
 import { countDocs } from "./countDocs.js"
 import root from '../root.js';
@@ -93,6 +94,15 @@ export class manager {
      */
     async getQuery(collectionName, queries, orderbyInfo, limit) {
         return getQuery(db, collectionName, queries, orderbyInfo, limit)
+    }
+
+    /**
+     * チャンク分割して削除します。
+     * @param {[FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData, FirebaseFirestore.DocumentData>]} docs 
+     * @returns 
+     */
+    async deleteDocs(docs){
+        return deleteDocs(docs);
     }
 
     /**
