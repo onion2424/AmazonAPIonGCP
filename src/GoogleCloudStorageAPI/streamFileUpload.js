@@ -206,7 +206,7 @@ function getTranslaters(translaters, dateStr) {
                 ret.push(async function* (source) {
                     //const pattern = /[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/g;
                     for await (const data of source) {
-                        data.cluster_asin = data.asin1;
+                        data.cluster_asin = data.asin1  || data.product_id;
                         data.partition_date = dateStr;
                         data.open_date = data.open_date.slice(0, 19);
                         yield `${JSON.stringify(data)}` + "\n";
