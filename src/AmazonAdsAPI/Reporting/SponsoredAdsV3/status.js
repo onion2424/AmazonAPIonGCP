@@ -8,7 +8,6 @@ import authManager from "../../Auth/AccessTokenFromRefreshToken/manager.js";
 import collectionManager from "../../../FireStoreAPI/Collection/manager.js";
 import L_ErrorManager from '../../../FireStoreAPI/Collection/L_Error/manager.js';
 import M_ErrorManager from '../../../FireStoreAPI/Collection/M_Error/manager.js';
-import R_DelayManager from '../../../FireStoreAPI/Collection/R_Delay/manager.js';
 import { Timestamp } from 'firebase-admin/firestore';
 
 /**
@@ -29,17 +28,6 @@ export async function status(drequest, mrequest) {
   const accesTokenDoc = await authManager.get(account);
   const accesToken = accesTokenDoc.data();
 
-  const delayDoc = R_DelayManager.delay(accesTokenDoc);
-  if (delayDoc) {
-    const delay = delayDoc.data();
-    if (dayjs(delay.time.toDate()) > dayjs()) {
-      const error = M_ErrorManager.create();
-      error.handle = "FireStoreAPI/Collection/M_Error/Handle/delay";
-      error.tag = "リクエスト制限";
-      return { ok: "error", error: error, delay: delay };
-    }
-  }
-
   const urlSuffix = amazonCommon.getURLEndPoint("ADS", account.marketplaceIds[0]);
 
   const response = await fetch(`https://advertising-api${urlSuffix}.amazon.com/reporting/reports/${drequest.reportInfo.reportId}`, {
@@ -59,8 +47,6 @@ export async function status(drequest, mrequest) {
   // 成功
   if (response && "status" in response) {
     if (response.ok) {
-      // ディレイを開放
-      if (delayDoc) R_DelayManager.remove(delayDoc);
       const data = await response.json();
       const reportInfo = structuredClone(drequest.reportInfo);
       if (data.status == "FAILED") {
@@ -86,7 +72,7 @@ export async function status(drequest, mrequest) {
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, JSON.stringify(data));
       error.tag = `ステータス=${response.status}`;
-      return { ok: "ng", error: error, token: accesTokenDoc };
+      return { ok: "ng", error: error };
     }
   }
   // エラー

@@ -26,6 +26,7 @@ import { Timestamp } from "firebase-admin/firestore";
     let data = {
         tag: "レポート受信ジョブ",
         job: "RECEIVER",
+        accountRefs: [],
         nextTime: Timestamp.fromMillis(dayjs()),
     }
     await docRef.set(data);
@@ -37,8 +38,9 @@ import { Timestamp } from "firebase-admin/firestore";
      * @type {S_RunningState}
      */
     let data = {
-        tag: "レポート受信ジョブ",
-        job: "RECEIVER",
+        tag: "バッチレポート受信ジョブ",
+        job: "BATCHRECEIVER",
+        accountRefs: [],
         nextTime: Timestamp.fromMillis(dayjs()),
     }
     await docRef.set(data);

@@ -8,7 +8,7 @@ import mrequestManager, { M_Request } from "../../../M_Request/manager.js"
 import { DocumentSnapshot } from "firebase-admin/firestore";
 import { M_Account } from "../../../M_Account/manager.js";
 import S_RunningStateManager from "../../../S_RunningState/manager.js";
-
+import { Timestamp, FieldValue } from "firebase-admin/firestore";
 /**
  * FirstCallを展開
  * @param {FirebaseFirestore.WriteBatch} batch
@@ -18,6 +18,7 @@ import S_RunningStateManager from "../../../S_RunningState/manager.js";
  * @returns {FirebaseFirestore.WriteBatch}
  */
 export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
+    const date = dayjs().startOf("minute");
     // それぞれのD_Requestに展開する
     // mtranからリクエストを持ってきて、dtranのアカウントで展開
     const dtran = dtranDoc.data();
@@ -27,9 +28,12 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
      */
     const account = accountDoc.data();
     logger.info(`[初期化開始][ステータス(FIRSTREPORT)][${mtran.tag}]`);
-    const stateRef = await firestoreManager.createRef("S_RunningState");
-    batch.set(stateRef, S_RunningStateManager.create("バッチレポート受信", "BATCHRECEIVER", [1, 2, 3]))
-    for (const requestInfo of mtran.requests){
+    // ステータスに追加
+    const states = await firestoreManager.getDocs("S_RunningState", [["job", "==", "BATCHRECEIVER"]]);
+    let state = _.sortBy(states, [d => d.data().accountRefs.length || 0])[0];
+    batch.update(state.ref, { accountRefs: FieldValue.arrayUnion(accountDoc.ref) });
+    const allocation = drequestManager.allocation();
+    for (const requestInfo of mtran.requests) {
         const mrequestDoc = await collectionManager.get(requestInfo.ref);
         /**
          * @type {M_Request}
@@ -40,9 +44,8 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
         // その他のM_transactionからD_tranを作成
         // Refを持たせる
         const drequests = drequestManager.create(mrequestDoc, requestInfo.refName, accountDoc, [dtranDoc], dayjs(dtran.date.toDate()), spans)
-        for (const drequest of drequests){
-            drequest.host = requestInfo.settings.host;
-            drequest.ref = stateRef;
+        for (const drequest of drequests) {
+            drequest.requestTime = Timestamp.fromDate(date.add(allocation(mrequest, drequest), "minute").toDate());
             const ref = await firestoreManager.createRef(`D_BatchReportRequest`);
             batch.set(ref, drequest);
         }
@@ -68,11 +71,11 @@ function getSpans(dateback, basedate, startdate) {
             return [...Array(diff)].map((_, i) => i + 1);
         }
         default: {
-            if(startdate > basedate.add(-dateback, 'day')){
+            if (startdate > basedate.add(-dateback, 'day')) {
                 const diff = basedate.diff(startdate, 'day');
                 return [...Array(diff)].map((_, i) => i + 1);
             }
-            else            {
+            else {
                 return [...Array(dateback)].map((_, i) => i + 1);
             }
         }

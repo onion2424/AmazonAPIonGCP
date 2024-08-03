@@ -25,17 +25,13 @@ export async function finalize(mtranDoc, dtranDoc, accountDoc) {
      * @type {M_Account}
      */
     const account = accountDoc.data();
-    logger.info(`[ファイナライズ開始][ステータス(FIRSTREPORT)][${mtran.tag}]`);
+    logger.info(`[ファイナライズ開始][ステータス(REGULARREPORT)][${mtran.tag}]`);
     const batch = await firestoreManager.createBatch();
-    const docs = await firestoreManager.getDocs("D_BatchReportRequest", [["transactionRefs", "array-contains", dtranDoc.ref]]);
+    const docs = await firestoreManager.getDocs("D_ReportRequest", [["transactionRefs", "array-contains", dtranDoc.ref]]);
     for(const doc of docs){
         batch.update(doc.ref, { transactionRefs: FieldValue.arrayRemove(dtranDoc.ref) });
     }
-
-    // M_Account.scheduleにregularCallを追加。
-    batch.update(accountDoc.ref, { schedules: FieldValue.arrayUnion("regularCall") });
-
     await firestoreManager.commitBatch(batch);
-    logger.info(`[ファイナライズ終了][ステータス(FIRSTREPORT)][${mtran.tag}]`);
+    logger.info(`[ファイナライズ終了][ステータス(REGULARREPORT)][${mtran.tag}]`);
     return;
 }

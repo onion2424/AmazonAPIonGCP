@@ -66,6 +66,7 @@ async function runSchedule() {
                  * @type { M_Transaction }
                  */
                 const mtran = mtranDoc.data();
+                if(!mtran.schedulize) continue;
                 if(!account.schedules.includes(mtran.refName)) continue;
 
                 await _.get(root, mtran.schedulize.split("/"))(date, accountDoc, mtranDoc);

@@ -4,13 +4,13 @@ const reffer = await manager.getDocs("S_RunningState");
 console.log('%o', reffer);
 */
 import { dayjs } from "../../../Common/common.js"
-import { Timestamp } from "firebase-admin/firestore";
+import { DocumentReference, Timestamp } from "firebase-admin/firestore";
 
 /**
  * @typedef {object} S_RunningState
  * @prop {string} tag タグ
  * @prop {string} job ジョブ
- * @prop {[number]} hosts ホストのリスト
+ * @prop {[DocumentReference]} accountRefs 対象アカウントの参照
  * @prop {Timestamp} nextTime 次回実行時間
  */
 
@@ -20,6 +20,6 @@ import { Timestamp } from "firebase-admin/firestore";
 export const S_RunningState = {
     tag: "",
     job: "",
-    hosts: [],
+    accountRefs: [],
     nextTime: Timestamp.fromDate(dayjs().toDate()),
 }

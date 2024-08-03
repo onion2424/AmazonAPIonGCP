@@ -1,28 +1,21 @@
-import root, {job, version} from "./import.js"
+import root, { job, version } from "./import.js"
 import { _, utils, dayjs, logger, systemInfo } from "../../Common/common.js";
 import collectiomManager from "../../FireStoreAPI/Collection/manager.js"
 import fireStoreManager from "../../FireStoreAPI/manager.js"
 import { S_RunningState } from "../../FireStoreAPI/Collection/S_RunningState/manager.js";
-import { Timestamp, Transaction } from "firebase-admin/firestore";
-import { D_ReportRequest } from "../../FireStoreAPI/Collection/D_ReportRequest/class.js";
+import { DocumentReference, DocumentSnapshot, FieldValue, Timestamp, Transaction } from "firebase-admin/firestore";
+import D_RequestManager, { D_ReportRequest } from "../../FireStoreAPI/Collection/D_ReportRequest/manager.js";
 import { M_Request } from "../../FireStoreAPI/Collection/M_Request/manager.js"
 import L_ErrorManager from "../../FireStoreAPI/Collection/L_Error/manager.js"
 import M_ErrorManager, { M_Error } from "../../FireStoreAPI/Collection/M_Error/manager.js";
-import R_DelayManager from "../../FireStoreAPI/Collection/R_Delay/manager.js"
 /**
  * エントリーポイント
  * @returns 
  */
 async function main() {
-    if (dayjs().minute() % 10 == 0) {
-        logger.info("[処理終了][レート回復]");
-        return;
-    }
-
     L_ErrorManager.initialize(job, version, "WRITE");
-
     // 次回起動時間を保存
-    systemInfo.nextTime = dayjs().add(1, 'minute').startOf('minute');
+    systemInfo.nextTime = dayjs().startOf("minute").add(1, 'minute');
 
     // 並列処理用にランダム時間待機
     await utils.wait(Math.floor((Math.random() * 3 + 1) * 1000) / 1000);
@@ -43,13 +36,6 @@ async function main() {
 
     logger.info(`[バッチ受信開始]`);
 
-    // 開放処理
-    // await release();
-
-    // キャッシュ
-    //await collectiomManager.caching();
-
-    // host分起動する　いったんPromise.allで
     while (true) {
         if (systemInfo.sigterm) {
             logger.warn("[SIGTERM検出][処理中断]");
@@ -78,125 +64,154 @@ async function main() {
  */
 async function createTasks(stateDoc) {
     const tasks = [];
-    const syncObj = { abort: false, state: stateDoc};
-    for (const host of stateDoc.data().hosts) {
-        tasks.push(runAsync(host, syncObj));
+    const syncObj = { abort: false, stateDoc: stateDoc };
+    for await (const accountRef of stateDoc.data().accountRefs) {
+        tasks.push(runAsync(accountRef, syncObj));
     }
     return Promise.allSettled(tasks);
 }
 
 /**
  * 非同期で処理を行います。
- * @param {number} host 
+ * @param {DocumentReference} accountRef 
  * @param {object} syncObj 
  */
-async function runAsync(host, syncObj) {
-    /**
-     * @type {D_ReportRequest}
-     */
-    let currentDoc;
+async function runAsync(accountRef, syncObj) {
     try {
-        logger.info(`[タスク開始][host=${host}]`);
+        /**
+         * @type {D_ReportRequest}
+         */
+        let currentDoc;
+        const date = dayjs();
+        try {
+            // 残件
+            const count = await getAllRequest(date, accountRef);
+            if(count == 0){
+                await fireStoreManager.updateRef(syncObj.stateDoc.ref, {accountRefs: FieldValue.arrayRemove(accountRef)});
+                logger.info(`[バッチ完了][${accountRef.path}]`);
+                return;
+            }
+            else{
+                logger.info(`[残り${count}件][${accountRef.path}]`);
+            }
+            
+            logger.info(`[タスク開始][${accountRef.path}]`);
+            if (date.minute == 0) {
+                const docs = await getPreviewRequest(date, accountRef);
+                if (docs.length) {
+                    const maxDoc = await getMaxDate(date, accountRef);
+                    const maxDate = dayjs(maxDoc[0].data().requestTime.toDate());
+                    const firstDate = maxDate > dayjs() ? maxDate : dayjs();
+                    const batch = await fireStoreManager.createBatch();
+                    const allocation = D_RequestManager.allocation();
+                    for await (const doc of docs) {
+                        const drequest = doc.data();
+                        const mrequestDoc = await collectiomManager.get(drequest.requestInfo.ref);
+                        /**
+                         * @type {M_Request}
+                         */
+                        const mrequest = mrequestDoc.data();
+                        batch.update(doc.ref, { requestTime: Timestamp.fromDate(firstDate.add(allocation(mrequest, drequest), "minute").toDate()) });
+                    }
+                    await fireStoreManager.commitBatch(batch);
+                    logger.info(`[リクエスト復活][${docs.length}件]`);
+                }
+            }
+        } catch (e) {
+            // 握りつぶす
+            await L_ErrorManager.onSystemError(e, currentDoc.data());
+        }
         // ここだけトランザクション処理、以降は並列可能
-        const docs = await getRequest(host, syncObj.state);
+        const docs = await getRequest(date, accountRef);
         if (!docs) {
-            logger.info(`[タスク終了][host=${host}]`);
+            logger.info(`[タスク終了][${accountRef.path}]`);
             return;
         }
         for await (const doc of docs) {
-            currentDoc = doc;
-            /**
-             * @type {D_ReportRequest}
-             */
-            const drequest = doc.data();
-            logger.info(`[リクエスト取得][${doc.id}][${drequest.status}]`);
+            try {
+                currentDoc = doc;
+                /**
+                 * @type {D_ReportRequest}
+                 */
+                const drequest = doc.data();
+                logger.info(`[リクエスト取得][${doc.id}][${drequest.status}]`);
 
-            // 待機時間(10分以上空くなら終了等？)
-            //const diff = dayjs(drequest.requestTime.toDate()).diff(dayjs(), "second");
-            //if (diff > 0)
-            //    await utils.wait(diff);
+                // 実行
+                const mrequestDoc = await collectiomManager.get(drequest.requestInfo.ref);
+                /**
+                 * @type {M_Request}
+                 */
+                const mrequest = mrequestDoc.data();
+                const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
+                const status = mrequest.statuses.find(s => s.status == drequest.status);
+                const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
 
-            // 実行
-            const mrequestDoc = await collectiomManager.get(drequest.requestInfo.ref);
-            /**
-             * @type {M_Request}
-             */
-            const mrequest = mrequestDoc.data();
-            const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
-            const status = mrequest.statuses.find(s => s.status == drequest.status);
-            const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
-
-            if (res.ok == "ok") {
-                const index = drequest.statuses.indexOf(drequest.status);
-                const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
-                // 1分後にする
-                const nextTime = Timestamp.fromDate(dayjs().add(1, "minute").toDate());
-                if ("created" in res.reportInfo && res.reportInfo.created) {
-                    // TimeStampに戻す https://stackoverflow.com/questions/57898146/firestore-timestamp-gets-saved-as-map
-                    res.reportInfo.created = new Timestamp(res.reportInfo.created._seconds, res.reportInfo.created._nanoseconds);
+                if (res.ok == "ok") {
+                    const index = drequest.statuses.indexOf(drequest.status);
+                    const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
+                    // 1分後にする
+                    const nextTime = Timestamp.fromDate(dayjs().add(1, "minute").toDate());
+                    if ("created" in res.reportInfo && res.reportInfo.created) {
+                        // TimeStampに戻す https://stackoverflow.com/questions/57898146/firestore-timestamp-gets-saved-as-map
+                        res.reportInfo.created = new Timestamp(res.reportInfo.created._seconds, res.reportInfo.created._nanoseconds);
+                    }
+                    await fireStoreManager.updateRef(doc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus });
+                    logger.info(`[リクエスト更新][${doc.id}][${drequest.status}⇒${nextStatus}]`);
                 }
-                await fireStoreManager.updateRef(doc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, host: 3 });
-                logger.info(`[リクエスト更新][${doc.id}][${drequest.status}⇒${nextStatus}]`);
-            }
-            // errorならPG上のエラーハンドリング
-            else if (res.ok == "error") {
-                const error = res.error;
-                const handled = await _.get(root, error.handle.split("/"))(drequest, res);
-                // hostを保存
-                handled.host = drequest.host;
-                await fireStoreManager.updateRef(doc.ref, handled);
-                logger.warn(`[エラーハンドリング][${doc.id}][${error.tag}][${error.handle}]`);
-            }
-            // ngならDBを参照してエラーハンドリング
-            else if (res.ok == "ng") {
-                const error = await M_ErrorManager.getOrAdd(drequest, res.error);
-                const handled = await _.get(root, error.handle.split("/"))(drequest, res);
-                // hostを保存
-                handled.host = drequest.host;
-                await fireStoreManager.updateRef(doc.ref, handled);
-                logger.warn(`[エラーハンドリング][${doc.id}][${error.tag}][${error.handle}]`);
+                // errorならPG上のエラーハンドリング
+                else if (res.ok == "error") {
+                    const error = res.error;
+                    const handled = await _.get(root, error.handle.split("/"))(drequest, res);
+                    await fireStoreManager.updateRef(doc.ref, handled);
+                    logger.warn(`[エラーハンドリング][${doc.id}][${error.tag}][${error.handle}]`);
+                }
+                // ngならDBを参照してエラーハンドリング
+                else if (res.ok == "ng") {
+                    const error = await M_ErrorManager.getOrAdd(drequest, res.error);
+                    const handled = await _.get(root, error.handle.split("/"))(drequest, res);
+                    await fireStoreManager.updateRef(doc.ref, handled);
+                    logger.warn(`[エラーハンドリング][${doc.id}][${error.tag}][${error.handle}]`);
+                }
+            } catch (e) {
+                // 握りつぶす
+                await L_ErrorManager.onSystemError(e, currentDoc.data());
             }
         }
     } catch (e) {
-        syncObj.abort = true;
         await L_ErrorManager.onSystemError(e, currentDoc.data());
-        await release(host);
         throw e;
     }
 }
+/**
+ * リクエストを取得します。
+ * @param {dayjs.Dayjs} date
+ * @param {DocumentReference} accountRef 
+ */
+async function getAllRequest(date, accountRef) {
+    return fireStoreManager.countDocs("D_BatchReportRequest", [["accountRef", "==", accountRef], ["status", "!=", "COMPLETED"], ["requestTime", ">=", Timestamp.fromDate(dayjs(0).toDate())]]);
+}
+
 
 /**
- * トランザクション処理を行い、リクエストを取得します。
- * @param {number} host 
+ * リクエストを取得します。
+ * @param {dayjs.Dayjs} date
+ * @param {DocumentReference} accountRef 
  */
-async function getRequest(host, state) {
-    if (host == 1) {
-        return fireStoreManager.getDocs("D_BatchReportRequest", [["ref", "==", state.ref], ["host", "==", host]], [{ column: "requestInfo.date.start", direction: "asc" }], 1);
-    }
-    else if (host == 2) {
-        return fireStoreManager.getDocs("D_BatchReportRequest", [["ref", "==", state.ref], ["host", "==", host]], [{ column: "requestInfo.date.start", direction: "asc" }], 1);
-    }
-    else {
-        return fireStoreManager.getDocs("D_BatchReportRequest", [["ref", "==", state.ref], ["status", "!=", "COMPLETED"], ["host", "==", host], ["requestTime", "<", Timestamp.fromDate(systemInfo.nextTime.toDate())]], [{ column: "requestTime", direction: "asc" }]);
-    }
+async function getRequest(date, accountRef) {
+    return fireStoreManager.getDocs("D_BatchReportRequest", [["accountRef", "==", accountRef], ["status", "!=", "COMPLETED"], ["requestTime", "<", Timestamp.fromDate(systemInfo.nextTime.toDate())], ["requestTime", ">=", Timestamp.fromDate(date.toDate())]]);
 }
 
 /**
- * ホストしているリクエストを開放します。
- * @param {number} host 
+ * リクエストを取得します。
+ * @param {dayjs.Dayjs} date
+ * @param {DocumentReference} accountRef 
  */
-async function release(host) {
-    // 開放処理
-    const condition = host ? ["host", "==", host] : ["host", "!=", 0];
-    const docs = await fireStoreManager.getDocs("D_ReportRequest", [condition]);
-    if (docs.length > 0) {
-        const batch = await fireStoreManager.createBatch();
-        for await (const doc of docs) {
-            batch.update(doc.ref, { host: 0 });
-        }
-        await fireStoreManager.commitBatch(batch);
-        logger.info(`[全リクエスト開放][host=${host ? host : "all"}][${docs.length}レコード]`);
-    }
+async function getPreviewRequest(date, accountRef) {
+    return fireStoreManager.getDocs("D_BatchReportRequest", [["accountRef", "==", accountRef], ["status", "!=", "COMPLETED"], ["requestTime", "<", Timestamp.fromDate(date.toDate())]]);
+}
+
+async function getMaxDate(date, accountRef) {
+    return fireStoreManager.getDocs("D_BatchReportRequest", [["accountRef", "==", accountRef], ["status", "!=", "COMPLETED"]], [{ column: "requestTime", direction: "desc" }], 1);
 }
 
 /**

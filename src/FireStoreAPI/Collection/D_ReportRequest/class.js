@@ -12,7 +12,7 @@ import { DocumentReference, Timestamp } from "firebase-admin/firestore";
  * @prop {DocumentReference} accountRef M_Accountのリファレンス
  * @prop {requestInfo} requestInfo リクエスト情報
  * @prop {string} status 現在のステータス
- * @prop {number} host ホスト
+ * @prop {boolean} lock ロック
  * @prop {[string]} statuses 遷移ステータス
  * @prop {reportInfo} reportInfo レポート情報
  * @prop {[DocumentReference]} transactionRefs D_Transactionのリファレンス
@@ -39,7 +39,7 @@ export const D_ReportRequest = {
         date: {}
     },
     status: "",
-    host: 0,
+    lock: false,
     statuses: [],
 
     /**
