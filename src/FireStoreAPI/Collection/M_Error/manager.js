@@ -30,6 +30,10 @@ export class manager {
    * @returns {Promise<M_Error>}
    */
   async getOrAdd(drequest, info) {
+    // cacheを行う
+    if(!this.cached)
+      await this.caching();
+
     // cacheから探す
     let ret = this.cache.find(c => {
       /**
