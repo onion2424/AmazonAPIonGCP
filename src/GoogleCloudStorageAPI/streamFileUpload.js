@@ -9,6 +9,7 @@ import parser from "stream-json";
 import streamArray from "stream-json/streamers/StreamArray.js"
 import streamValue from "stream-json/streamers/StreamValues.js"
 import streamObject from "stream-json/streamers/StreamObject.js"
+import pick from "stream-json/filters/Pick.js";
 import iconv from 'iconv-lite';
 import * as csv from 'fast-csv';
 import L_ErrorManager from "../FireStoreAPI/Collection/L_Error/manager.js";
@@ -40,7 +41,7 @@ export async function streamFileUpload(storage, bucketName, destFileName, readab
 
     // Create a reference to a file object
     const file = myBucket.file(destFileName);
-    const writable = file.createWriteStream();
+    const writable = file.createWriteStream({timeout: 1000 * 60 * 60,});
     // const stream = new chain(
     //     [
     //         readable,
@@ -206,7 +207,7 @@ function getTranslaters(translaters, dateStr) {
                 ret.push(async function* (source) {
                     //const pattern = /[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}/g;
                     for await (const data of source) {
-                        data.cluster_asin = data.asin1  || data.product_id;
+                        data.cluster_asin = data.asin1 || data.product_id;
                         data.partition_date = dateStr;
                         data.open_date = data.open_date.slice(0, 19);
                         yield `${JSON.stringify(data)}` + "\n";
@@ -225,6 +226,39 @@ function getTranslaters(translaters, dateStr) {
                         data.cluster_asin = data.asin;
                         data.partition_date = dateStr;
                         yield `${JSON.stringify(data)}` + "\n";
+                    }
+                });
+                break;
+            }
+            case "GetBrandAnalysticsSearchTermsReport": {
+                ret.push(parser());
+                ret.push(pick.pick("dataByDepartmentAndSearchTerm"));
+                ret.push(new streamArray());
+                ret.push(async function* (source) {
+                    let clickShareRank = 0;
+                    let ret = {};
+                    for await (const { value } of source) {
+                        clickShareRank = value.clickShareRank;
+                        if (clickShareRank == 1) {
+                            ret = value;
+                            ret.partition_date = dateStr;
+                            delete ret[`clickedAsin`];
+                            delete ret[`clickedItemName`];
+                            delete ret[`clickShareRank`];
+                            delete ret[`clickShare`];
+                            delete ret[`conversionShare`];
+                            delete ret[`departmentName`];
+                        }
+                        ret[`clickedAsin${clickShareRank}`] = value["clickedAsin"];
+                        ret[`clickedItemName${clickShareRank}`] = value["clickedItemName"];
+                        ret[`clickShareRank${clickShareRank}`] = value["clickShareRank"];
+                        ret[`clickShare${clickShareRank}`] = value["clickShare"];
+                        ret[`conversionShare${clickShareRank}`] = value["conversionShare"];
+                        if(clickShareRank == 3){
+                            yield value.map(v => JSON.stringify(v)).join("\n");
+                        }else{
+                            yield "";
+                        }                        
                     }
                 });
                 break;

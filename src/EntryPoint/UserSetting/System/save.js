@@ -10,20 +10,21 @@ import bigQueryManager from "../../../BigQueryAPI/manager.js"
 import { M_Request } from "../../../FireStoreAPI/Collection/M_Request/manager.js";
 
 export default async function save(json) {
-
     const date = dayjs().startOf("day");
     const batch = await fireStoreManager.createBatch();
 
-    const adsDocRef = fireStoreManager.createRef("M_Token");
-    batch.set(adsDocRef, M_TokenManager.create(json['ads_token'].accessToken));
-    delete json.ads_token.accessToken;
+    // const adsDocRef = fireStoreManager.createRef("M_Token");
+    // batch.set(adsDocRef, M_TokenManager.create(json['ads_token'].accessToken));
+    // delete json.ads_token.accessToken;
 
     const spDocRef = fireStoreManager.createRef("M_Token");
     batch.set(spDocRef, M_TokenManager.create(json['sp_token'].accessToken));
     delete json.sp_token.accessToken;
 
     const accountDocRef = fireStoreManager.createRef("M_Account");
-    const account = M_AccountManager.create(json, adsDocRef, spDocRef);
+    const account = M_AccountManager.create(json, null, spDocRef);
+    // システムコールを追加
+    account.schedules.push("systemCall");
 
     batch.set(accountDocRef, account);
 
@@ -41,11 +42,7 @@ export default async function save(json) {
              * @type {M_Transaction}
              */
             const mtranData = mtranDoc.data();
-            if (mtranData.refName == "firstCall") {
-                const transactionDocRef = fireStoreManager.createRef("D_Transaction");
-                batch.set(transactionDocRef, D_TransactionManager.create(mtranDoc, accountDocRef, date));
-            }
-            else if (mtranData.refName == "regularCall") {
+            if (mtranData.refName == "systemCall") {
                 for await (const request of mtranData.requests) {
                     const mrequestDoc = await collectionManager.get(request.ref);
                     /**

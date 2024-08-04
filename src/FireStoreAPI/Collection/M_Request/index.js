@@ -621,7 +621,7 @@ import FirestoreManager from "../../manager.js"
                             translaters: [
                                 "gunzip", "sdAdvertisedProduct",
                             ],
-                            tableOptions:{
+                            tableOptions: {
                                 schema: [
                                     {
                                         "mode": "Required",
@@ -900,7 +900,7 @@ import FirestoreManager from "../../manager.js"
                             translaters: [
                                 "decodeSJIS", "encodeUTF-8", "GetFbaMyiAllInventoryData"
                             ],
-                            tableOptions:{
+                            tableOptions: {
                                 schema: [
                                     {
                                         "mode": "Required",
@@ -1099,7 +1099,7 @@ import FirestoreManager from "../../manager.js"
                             translaters: [
                                 "decodeSJIS", "encodeUTF-8", "GetFlatFileAllOrdersDataByOrderDateGeneral"
                             ],
-                            tableOptions:{
+                            tableOptions: {
                                 schema: [
                                     {
                                         "mode": "Required",
@@ -1334,7 +1334,7 @@ import FirestoreManager from "../../manager.js"
                             translaters: [
                                 "gunzip", "getSalesAndTrafficReport",
                             ],
-                            tableOptions:{
+                            tableOptions: {
                                 schema: [
                                     {
                                         "mode": "Required",
@@ -1690,7 +1690,7 @@ import FirestoreManager from "../../manager.js"
                             translaters: [
                                 "decodeSJIS", "encodeUTF-8", "getMerchantListingsAllData",
                             ],
-                            tableOptions:{
+                            tableOptions: {
                                 schema: [
                                     {
                                         "mode": "Required",
@@ -1970,6 +1970,179 @@ import FirestoreManager from "../../manager.js"
                 }
             ],
         tag: "全ての出品商品のレポート",
+        valid: true,
+    };
+    const docs = await FirestoreManager.getDocs("M_Request", [["tag", "==", data.tag]]);
+    if (docs.length) {
+        docRef = docs[0].ref;
+    }
+    await docRef.set(data);
+}
+
+{
+    let docRef = FirestoreManager.createRef("M_Request");
+
+    let data = {
+        details:
+            [
+                {
+                    body:
+                    {
+                        "reportType": "GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT",
+                        "dataStartTime": "",
+                        "dataEndTime": "",
+                        "marketplaceIds": [],
+                        "reportOptions": {
+                            "reportPeriod": "DAY",
+                        }
+                    },
+                    refName: "dailyData",
+                    settings: {
+                        date:
+                        {
+                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
+                        },
+                        save:
+                        {
+                            fileName: "GetBrandAnalysticsSearchTermsReport.json",
+                            tableName: "GetBrandAnalysticsSearchTermsReport",
+                            translaters: [
+                                "gunzip", "GetBrandAnalysticsSearchTermsReport",
+                            ],
+                            tableOptions: {
+                                schema: [
+                                    {
+                                        "mode": "Required",
+                                        "name": "partition_date",
+                                        "type": "DATE"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "conversionShare3",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickShare3",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickedItemName3",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickedAsin3",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "conversionShare2",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickShare2",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickShareRank3",
+                                        "type": "INTEGER"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickedItemName2",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "conversionShare1",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickShareRank1",
+                                        "type": "INTEGER"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickedAsin2",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickedItemName1",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickedAsin1",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickShareRank2",
+                                        "type": "INTEGER"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "searchFrequencyRank",
+                                        "type": "INTEGER"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "clickShare1",
+                                        "type": "BIGNUMERIC"
+                                    },
+                                    {
+                                        "mode": "NULLABLE",
+                                        "name": "searchTerm",
+                                        "type": "STRING"
+                                    }
+                                ],
+                                timePartitioning: {
+                                    type: 'DAY',
+                                    field: 'partition_date',
+                                },
+                                clustering: {
+                                    fields: ['searchTerm'],
+                                },
+                            }
+                        }
+                    },
+                    tag: "日別レポート"
+                }
+            ],
+        statuses:
+            [
+                {
+                    path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/create",
+                    status: "CREATE",
+                },
+                {
+                    path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/status",
+                    status: "STATUS",
+                },
+                {
+                    path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/get",
+                    status: "GET",
+                },
+                {
+                    path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/download",
+                    status: "DOWNLOAD",
+                },
+                {
+                    path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/translate",
+                    status: "TRANSLATE",
+                },
+                {
+                    path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/save",
+                    status: "SAVE",
+                }
+            ],
+        tag: "検索ランキングレポート",
         valid: true,
     };
     const docs = await FirestoreManager.getDocs("M_Request", [["tag", "==", data.tag]]);

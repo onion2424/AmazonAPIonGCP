@@ -40,8 +40,8 @@ export class manager {
         // statusを更新
         return {
             status: "CREATE",
-            requestTime: Timestamp.fromDate(systemInfo.nextTime.toDate()),
-            lock: false,
+            //requestTime: Timestamp.fromDate(systemInfo.nextTime.toDate()),
+            lock: true,
         }
     }
 

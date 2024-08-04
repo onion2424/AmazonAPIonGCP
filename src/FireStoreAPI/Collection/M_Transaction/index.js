@@ -23,6 +23,33 @@ const getSalesAndTrafficReport = requests.find(r => r.tag == "ビジネスレポ
 const getMerchantListingsAllData = requests.find(r => r.tag == "全ての出品商品のレポート");
 const GetFbaMyiAllInventoryData = requests.find(r => r.tag == "FBA在庫管理");
 const GetFlatFileAllOrdersDataByOrderDateGeneral = requests.find(r => r.tag == "全注文レポート");
+const GetBrandAnalysticsSearchTermsReport = requests.find(r => r.tag == "検索ランキングレポート");
+{
+    const data = {
+        tag: 'システムリクエスト',
+        refName: "systemCall",
+        statuses:
+            [
+                {
+                    status: "SYSTEMREPORT",
+                    collection: "D_ReportRequest",
+                    initialize: "FireStoreAPI/Collection/M_Transaction/Status/SystemReport/initialize",
+                    finalize: "FireStoreAPI/Collection/M_Transaction/Status/SystemReport/finalize",
+                }
+            ],
+        schedulize: "FireStoreAPI/Collection/M_Transaction/Status/SystemReport/schedulize",
+        requests: [
+            { ref: GetBrandAnalysticsSearchTermsReport.ref, refName: GetBrandAnalysticsSearchTermsReport.refName, settings: { spans: [1], granularity: "DAY"  }},
+        ],
+        valid: true,
+    }
+    let docRef = FirestoreManager.createRef("M_Transaction");
+    const docs = await FirestoreManager.getDocs("M_Transaction", [["tag", "==", data.tag]]);
+    if (docs.length) {
+        docRef = docs[0].ref;
+    }
+    await docRef.set(data);
+}
 {
     /**
      * @type {M_Transaction}
@@ -48,7 +75,7 @@ const GetFlatFileAllOrdersDataByOrderDateGeneral = requests.find(r => r.tag == "
         ],
         valid: true,
     }
-    let docRef = await FirestoreManager.createRef("M_Transaction");
+    let docRef = FirestoreManager.createRef("M_Transaction");
     const docs = await FirestoreManager.getDocs("M_Transaction", [["tag", "==", data.tag]]);
     if (docs.length) {
         docRef = docs[0].ref;
@@ -80,7 +107,7 @@ const GetFlatFileAllOrdersDataByOrderDateGeneral = requests.find(r => r.tag == "
         ],
         valid: true,
     }
-    let docRef = await FirestoreManager.createRef("M_Transaction");
+    let docRef = FirestoreManager.createRef("M_Transaction");
     const docs = await FirestoreManager.getDocs("M_Transaction", [["tag", "==", data.tag]]);
     if (docs.length) {
         docRef = docs[0].ref;

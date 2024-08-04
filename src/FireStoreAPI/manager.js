@@ -8,7 +8,7 @@ import { transaction } from './transaction.js';
 import { countDocs } from "./countDocs.js"
 import root from '../root.js';
 import { _, systemInfo, logger } from '../Common/common.js';
-import { subscribe } from './subscribe.js';
+//import { subscribe } from './subscribe.js';
 import { recursiveDelete } from './recursiveDelete.js';
 
 const keyFilename = './AmazonApiServiceKey/amazon-api-report-firebase-adminsdk-semvr-dfdb5719d0.json';
@@ -133,16 +133,16 @@ export class manager {
         return transaction(db, getFunctions, writeFunctions);
     }
 
-    /**
-     * 購読します。
-     * @param {string} collectionName 
-     * @param {[any[]]} queries
-     * @param {*} func 
-     * @returns 
-     */
-    async subscribe(collectionName, queries, func) {
-        return subscribe(db, collectionName, queries, func);
-    }
+    // /**
+    //  * 購読します。
+    //  * @param {string} collectionName 
+    //  * @param {[any[]]} queries
+    //  * @param {*} func 
+    //  * @returns 
+    //  */
+    // async subscribe(collectionName, queries, func) {
+    //     return subscribe(db, collectionName, queries, func);
+    // }
 }
 
 logger.debug("import FireStoreAPI");
