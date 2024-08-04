@@ -11,6 +11,6 @@ export function create(tokenInfo)
 {
     const ret = structuredClone(M_Token);
     ret.token = tokenInfo.access_token;
-    ret.expiration = Timestamp.fromDate(dayjs().add(tokenInfo.expires_in, 'seconds').toDate());
+    ret.expiration = Timestamp.fromDate(dayjs().add(tokenInfo.expires_in, 'seconds').add(-5, "minute").toDate());
     return ret;
 }
