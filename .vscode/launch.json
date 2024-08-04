@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\src\\EntryPoint\\Observer\\index.js",
+            "program": "${workspaceFolder}\\src\\EntryPoint\\BatchReceiver\\index.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ],

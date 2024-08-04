@@ -25,8 +25,8 @@ export class manager {
     return (path) => {
       // 時間を計算
       if (!add.has(path)) {
-        add.set(path, 0);
-        return 0;
+        add.set(path, 1);
+        return 1;
       }
 
       /**
@@ -35,7 +35,7 @@ export class manager {
       let count = add.get(path);
       count++;
       // 10分に1回休憩
-      if (add % 10 == 0)
+      if (count % 10 == 0)
         count++;
       add.set(path, count);
       return count;
