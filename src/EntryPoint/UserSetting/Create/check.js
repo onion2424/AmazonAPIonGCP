@@ -55,7 +55,7 @@ export default async function check(json) {
     // 多重防止
     const docs = await fireStoreManager.getDocs("M_Account", [["profileId", "==", json.sellerId]]);
     if (docs.length) {
-        logger.warn("[チェック失敗][セラーID重複]");
+        logger.warn("[チェック失敗][プロフィール重複]");
         return false;
     }
 
