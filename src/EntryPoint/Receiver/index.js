@@ -184,6 +184,9 @@ async function runAsync(accountRef, syncObj, first) {
                         // TimeStampに戻す https://stackoverflow.com/questions/57898146/firestore-timestamp-gets-saved-as-map
                         res.reportInfo.created = new Timestamp(res.reportInfo.created._seconds, res.reportInfo.created._nanoseconds);
                     }
+                    if("expiration" in res.reportInfo && res.reportInfo.expiration){
+                        res.reportInfo.expiration = new Timestamp(res.reportInfo.expiration._seconds, res.reportInfo.expiration._nanoseconds);
+                    }
                     await fireStoreManager.updateRef(drequestDoc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, lock: false });
                     logger.info(`[リクエスト更新][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}⇒${nextStatus}]`);
                 }
