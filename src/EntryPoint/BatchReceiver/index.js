@@ -13,7 +13,7 @@ import M_ErrorManager, { M_Error } from "../../FireStoreAPI/Collection/M_Error/m
  * @returns 
  */
 async function main() {
-    L_ErrorManager.initialize(job, version, "WRITE");
+    L_ErrorManager.initialize(job, version, "WRITE|SAVE");
     // 次回起動時間を保存
     systemInfo.nextTime = dayjs().startOf("minute").add(1, 'minute');
 
