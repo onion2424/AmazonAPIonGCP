@@ -177,12 +177,12 @@ function getTranslaters(translaters, dateStr) {
                     let reportSpecification = {};
                     for await (const { value } of source) {
                         let ret = "";
-                        if ("reportType" in value) {
+                        if (!Array.isArray(value) && "reportType" in value) {
                             reportSpecification = value;
                         }
-                        else if ("date" in value[0]) {
+                        else if (Array.isArray(value) && value.length && "date" in value[0]) {
                         }
-                        else {
+                        else if (Array.isArray(value) && value.length && "childAsin" in value[0]){
                             value.forEach(v => { v.reportSpecification = reportSpecification; v.partition_date = dateStr; v.cluster_asin = v.childAsin });
                             ret = value.map(v => JSON.stringify(v)).join("\n");
                         }
