@@ -12,7 +12,7 @@ import * as path from "path";
  */
 export async function loadFromGCS(bigquery, datasetId, tableId, file, ) {
   tableId = datasetId + "_" + tableId;
-  logger.info(`[テーブル作成開始][${tableId}]`);
+  logger.info(`[テーブル作成開始][${datasetId}][${tableId}]`);
   // Imports a GCS file into a table with manually defined schema.
   // Configure the load job. For full list of options, see:
   // https://cloud.google.com/bigquery/docs/reference/rest/v2/Job#JobConfigurationLoad
@@ -49,12 +49,12 @@ export async function loadFromGCS(bigquery, datasetId, tableId, file, ) {
   // Check the job's status for errors
   const errors = job.status?.errors;
   if (errors && errors.length > 0) {
-    logger.error(`[テーブル作成失敗][${tableId}]`);
+    logger.error(`[テーブル作成失敗][${datasetId}][${tableId}]`);
     return false;
   }
 
   // load() waits for the job to finish
-  logger.info(`[テーブル作成完了][${tableId}]`);
+  logger.info(`[テーブル作成完了][${datasetId}][${tableId}]`);
 
   return true;
 }

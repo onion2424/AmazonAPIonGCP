@@ -8,6 +8,7 @@ import D_RequestManager, { D_ReportRequest } from "../../FireStoreAPI/Collection
 import { M_Request } from "../../FireStoreAPI/Collection/M_Request/manager.js"
 import L_ErrorManager from "../../FireStoreAPI/Collection/L_Error/manager.js"
 import M_ErrorManager, { M_Error } from "../../FireStoreAPI/Collection/M_Error/manager.js";
+import { M_Account } from "../../FireStoreAPI/Collection/M_Account/manager.js";
 /**
  * エントリーポイント
  * @returns 
@@ -82,20 +83,25 @@ async function runAsync(accountRef, syncObj) {
          * @type {D_ReportRequest}
          */
         let currentDoc;
+        const accountDoc = await collectiomManager.get(accountRef);
+        /**
+         * @type {M_Account}
+         */
+        const account = accountDoc.data();
         const date = dayjs().startOf("minute");
         try {
             // 残件
             const count = await getAllRequest(date, accountRef);
             if (count == 0) {
                 await fireStoreManager.updateRef(syncObj.stateDoc.ref, { accountRefs: FieldValue.arrayRemove(accountRef) });
-                logger.info(`[バッチ完了][${accountRef.path}]`);
+                logger.info(`[全件取得完了][バッチ処理終了][${account.tag}]`);
                 return;
             }
             else {
-                logger.info(`[残り${count}件][${accountRef.path}]`);
+                logger.info(`[残り${count}件][${account.tag}]`);
             }
 
-            logger.info(`[タスク開始][${accountRef.path}]`);
+            logger.info(`[タスク開始][${account.tag}]`);
             if (date.minute() == 0) {
                 const docs = await getPreviewRequest(date, accountRef);
                 if (docs.length) {
@@ -114,7 +120,7 @@ async function runAsync(accountRef, syncObj) {
                         batch.update(doc.ref, { requestTime: Timestamp.fromDate(firstDate.add(allocation(mrequest.statuses.find(s => s.status == drequest.status).path), "minute").toDate()) });
                     }
                     await fireStoreManager.commitBatch(batch);
-                    logger.info(`[リクエスト復活][${docs.length}件]`);
+                    logger.info(`[リクエスト復活][${account.tag}][${docs.length}件]`);
                 }
             }
         } catch (e) {
@@ -124,7 +130,7 @@ async function runAsync(accountRef, syncObj) {
         // ここだけトランザクション処理、以降は並列可能
         const docs = await getRequest(date, accountRef);
         if (!docs.length) {
-            logger.info(`[タスクなし][${accountRef.path}]`);
+            logger.info(`[今回処理タスクなし][${account.tag}]`);
             return;
         }
         for await (const doc of docs) {
@@ -142,7 +148,7 @@ async function runAsync(accountRef, syncObj) {
                 const mrequest = mrequestDoc.data();
                 const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
 
-                logger.info(`[リクエスト取得][${accountRef.path}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}]`);
+                logger.info(`[リクエスト取得][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}]`);
                 // 実行
                 const status = mrequest.statuses.find(s => s.status == drequest.status);
                 const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
@@ -160,28 +166,28 @@ async function runAsync(accountRef, syncObj) {
                         res.reportInfo.expiration = new Timestamp(res.reportInfo.expiration._seconds, res.reportInfo.expiration._nanoseconds);
                     }
                     await fireStoreManager.updateRef(doc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus });
-                    logger.info(`[リクエスト更新][${accountRef.path}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}⇒${nextStatus}]`);
+                    logger.info(`[リクエスト更新][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}⇒${nextStatus}]`);
                 }
                 // errorならPG上のエラーハンドリング
                 else if (res.ok == "error") {
                     const error = res.error;
                     const handled = await _.get(root, error.handle.split("/"))(drequest, res);
                     await fireStoreManager.updateRef(doc.ref, handled);
-                    logger.warn(`[エラーハンドリング][${accountRef.path}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
+                    logger.warn(`[エラーハンドリング][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
                 // ngならDBを参照してエラーハンドリング
                 else if (res.ok == "ng") {
                     const error = await M_ErrorManager.getOrAdd(drequest, res.error);
                     const handled = await _.get(root, error.handle.split("/"))(drequest, res);
                     await fireStoreManager.updateRef(doc.ref, handled);
-                    logger.warn(`[エラーハンドリング][${accountRef.path}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
+                    logger.warn(`[エラーハンドリング][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
             } catch (e) {
                 // 握りつぶす
                 await L_ErrorManager.onSystemError(e, currentDoc?.data());
             }
         }
-        logger.info(`[タスク完了][${accountRef.path}]`);
+        logger.info(`[タスク完了][${account.tag}]`);
     } catch (e) {
         await L_ErrorManager.onSystemError(e, currentDoc?.data());
         throw e;
