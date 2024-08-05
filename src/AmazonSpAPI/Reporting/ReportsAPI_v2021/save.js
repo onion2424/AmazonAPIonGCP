@@ -35,16 +35,16 @@ export async function save(drequest, mrequest) {
 
     const file = list[0];
 
-    const separate = "$";
-
-    const created = await bigQueryManager.loadFromGCS(detail.settings.save.tableName, `${account.tag}${separate}${dayjs(drequest.requestInfo.date.start).format("YYYYMMDD")}`, file);
-
     const reportInfo = structuredClone(drequest.reportInfo);
     if(file.metadata.size == "0"){
         logger.info(`[テーブル作成パス][ファイルサイズ=0][${file.name}]`);
         reportInfo.continue = 0;
         return { ok: "ok", reportInfo: reportInfo, next: true };
     }
+
+    const separate = "$";
+
+    const created = await bigQueryManager.loadFromGCS(detail.settings.save.tableName, `${account.tag}${separate}${dayjs(drequest.requestInfo.date.start).format("YYYYMMDD")}`, file);
 
     // ステータス更新
     if (created) {
