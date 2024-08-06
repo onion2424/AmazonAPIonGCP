@@ -57,13 +57,7 @@ export async function create(drequest, mrequest) {
     }
     // 失敗
     else {
-      let message = "";
-      try {
-        const data = await response.clone().json();
-        message = JSON.stringify(data);
-      } catch (e) {
-        message = await response.clone().text();
-      }
+      const message = await response.text();
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, message);
       error.tag = `ステータス=${response.status}`;
