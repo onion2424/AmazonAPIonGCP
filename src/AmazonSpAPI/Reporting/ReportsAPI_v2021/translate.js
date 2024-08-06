@@ -28,7 +28,7 @@ export async function translate(drequest, mrequest) {
         // エラー
         const error = M_ErrorManager.create();
         error.handle = "FireStoreAPI/Collection/M_Error/Handle/downloadStatus";
-        error.tag = "ファイル取得失敗";
+        error.tag = `ファイル取得失敗：${drequest.reportInfo.filepath}`;
         return { ok: "error", error: error };
     }
 
