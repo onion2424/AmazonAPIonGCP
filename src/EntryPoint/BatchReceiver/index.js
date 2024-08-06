@@ -105,10 +105,7 @@ async function runAsync(accountRef, syncObj) {
         logger.info(`[タスク開始][${account.tag}]`);
 
         const docs = await getRequest(date, accountRef);
-        if (!docs.length) {
-            logger.info(`[今回処理タスクなし][${account.tag}]`);
-            return;
-        }
+        logger.info(`[今回処理リクエスト${docs.count}件][${account.tag}]`);
         for await (const doc of docs) {
             try {
                 currentDoc = doc;
