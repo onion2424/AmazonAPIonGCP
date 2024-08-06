@@ -127,7 +127,7 @@ async function runAsync(accountRef, syncObj, first) {
                     batch.update(doc.ref, { requestTime: Timestamp.fromDate(firstDate.add(allocation(mrequest.statuses.find(s => s.status == drequest.status).path), "minute").toDate()), lock: false });
                 }
                 await fireStoreManager.commitBatch(batch);
-                logger.info(`[リクエスト復活][${docs.length}件]`);
+                logger.info(`[リクエスト復活][${account.tag}][${docs.length}件][割り当て時刻=${firstDate.format("YYYY-MM-DD HH:mm:ss")}～]`);
             }
         }
     } catch (e) {
