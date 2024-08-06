@@ -102,27 +102,6 @@ async function runAsync(accountRef, syncObj) {
             }
 
             logger.info(`[タスク開始][${account.tag}]`);
-            if (date.minute() == 0) {
-                const docs = await getPreviewRequest(date, accountRef);
-                if (docs.length) {
-                    const maxDoc = await getMaxDate(date, accountRef);
-                    const maxDate = dayjs(maxDoc[0].data().requestTime.toDate());
-                    const firstDate = maxDate > date ? maxDate : date;
-                    const batch = await fireStoreManager.createBatch();
-                    const allocation = D_RequestManager.allocation();
-                    for await (const doc of docs) {
-                        const drequest = doc.data();
-                        const mrequestDoc = await collectiomManager.get(drequest.requestInfo.ref);
-                        /**
-                         * @type {M_Request}
-                         */
-                        const mrequest = mrequestDoc.data();
-                        batch.update(doc.ref, { requestTime: Timestamp.fromDate(firstDate.add(allocation(mrequest.statuses.find(s => s.status == drequest.status).path), "minute").toDate()) });
-                    }
-                    await fireStoreManager.commitBatch(batch);
-                    logger.info(`[リクエスト復活][${account.tag}][${docs.length}件][割り当て時刻=${firstDate.format("YYYY-MM-DD HH:mm:ss")}～]`);
-                }
-            }
         } catch (e) {
             // 握りつぶす
             await L_ErrorManager.onSystemError(e, currentDoc?.data());
@@ -186,6 +165,34 @@ async function runAsync(accountRef, syncObj) {
                 // 握りつぶす
                 await L_ErrorManager.onSystemError(e, currentDoc?.data());
             }
+        }
+        
+        try {
+            // 復活処理
+            if (date.minute() == 0) {
+                const docs = await getPreviewRequest(date, accountRef);
+                if (docs.length) {
+                    const maxDoc = await getMaxDate(date, accountRef);
+                    const maxDate = dayjs(maxDoc[0].data().requestTime.toDate());
+                    const firstDate = maxDate > date ? maxDate : date;
+                    const batch = await fireStoreManager.createBatch();
+                    const allocation = D_RequestManager.allocation();
+                    for await (const doc of docs) {
+                        const drequest = doc.data();
+                        const mrequestDoc = await collectiomManager.get(drequest.requestInfo.ref);
+                        /**
+                         * @type {M_Request}
+                         */
+                        const mrequest = mrequestDoc.data();
+                        batch.update(doc.ref, { requestTime: Timestamp.fromDate(firstDate.add(allocation(mrequest.statuses.find(s => s.status == drequest.status).path), "minute").toDate()) });
+                    }
+                    await fireStoreManager.commitBatch(batch);
+                    logger.info(`[リクエスト復活][${account.tag}][${docs.length}件][割り当て時刻=${firstDate.format("YYYY-MM-DD HH:mm:ss")}～]`);
+                }
+            }
+        } catch (e) {
+            // 握りつぶす
+            await L_ErrorManager.onSystemError(e, currentDoc?.data());
         }
         logger.info(`[タスク完了][${account.tag}]`);
     } catch (e) {
