@@ -74,9 +74,15 @@ export async function download(drequest, mrequest) {
     }
     // 失敗
     else {
-      const data = await response.json();
+      let message = "";
+      try {
+        const data = await response.clone().json();
+        message = JSON.stringify(data);
+      } catch (e) {
+        message = await response.clone().text();
+      }
       const status = mrequest.statuses.find(s => s.status == drequest.status);
-      const error = M_ErrorManager.create(status.path, response.status, JSON.stringify(data));
+      const error = M_ErrorManager.create(status.path, response.status, message);
       error.tag = `ステータス=${response.status}`;
       return { ok: "ng", error: error, token: accesTokenDoc  };
     }
