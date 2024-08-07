@@ -153,9 +153,9 @@ async function runAsync(accountRef, syncObj, first) {
                 const diff = dayjs(next[0].data().requestTime.toDate()).diff(dayjs(), "second");
                 if (diff > 0)
                 {
-                    const waitMinute = Math.ceil(diff / 60);
-                    logger.debug(`${waitMinute}分待機`);
-                    await utils.wait(waitMinute * 60);
+                    const waitMinutes = Math.ceil(diff / 60);
+                    logger.debug(`${waitMinutes}分待機`);
+                    await utils.wait(waitMinutes * 60);
                 }
                 continue;
             }
