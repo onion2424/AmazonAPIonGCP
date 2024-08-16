@@ -10,6 +10,7 @@ export function create(json, ref1, ref2)
     const ret = structuredClone(M_Account);
     ret.tag = json.tag;
     ret.sellerId = json.sellerId;
+    ret.timezone = json.timezone;
     if(json.profileId){
         ret.startDate = json.sellerStartDate;
     }

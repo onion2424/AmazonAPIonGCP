@@ -11,6 +11,7 @@ import { Timestamp, DocumentReference } from "firebase-admin/firestore";
  * @prop {string} sellerId セラーID
  * @prop {string} profileId プロフィールID
  * @prop {[string]} marketplaceIds マーケットプレイスID
+ * @prop {string} timezone タイムゾーン
  * @prop {Timestamp} startDate 開始日
  * @prop {token} token トークン
  * @prop {boolean} deleted 削除フラグ
@@ -26,6 +27,7 @@ export const M_Account = {
     sellerId: "",
     profileId: "",
     marketplaceIds: [],
+    timezone: "",
     /**
      * @typedef {object} token
      * @prop {ads_token} ads_token ADS-APIのトークン

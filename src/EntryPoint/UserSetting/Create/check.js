@@ -32,6 +32,9 @@ export default async function check(json) {
         return false;
     }
 
+    // timezoneをセット
+    json.timezone = profile.timezone;
+
     // SP-API 検証
     // Auth
     const sp = json["sp_token"];

@@ -18,7 +18,7 @@ import root from "../../../root.js"
 export function create(requestDoc, refName, accountDoc, transactionDocs, basedate, spans, granularity) {
     const ret = [];
     const request = requestDoc.data();
-
+    const account = accountDoc.data();
     const detail = request.details.find((d) => d.refName == refName);
     for (const span of spans) {
         // 日付
@@ -28,7 +28,7 @@ export function create(requestDoc, refName, accountDoc, transactionDocs, basedat
         const requestInfo = {
             ref: requestDoc.ref,
             refName: detail.refName,
-            date: _.get(root, detail.settings.date.path.split('/'))(basedate.add(-span, 'day'), granularity),
+            date: _.get(root, detail.settings.date.path.split('/'))(basedate.add(-span, 'day'), granularity, account.timezone),
         }
         doc.requestInfo = requestInfo;
         doc.statuses = _.map(request.statuses, (s) => s.status);

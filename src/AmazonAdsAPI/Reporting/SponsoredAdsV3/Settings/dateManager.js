@@ -11,7 +11,7 @@ class manager
      * リクエスト用の日時を取得します。
      * @param {dayjs.Dayjs} date 
      */
-    getDate(date) {
+    getDate(date, granularity, timezone) {
         let ret = {
             start: date.format("YYYY-MM-DD"),
             end: date.format("YYYY-MM-DD"),

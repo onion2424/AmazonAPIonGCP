@@ -29,7 +29,7 @@ async function main() {
             logger.info(`[定時処理開始][今回日時：${dayjs(state.nextTime.toDate()).format("YYYY-MM-DD HH:mm:ss")}]`);
             const ret = await runSchedule();
             if (ret) {
-                const nextTime = dayjs(state.nextTime.toDate()).add(1, 'day').startOf('day').add(510, 'minute');
+                const nextTime = dayjs().add(1, 'day').startOf('day').add(90, 'minute');
                 await fireStoreManager.updateRef(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
                 logger.info(`[定時処理終了][次回日時：${nextTime.format("YYYY-MM-DD HH:mm:ss")}]`);
             }

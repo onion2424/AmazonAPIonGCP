@@ -18,13 +18,18 @@ import { M_Account } from "../../../M_Account/class.js";
  * @returns {FirebaseFirestore.WriteBatch}
  */
 export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
-    const date = dayjs().add(1, "hour").startOf('hour');
+    const date = dayjs().add(1, "hour").startOf('hour');   
+
     const mtran = mtranDoc.data();
     const dtran = dtranDoc.data();
     /**
      * @type {M_Account}
      */
     const account = accountDoc.data();
+    // timezoneを考慮
+    let diff = dayjs(dtran.date.toDate()).add(2, "hour").tz(account.timezone, true).diff(date, "minutes");
+    // ↑が0なら2時だから、そのままでOK - ならもっとOK +ならそれ分minutesを+する
+    const firstDate = diff > 0 ? date.add(diff, "minute") : date;
     const allocation = drequestManager.allocation();
     logger.info(`[初期化開始][ステータス(REGULARREPORT)][${mtran.tag}]`);
     for (const requestInfo of mtran.requests) {
@@ -37,7 +42,7 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
         // Refを持たせる
         const drequests = drequestManager.create(mrequestDoc, requestInfo.refName, accountDoc, [dtranDoc], dayjs(dtran.date.toDate()), spans, granularity);
         for (const drequest of drequests.reverse()) {
-            drequest.requestTime = Timestamp.fromDate(date.add(allocation(mrequest.statuses.find(s => s.status == drequest.status).path), "minute").toDate());
+            drequest.requestTime = Timestamp.fromDate(firstDate.add(allocation(mrequest.statuses.find(s => s.status == drequest.status).path), "minute").toDate());
             const ref = firestoreManager.createRef("D_ReportRequest");
             batch.set(ref, drequest);
         }

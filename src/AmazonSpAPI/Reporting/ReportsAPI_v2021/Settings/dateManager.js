@@ -1,20 +1,29 @@
 import root from "../../../../root.js";
-import { _, utils, dayjs, logger} from "../../../../Common/common.js";
+import { _, utils, dayjs, logger } from "../../../../Common/common.js";
 
 // observerからのみimport
-class manager
-{
-    constructor()
-    {
+class manager {
+    constructor() {
     }
     /**
      * リクエスト用の日時を取得します。
      * @param {dayjs.Dayjs} date 
      */
-    getDate(date) {
+    getDate(date, granularity, timezone) {
+        /*
+        console.log(dayjs("2024-08-16 00:00:00").utc().format("YYYYMMDD HH:mm:ss"));
+        console.log(dayjs.tz("2024-08-16 00:00:00", "Asia/Singapore").utc().format("YYYYMMDD HH:mm:ss"));
+        console.log(dayjs("2024-08-16 00:00:00").utc().format("YYYYMMDD HH:mm:ss"));
+        console.log(dayjs().utc().format("YYYYMMDD HH:mm:ss"));
+        console.log(dayjs().tz("Asia/Singapore", true).utc().format("YYYYMMDD HH:mm:ss"));
+        console.log(dayjs().utc().format("YYYYMMDD HH:mm:ss"));
+        console.log(dayjs().utc().format("YYYYMMDD HH:mm:ss.SSSZ"));
+        console.log(dayjs().tz("Asia/Singapore", true).format("YYYYMMDD HH:mm:ss.SSSZ"));
+        console.log(dayjs().format("YYYYMMDD HH:mm:ss.SSSZ"));
+        */
         let ret = {
-            start: date.format("YYYY-MM-DD") + "T00:00:00.000Z",
-            end: date.format("YYYY-MM-DD") + "T23:59:00.999Z",
+            start: date.tz(timezone, true).format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+            end: date.tz(timezone, true).add(1, "day").add(-1, "millisecond").format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
         };
         return ret;
     }

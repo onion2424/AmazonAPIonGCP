@@ -1,9 +1,11 @@
 import * as pathImport from 'path';
 import dayjs from "dayjs";
-import { toLocalDate } from './Helpers/Dayjs/toLocalDate.js';
-import 'dayjs/locale/ja.js'
-dayjs.locale('ja');
-dayjs.extend(toLocalDate);
+import timezone from "dayjs/plugin/timezone.js"
+import utc from "dayjs/plugin/utc.js"
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault("Asia/Tokyo");
 export { dayjs }
 import lodash from "lodash";
 export const _ = lodash;

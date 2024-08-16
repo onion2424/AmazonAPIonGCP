@@ -49,7 +49,7 @@ export async function schedulize(date, accountDoc, mtranDoc) {
             // D_Transactionを作成
             const dtranRef = await fireStoreManager.createRef("D_Transaction");
             batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, dayjs(dschedule.date.toDate())));
-            batch.update(doc.ref, { date: Timestamp.fromDate(dayjs(dschedule.date.toDate()).add(1, 'day').startOf('day').toDate()) });
+            batch.update(doc.ref, { date: Timestamp.fromDate(date.toDate().add(1, 'day').startOf('day').toDate()) });
             await fireStoreManager.commitBatch(batch);
             logger.info(`[更新][${mtran.tag}]`);
         }
