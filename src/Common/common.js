@@ -121,6 +121,11 @@ class systemInfoClass {
          * @type {dayjs.Dayjs}
          */
         this.nextTime = null;
+
+        /**
+         * 定時実行時間(minutes)
+         */
+        this.scheduleTime = 90;
     }
     isTest() {
         return this.mode == "TEST";

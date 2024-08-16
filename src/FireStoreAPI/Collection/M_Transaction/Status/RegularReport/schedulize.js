@@ -21,12 +21,14 @@ export async function schedulize(date, accountDoc, mtranDoc) {
     //該当するD_Scheduleを取得
     let doc = (await fireStoreManager.getDocs("D_Schedule", [["accountRef", "==", accountDoc.ref], ["transactionRef", "==", mtranDoc.ref]]))[0];
     if (!doc) {
+        /*
         const batch = await fireStoreManager.createBatch();
 
         // D_Scheduleがなければ作成
         const dschedule = D_ScheduleManager.create(accountDoc, mtranDoc, date);
 
         // D_Transactionを作成
+        // firstreportがあれば、それまでの差分を埋める必要がある
         const dtranRef = await fireStoreManager.createRef("D_Transaction");
         batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, dayjs(dschedule.date.toDate())));
 
@@ -36,6 +38,8 @@ export async function schedulize(date, accountDoc, mtranDoc) {
         batch.set(dscheduleRef, dschedule);
         await fireStoreManager.commitBatch(batch);
         logger.info(`[新規][${mtran.tag}]`);
+        */
+        throw new Error("D_Scheduleなし");
     }
     else {
         // あれば日時を見て、今より小さければD_Transactionに展開
@@ -48,8 +52,10 @@ export async function schedulize(date, accountDoc, mtranDoc) {
             const batch = await fireStoreManager.createBatch();
             // D_Transactionを作成
             const dtranRef = await fireStoreManager.createRef("D_Transaction");
-            batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, dayjs(dschedule.date.toDate())));
-            batch.update(doc.ref, { date: Timestamp.fromDate(date.toDate().add(1, 'day').startOf('day').toDate()) });
+            const dtran = D_TransactionManager.create(mtranDoc, accountDoc.ref, date);
+            dtran.spans = [...Array(date.startOf("day").diff(dayjs(dschedule.date.toDate()).startOf("day"), "day") + 1)].map((_, i) => i);
+            batch.set(dtranRef, dtran);
+            batch.update(doc.ref, { date: Timestamp.fromDate(date.add(1, 'day').startOf('day').toDate()) });
             await fireStoreManager.commitBatch(batch);
             logger.info(`[更新][${mtran.tag}]`);
         }

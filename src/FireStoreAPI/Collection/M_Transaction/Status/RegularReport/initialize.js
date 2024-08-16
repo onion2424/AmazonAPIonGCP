@@ -36,7 +36,7 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
         const mrequestDoc = await collectionManager.get(requestInfo.ref);
         const mrequest = mrequestDoc.data();
         const detail = mrequest.details.find(d => d.refName == requestInfo.refName);
-        const spans = requestInfo.settings.spans;
+        const spans = mergeSpans(requestInfo.settings.spans, dtran.spans);
         const granularity = requestInfo.settings.granularity;
         // その他のM_transactionからD_tranを作成
         // Refを持たせる
@@ -50,4 +50,17 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
     }
     logger.info(`[初期化終了][ステータス(REGULARREPORT)][${mtran.tag}]`);
     return;
+}
+
+/**
+ * 
+ * @param {[number]} reportSpans 
+ * @param {[number]} tranSpans 
+ */
+function mergeSpans(reportSpans, tranSpans){
+    let ret = [];
+    for(const tranSpan of tranSpans){
+        ret = [...ret, ...reportSpans.map(s => s + tranSpan)];
+    }
+    return _.sortBy(Array.from(new Set(ret)));
 }

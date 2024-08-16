@@ -8,6 +8,7 @@ import { M_Transaction } from '../../../FireStoreAPI/Collection/M_Transaction/cl
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import bigQueryManager from "../../../BigQueryAPI/manager.js"
 import { M_Request } from "../../../FireStoreAPI/Collection/M_Request/manager.js";
+import D_ScheduleManager, { D_Schedule } from "../../../FireStoreAPI/Collection/D_Schedule/manager.js";
 
 export default async function save(json) {
 
@@ -57,10 +58,13 @@ export default async function save(json) {
                         await bigQueryManager.createPartitionTable(detail.settings.save.tableName, account.tag, detail.settings.save.tableOptions);
                     }
                 }
+                // D_ScheduleにregularCallを追加。
+                const dscheduleRef = fireStoreManager.createRef("D_Schedule");
+                const dschedule = D_ScheduleManager.create(accountDocRef, mtranDoc.ref, dayjs(date.toDate()).add(1, "day"));
+                batch.set(dscheduleRef, dschedule);
             }
         }
     }
-
     await fireStoreManager.commitBatch(batch);
 
     logger.info("[セーブ完了]");

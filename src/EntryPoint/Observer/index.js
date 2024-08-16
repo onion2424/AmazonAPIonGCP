@@ -26,10 +26,12 @@ async function main() {
         logger.info(`[起動][${state.tag}][Version=${version}]`);
 
         if (state.nextTime.toDate() < dayjs().toDate()) {
-            logger.info(`[定時処理開始][今回日時：${dayjs(state.nextTime.toDate()).format("YYYY-MM-DD HH:mm:ss")}]`);
-            const ret = await runSchedule();
+            const diff = dayjs().diff(dayjs().startOf("day"));
+            let date = diff > systemInfo.scheduleTime ? dayjs().startOf('day') : dayjs().add(-1, "day").startOf("day");
+            logger.info(`[定時処理開始][今回日時：${date.format("YYYY-MM-DD HH:mm:ss")}]`);
+            const ret = await runSchedule(date);
             if (ret) {
-                const nextTime = dayjs().add(1, 'day').startOf('day').add(90, 'minute');
+                const nextTime = date.add(1, 'day').startOf('day').add(systemInfo.scheduleTime, 'minute');
                 await fireStoreManager.updateRef(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
                 logger.info(`[定時処理終了][次回日時：${nextTime.format("YYYY-MM-DD HH:mm:ss")}]`);
             }
@@ -44,13 +46,11 @@ async function main() {
 /**
  * 定時処理を行います。
  */
-async function runSchedule() {
+async function runSchedule(date) {
     let currentDoc;
     try {
         // キャッシュを行う
         await collectiomManager.caching();
-
-        const date = dayjs().startOf('day');
 
         // M_Accountで回してD_Schedule作成or無効化
         for (const accountDoc of M_AccountManager.cache) {

@@ -14,6 +14,7 @@ import { Timestamp, DocumentReference } from "firebase-admin/firestore";
  * @prop {DocumentReference} transactionRef M_Transactionのref
  * @prop {DocumentReference} accountRef M_Accountのref
  * @prop {Timestamp} date 対象日時
+ * @prop {[number]} spans スパン
  */
 
 /**

@@ -1,5 +1,5 @@
 import { _, logger, dayjs } from "../../../../../Common/common.js";
-import { M_Transaction } from "../../manager.js";
+import M_TransactionManager, { M_Transaction } from "../../manager.js";
 import { D_Transaction } from "../../../D_Transaction/manager.js";
 import firestoreManager from "../../../../manager.js"
 import collectionManager from "../../../manager.js"
@@ -8,6 +8,7 @@ import mrequestManager, { M_Request } from "../../../M_Request/manager.js"
 import { DocumentSnapshot, FieldValue } from "firebase-admin/firestore";
 import { M_Account } from "../../../M_Account/manager.js";
 import S_RunningStateManager from "../../../S_RunningState/manager.js";
+import D_ScheduleManager from "../../../D_Schedule/manager.js"
 
 /**
  * FirstCallを展開
@@ -28,7 +29,7 @@ export async function finalize(mtranDoc, dtranDoc, accountDoc) {
     logger.info(`[ファイナライズ開始][ステータス(FIRSTREPORT)][${mtran.tag}]`);
     const batch = await firestoreManager.createBatch();
     const docs = await firestoreManager.getDocs("D_BatchReportRequest", [["transactionRefs", "array-contains", dtranDoc.ref]]);
-    for(const doc of docs){
+    for (const doc of docs) {
         batch.update(doc.ref, { transactionRefs: FieldValue.arrayRemove(dtranDoc.ref) });
     }
 

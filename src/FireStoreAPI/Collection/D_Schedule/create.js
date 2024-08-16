@@ -6,12 +6,12 @@ import { Timestamp } from "firebase-admin/firestore";
  * @param {dayjs.Dayjs} date 設定する日付 
  * @returns 
  */
-export function create(account, mtran, date)
+export function create(accountDocRef, mtranDocRef, date)
 {
     const ret = structuredClone(D_Schedule);
     ret.date = Timestamp.fromDate(date.toDate());
-    ret.accountRef = account.ref;
-    ret.transactionRef = mtran.ref;
+    ret.accountRef = accountDocRef;
+    ret.transactionRef = mtranDocRef;
 
     return ret;
 }
