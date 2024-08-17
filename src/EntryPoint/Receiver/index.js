@@ -3,7 +3,7 @@ import { _, utils, dayjs, logger, systemInfo } from "../../Common/common.js";
 import collectiomManager from "../../FireStoreAPI/Collection/manager.js"
 import fireStoreManager from "../../FireStoreAPI/manager.js"
 import { S_RunningState } from "../../FireStoreAPI/Collection/S_RunningState/manager.js";
-import { Timestamp, Transaction, DocumentReference } from "firebase-admin/firestore";
+import { Timestamp, Transaction, DocumentReference, DocumentSnapshot } from "firebase-admin/firestore";
 import D_RequestManager, { D_ReportRequest } from "../../FireStoreAPI/Collection/D_ReportRequest/manager.js";
 import { M_Request } from "../../FireStoreAPI/Collection/M_Request/manager.js"
 import L_ErrorManager from "../../FireStoreAPI/Collection/L_Error/manager.js"
@@ -78,10 +78,13 @@ async function main() {
 async function createTasks(syncObj, first) {
     const tasks = [];
     syncObj.abort = false;
-    for (const accountRef of syncObj.state.accountRefs) {
+    for (const accountRef of syncObj.state.accountRefs.concat()) {
+        const accountDoc = await collectiomManager.get(accountRef);
+        const account = accountDoc.data();
+        if (!account.valid) continue;
         if(first)
             syncObj.delay.set(accountRef.path, {delay: 0});
-        tasks.push(runAsync(accountRef, syncObj, first));
+        tasks.push(runAsync(accountDoc, syncObj, first));
         // 5秒待機
         await utils.wait(5);
     }
@@ -90,13 +93,12 @@ async function createTasks(syncObj, first) {
 
 /**
  * 非同期で処理を行います。
- * @param {DocumentReference} accountRef
+ * @param {DocumentSnapshot} accountDoc
  * @param {object} syncObj 
  * @param {boolean} first
  */
-async function runAsync(accountRef, syncObj, first) {
-    const delay = syncObj.delay.get(accountRef.path);
-    const accountDoc = await collectiomManager.get(accountRef);
+async function runAsync(accountDoc, syncObj, first) {
+    const delay = syncObj.delay.get(accountDoc.ref.path);
     /**
      * @type {M_Account}
      */
@@ -110,9 +112,9 @@ async function runAsync(accountRef, syncObj, first) {
     try {
         if (first) {
             const date = dayjs(syncObj.state.nextTime.toDate());
-            const docs = await getPreviewRequest(date, accountRef);
+            const docs = await getPreviewRequest(date, accountDoc);
             if (docs.length) {
-                const maxDoc = await getMaxDate(date, accountRef);
+                const maxDoc = await getMaxDate(date, accountDoc);
                 const maxDate = dayjs(maxDoc[0].data().requestTime.toDate());
                 const firstDate = maxDate > date ? maxDate : date;
                 const batch = await fireStoreManager.createBatch();
@@ -140,11 +142,11 @@ async function runAsync(accountRef, syncObj, first) {
     try {
         while (!systemInfo.sigterm && !syncObj.abort) {
             const date = dayjs();
-            const obj = await getRequest(date, accountRef, delay);
+            const obj = await getRequest(date, accountDoc, delay);
             const drequestDocs = obj.docs;
             if (!drequestDocs.length) {
                 // 終了判定
-                const next = await getNextRequest(date, accountRef, delay);
+                const next = await getNextRequest(date, accountDoc, delay);
                 if (!next.length) {
                     logger.info(`[タスク終了][アカウント=${account.tag}]`);
                     return;
@@ -191,17 +193,24 @@ async function runAsync(accountRef, syncObj, first) {
                     await fireStoreManager.updateRef(drequestDoc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, lock: false });
                     logger.info(`[リクエスト更新][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}⇒${nextStatus}]`);
                 }
+                // invalidならアカウント無効
+                else if (res.ok == "invalid"){
+                    _.remove(syncObj.state.accountRefs, r => r.path == accountDoc.ref.path);
+                    fireStoreManager.updateRef(accountDoc.ref, { valid: false });
+                    logger.error(`[アカウント無効][${account.tag}][Valid Off]`);
+                    return;
+                }
                 // errorならPG上のエラーハンドリング
                 else if (res.ok == "error") {
                     const error = res.error;
-                    const handled = await _.get(root, error.handle.split("/"))(drequest, res, delay);
+                    const handled = await _.get(root, error.handle.split("/"))(drequest, delay);
                     await fireStoreManager.updateRef(drequestDoc.ref, handled);
                     logger.warn(`[エラーハンドリング][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
                 // ngならDBを参照してエラーハンドリング
                 else if (res.ok == "ng") {
                     const error = await M_ErrorManager.getOrAdd(drequest, res.error);
-                    const handled = await _.get(root, error.handle.split("/"))(drequest, res);
+                    const handled = await _.get(root, error.handle.split("/"))(drequest, delay);
                     await fireStoreManager.updateRef(drequestDoc.ref, handled);
                     logger.warn(`[エラーハンドリング][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
@@ -221,14 +230,14 @@ async function runAsync(accountRef, syncObj, first) {
 /**
  * トランザクション処理を行い、リクエストを取得します。
  * @param {dayjs.Dayjs} date
- * @param {DocumentReference} accountRef 
+ * @param {DocumentSnapshot} accountDoc 
  * @param {*} info
  */
-async function getRequest(date, accountRef, info) {
+async function getRequest(date, accountDoc, info) {
     //transactin
     const getfunc = async (tran, obj) => {
         // 時間のorderbyでとってくる。0件なら終了
-        const query = await fireStoreManager.getQuery("D_ReportRequest", [["accountRef", "==", accountRef], ["status", "!=", "COMPLETED"], ["lock", "==", false], ["requestTime", "<=", Timestamp.fromDate(date.add(-info.delay, "minute").toDate())]]);
+        const query = await fireStoreManager.getQuery("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"], ["lock", "==", false], ["requestTime", "<=", Timestamp.fromDate(date.add(-info.delay, "minute").toDate())]]);
         const snapshot = await tran.get(query);
         obj.docs = snapshot.docs;
     }
@@ -247,25 +256,25 @@ async function getRequest(date, accountRef, info) {
 /**
  * リクエストを取得します。
  * @param {dayjs.Dayjs} date
- * @param {DocumentReference} accountRef 
+ * @param {DocumentSnapshot} accountDoc 
  */
-async function getPreviewRequest(date, accountRef) {
-    return fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountRef], ["status", "!=", "COMPLETED"], ["requestTime", "<", Timestamp.fromDate(date.toDate())]], [{ column: "requestTime", direction: "desc" }]);
+async function getPreviewRequest(date, accountDoc) {
+    return fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"], ["requestTime", "<", Timestamp.fromDate(date.toDate())]], [{ column: "requestTime", direction: "desc" }]);
 }
 
-async function getMaxDate(date, accountRef) {
-    return fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountRef], ["status", "!=", "COMPLETED"]], [{ column: "requestTime", direction: "desc" }], 1);
+async function getMaxDate(date, accountDoc) {
+    return fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"]], [{ column: "requestTime", direction: "desc" }], 1);
 }
 
 
 /**
  * トランザクション処理を行い、次回リクエストを取得します。
  * @param {dayjs.Dayjs} date
- * @param {DocumentReference} accountRef 
+ * @param {DocumentSnapshot} accountDoc 
  * @param {*} info
  */
-async function getNextRequest(date, accountRef, info) {
-    return await fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountRef], ["status", "!=", "COMPLETED"], ["lock", "==", false], ["requestTime", ">", Timestamp.fromDate(date.add(-info.delay, "minute").toDate())], ["requestTime", "<", Timestamp.fromDate(systemInfo.nextTime.add(-info.delay, "minute").toDate())]], [{ column: "requestTime", direction: "asc" }], 1);
+async function getNextRequest(date, accountDoc, info) {
+    return await fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"], ["lock", "==", false], ["requestTime", ">", Timestamp.fromDate(date.add(-info.delay, "minute").toDate())], ["requestTime", "<", Timestamp.fromDate(systemInfo.nextTime.add(-info.delay, "minute").toDate())]], [{ column: "requestTime", direction: "asc" }], 1);
 }
 
 /**

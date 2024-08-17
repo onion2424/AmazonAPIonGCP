@@ -24,8 +24,11 @@ export async function create(drequest, mrequest) {
   const clientId = account.token.ads_token.client_id;
   const profileId = account.profileId;
 
-  const accesTokenDoc = await authManager.get(account);
-  const accesToken = accesTokenDoc.data();
+  const authRes = await authManager.get(accountDoc);
+  if (authRes.ok != "ok") {
+    return authRes;
+  }
+  const accesToken = authRes.token;
 
   // 日付情報を付与
   const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);
@@ -63,7 +66,7 @@ export async function create(drequest, mrequest) {
       const status = mrequest.statuses.find(s => s.status == drequest.status);
       const error = M_ErrorManager.create(status.path, response.status, message);
       error.tag = `ステータス=${response.status}`;
-      return { ok: "ng", error: error};
+      return { ok: "ng", error: error };
     }
   }
 

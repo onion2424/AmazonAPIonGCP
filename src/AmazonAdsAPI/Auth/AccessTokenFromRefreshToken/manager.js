@@ -10,10 +10,9 @@ class manager{
     constructor(){
 
     }
-    /**
-     * @param {M_Account} account
-     */
-    async get(account){
+
+    async get(accountDoc){
+        const account = accountDoc.data();
         const tokenDoc = await collectionManager.get(account.token.ads_token.ref);
         /**
          * @type {M_Token}
@@ -25,14 +24,18 @@ class manager{
             const clientId = account.token.ads_token.client_id;
             const clientSecret = account.token.ads_token.client_secret;
             const refreshToken = account.token.ads_token.refresh_token;
-            const newToken = await get(clientId, clientSecret, refreshToken);
-            await fireStoreManager.updateRef(tokenDoc.ref, M_TokenManager.create(newToken));
-            // キャッシュ削除（次回再キャッシュ）
-            const doc = await collectionManager.recache(tokenDoc);
-            return doc;
-        }
-        
-        return tokenDoc;
+            const res = await get(clientId, clientSecret, refreshToken);
+            if(res.ok == "ok"){
+                const newToken = res.token;
+                await fireStoreManager.updateRef(tokenDoc.ref, M_TokenManager.create(newToken));
+                // 再キャッシュ
+                const doc = await collectionManager.recache(tokenDoc);
+                return { ok:"ok", token: doc.data()};
+            }
+            return res;
+        }else{
+            return { ok:"ok", token: token};
+        }   
     }
 }
 

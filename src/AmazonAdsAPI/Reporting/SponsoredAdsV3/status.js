@@ -25,8 +25,11 @@ export async function status(drequest, mrequest) {
   const clientId = account.token.ads_token.client_id;
   const profileId = account.profileId;
 
-  const accesTokenDoc = await authManager.get(account);
-  const accesToken = accesTokenDoc.data();
+  const authRes = await authManager.get(accountDoc);
+  if (authRes.ok != "ok") {
+    return authRes;
+  }
+  const accesToken = authRes.token;
 
   const urlSuffix = amazonCommon.getURLEndPoint("ADS", account.marketplaceIds[0]);
 

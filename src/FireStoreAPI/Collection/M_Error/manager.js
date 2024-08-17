@@ -40,7 +40,7 @@ export class manager {
        * @type {M_Error}
        */
       const data = c.data();
-      if (data.path == data.path && data.status == info.status) {
+      if (data.path == info.path && data.status == info.status) {
         return _.get(root, data.equal.split("/"))(data, info, drequest);
       }
       return false;
@@ -48,7 +48,7 @@ export class manager {
     if (!ret) {
       // トランザクション
       const getfunc = async (tran, obj) => {
-        const query = await fireStoreManager.getQuery("M_Error", [["ref", "==", drequest.requestInfo.ref], ["status", "==", info.status], ["response", "==", info.response]], [], 1);
+        const query = await fireStoreManager.getQuery("M_Error", [["status", "==", info.status], ["response", "==", info.response]], [], 1);
         const snapshot = await tran.get(query);
         for await (const doc of snapshot.docs) {
           /**

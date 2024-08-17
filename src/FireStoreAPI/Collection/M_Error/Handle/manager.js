@@ -13,7 +13,6 @@ export class manager {
      * @param {D_ReportRequest} drequest 
      */
     async skipOnce(drequest) {
-        // 日付のみ更新
         return {
             lock: true,
         }
@@ -61,8 +60,8 @@ export class manager {
      * 
      * @param {D_ReportRequest} drequest 
      */
-    async rateLimit(drequest, res, info) {
-        if(info)
+    async rateLimit(drequest, info) {
+        if (info)
             info.delay++;
         return {
             lock: false

@@ -15,16 +15,16 @@ export default async function check(json) {
     // Ads-API 検証
     //auth
     const ads = _.get(json, ["ads_token"]);
-    const accessToken = await get.get(ads["client_id"], ads["client_secret"], ads["refresh_token"]);
-    if (!accessToken) {
+    const adsAuthRes = await get.get(ads["client_id"], ads["client_secret"], ads["refresh_token"]);
+    if (adsAuthRes.ok != "ok") {
         logger.warn("[チェック失敗][ADS-API][アクセストークン取得失敗]");
         return false;
     }
     else {
-        ads.accessToken = accessToken;
+        ads.accessToken = adsAuthRes.token;
     }
 
-    const profiles = await profileManager.get(ads["client_id"], accessToken.access_token);
+    const profiles = await profileManager.get(ads["client_id"], ads.accessToken.access_token);
 
     var profile = _.find(profiles, (val => _.get(val, ["profileId"]) == json.profileId));
     if (!profile || profile.accountInfo.id != json.sellerId) {
@@ -38,17 +38,17 @@ export default async function check(json) {
     // SP-API 検証
     // Auth
     const sp = json["sp_token"];
-    const spAccessToken = await spget.get(sp["client_id"], sp["client_secret"], sp["refresh_token"]);
-    if (!spAccessToken) {
+    const spAuthRes = await spget.get(sp["client_id"], sp["client_secret"], sp["refresh_token"]);
+    if (spAuthRes.ok != "ok") {
         logger.warn("[チェック失敗][SP-API][アクセストークン取得失敗]");
         return false;
     }
     else {
-        sp.accessToken = spAccessToken;
+        sp.accessToken = spAuthRes.token;
     }
 
     // Fees
-    const fees = await feesManager.get(spAccessToken.access_token);
+    const fees = await feesManager.get(sp.accessToken.access_token);
     const data = _.get(fees, ["payload", "FeesEstimateResult", "FeesEstimateIdentifier"]);
     if (data.SellerId != json.sellerId) {
         logger.warn("[チェック失敗][SP-API][セラーID不整合]");

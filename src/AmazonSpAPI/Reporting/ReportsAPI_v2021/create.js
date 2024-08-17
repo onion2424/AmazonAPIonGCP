@@ -22,8 +22,11 @@ export async function create(drequest, mrequest) {
    */
   const account = accountDoc.data();
 
-  const accesTokenDoc = await authManager.get(account);
-  const accesToken = accesTokenDoc.data();
+  const authRes = await authManager.get(accountDoc);
+  if (authRes.ok != "ok") {
+    return authRes;
+  }
+  const accesToken = authRes.token;
 
   // 日付情報を付与
   const detail = mrequest.details.find(d => d.refName == drequest.requestInfo.refName);

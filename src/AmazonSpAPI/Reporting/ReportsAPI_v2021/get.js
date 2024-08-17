@@ -21,8 +21,12 @@ export async function get(drequest, mrequest) {
    * @type {M_Account}
    */
   const account = accountDoc.data();
-  const accesTokenDoc = await authManager.get(account);
-  const accesToken = accesTokenDoc.data();
+  
+  const authRes = await authManager.get(accountDoc);
+  if (authRes.ok != "ok") {
+    return authRes;
+  }
+  const accesToken = authRes.token;
 
   const urlSuffix = amazonCommon.getURLEndPoint("SP", account.marketplaceIds[0]);
 
