@@ -1325,7 +1325,7 @@ import FirestoreManager from "../../manager.js"
                     settings: {
                         date:
                         {
-                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate",
+                            path: "AmazonSpAPI/Reporting/ReportsAPI_v2021/Settings/Date/getDate2",
                         },
                         save:
                         {

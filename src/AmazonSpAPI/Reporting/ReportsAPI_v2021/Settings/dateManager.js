@@ -27,6 +27,22 @@ class manager {
         };
         return ret;
     }
+
+    /**
+     * 
+     * @param {dayjs.Dayjs} date 
+     * @param {*} granulatiry 
+     * @param {*} timezone 
+     */
+    getDate2(date, granulatiry, timezone) {
+        let start = date.tz(timezone, true);
+        let end = date.tz(timezone, true).add(1, "day").add(-1, "millisecond");
+        let ret = {
+            start: start.add(start.utcOffset(), "minute").format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+            end: end.add(end.utcOffset(), "minute").format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+        };
+        return ret;
+    }
 }
 
 
