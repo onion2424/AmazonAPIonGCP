@@ -125,7 +125,7 @@ class systemInfoClass {
         /**
          * 定時実行時間(minutes)
          */
-        this.scheduleTime = 90;
+        this.scheduleTime = 510;
     }
     isTest() {
         return this.mode == "TEST";
