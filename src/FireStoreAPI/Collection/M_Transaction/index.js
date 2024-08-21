@@ -71,6 +71,7 @@ const GetBrandAnalysticsSearchTermsReport = requests.find(r => r.tag == "検索�
             { ref: sbCampaigns.ref, refName: sbCampaigns.refName, settings: { dateback: systemInfo.isTest() ? 1 : 60 } },
             { ref: sdAdvertisedProduct.ref, refName: sdAdvertisedProduct.refName, settings: { dateback: systemInfo.isTest() ? 1 : 60 } },
             { ref: getSalesAndTrafficReport.ref, refName: getSalesAndTrafficReport.refName, settings: { dateback: systemInfo.isTest() ? 1 : 0 } },
+            { ref: getMerchantListingsAllData.ref, refName: getMerchantListingsAllData.refName, settings: { dateback: systemInfo.isTest() ? 1 : 0 } },
             { ref: GetFlatFileAllOrdersDataByOrderDateGeneral.ref, refName: GetFlatFileAllOrdersDataByOrderDateGeneral.refName, settings: { dateback: systemInfo.isTest() ? 1 : 0 } },
         ],
         valid: true,
