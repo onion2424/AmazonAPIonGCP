@@ -96,7 +96,7 @@ async function runAsync(accountDoc, syncObj) {
         const count = await getAllRequest(date, accountDoc);
         if (count == 0) {
             await fireStoreManager.updateRef(syncObj.stateDoc.ref, { accountRefs: FieldValue.arrayRemove(accountDoc) });
-            logger.info(`[全件取得完了][バッチ処理終了][${account.tag}]`);
+            logger.info(`[全件取得完了][バッチ処理終了][@PUSH][${account.tag}]`);
             return;
         }
         else {
