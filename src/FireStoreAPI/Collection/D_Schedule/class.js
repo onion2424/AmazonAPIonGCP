@@ -20,4 +20,5 @@ export const D_Schedule = {
     date: null,
     accountRef: null,
     transactionRef: null,
+    lock: false,
 }

@@ -31,6 +31,11 @@ export async function finalize(mtranDoc, dtranDoc, accountDoc) {
     for(const doc of docs){
         batch.update(doc.ref, { transactionRefs: FieldValue.arrayRemove(dtranDoc.ref) });
     }
+
+    //D_Scheduleを開放
+    let doc = (await firestoreManager.getDocs("D_Schedule", [["accountRef", "==", accountDoc.ref], ["transactionRef", "==", mtranDoc.ref]]))[0];
+    batch.update(doc.ref, { lock: false});
+
     await firestoreManager.commitBatch(batch);
     logger.info(`[ファイナライズ終了][ステータス(REGULARREPORT)][${mtran.tag}]`);
     return;

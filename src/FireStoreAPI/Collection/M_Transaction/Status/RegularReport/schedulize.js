@@ -48,6 +48,12 @@ export async function schedulize(date, accountDoc, mtranDoc) {
          */
         const dschedule = doc.data();
 
+        // ロックされている場合はパス
+        if(dschedule.lock){
+            logger.warn(`[パス][前回スケジュール未終了][${mtran.tag}]`);
+            return;
+        }
+
         if (dayjs(dschedule.date.toDate()).startOf("second") <= date.startOf("second")) {
             const batch = await fireStoreManager.createBatch();
             // D_Transactionを作成
@@ -55,12 +61,12 @@ export async function schedulize(date, accountDoc, mtranDoc) {
             const dtran = D_TransactionManager.create(mtranDoc, accountDoc.ref, date);
             dtran.spans = [...Array(date.startOf("day").diff(dayjs(dschedule.date.toDate()).startOf("day"), "day") + 1)].map((_, i) => i);
             batch.set(dtranRef, dtran);
-            batch.update(doc.ref, { date: Timestamp.fromDate(date.add(1, 'day').startOf('day').toDate()) });
+            batch.update(doc.ref, { date: Timestamp.fromDate(date.add(1, 'day').startOf('day').toDate()), lock:true });
             await fireStoreManager.commitBatch(batch);
-            logger.info(`[更新][${mtran.tag}]`);
+            logger.info(`[更新][スケジューリング][${mtran.tag}]`);
         }
         else {
-            logger.info(`[パス][${mtran.tag}]`);
+            logger.info(`[パス][スケジューリング済み][${mtran.tag}]`);
         }
     }
 }
