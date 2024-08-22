@@ -45,7 +45,7 @@ async function main() {
     await collectiomManager.caching();
 
     // アカウント分起動する
-    const syncObj = { abort: false, state: state, delay: new Map() };
+    const syncObj = { abort: false, state: state, rateLimit: rateLimit };
     while (true) {
         let first = true;
         if (systemInfo.sigterm) {
@@ -82,8 +82,6 @@ async function createTasks(syncObj, first) {
         const accountDoc = await collectiomManager.get(accountRef);
         const account = accountDoc.data();
         if (!account.valid) continue;
-        if(first)
-            syncObj.delay.set(accountRef.path, {delay: 0});
         tasks.push(runAsync(accountDoc, syncObj, first));
         // 5秒待機
         await utils.wait(5);
@@ -98,7 +96,6 @@ async function createTasks(syncObj, first) {
  * @param {boolean} first
  */
 async function runAsync(accountDoc, syncObj, first) {
-    const delay = syncObj.delay.get(accountDoc.ref.path);
     /**
      * @type {M_Account}
      */
@@ -126,7 +123,10 @@ async function runAsync(accountDoc, syncObj, first) {
                      * @type {M_Request}
                      */
                     const mrequest = mrequestDoc.data();
-                    batch.update(doc.ref, { requestTime: Timestamp.fromDate(firstDate.add(allocation(mrequest.statuses.find(s => s.status == drequest.status).path), "minute").toDate()), lock: false });
+                    let allocDate = firstDate.add(allocation(mrequest.statuses.find(s => s.status == drequest.status).path), "minute");
+                    if (allocDate >= systemInfo.nextTime)
+                        continue;
+                    batch.update(doc.ref, { requestTime: Timestamp.fromDate(allocDate.toDate()), lock: false });
                 }
                 await fireStoreManager.commitBatch(batch);
                 logger.info(`[リクエスト復活][${account.tag}][${docs.length}件][割り当て時刻=${firstDate.format("YYYY-MM-DD HH:mm:ss")}～]`);
@@ -142,19 +142,18 @@ async function runAsync(accountDoc, syncObj, first) {
     try {
         while (!systemInfo.sigterm && !syncObj.abort) {
             const date = dayjs();
-            const obj = await getRequest(date, accountDoc, delay);
+            const obj = await getRequest(date, accountDoc);
             const drequestDocs = obj.docs;
             if (!drequestDocs.length) {
                 // 終了判定
-                const next = await getNextRequest(date, accountDoc, delay);
+                const next = await getNextRequest(date, accountDoc);
                 if (!next.length) {
                     logger.info(`[タスク終了][アカウント=${account.tag}]`);
                     return;
                 }
 
                 const diff = dayjs(next[0].data().requestTime.toDate()).diff(dayjs(), "second");
-                if (diff > 0)
-                {
+                if (diff > 0) {
                     const waitMinutes = Math.ceil(diff / 60);
                     logger.debug(`${waitMinutes}分待機`);
                     await utils.wait(waitMinutes * 60);
@@ -187,14 +186,14 @@ async function runAsync(accountDoc, syncObj, first) {
                         // TimeStampに戻す https://stackoverflow.com/questions/57898146/firestore-timestamp-gets-saved-as-map
                         res.reportInfo.created = new Timestamp(res.reportInfo.created._seconds, res.reportInfo.created._nanoseconds);
                     }
-                    if("expiration" in res.reportInfo && res.reportInfo.expiration){
+                    if ("expiration" in res.reportInfo && res.reportInfo.expiration) {
                         res.reportInfo.expiration = new Timestamp(res.reportInfo.expiration._seconds, res.reportInfo.expiration._nanoseconds);
                     }
                     await fireStoreManager.updateRef(drequestDoc.ref, { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, lock: false });
                     logger.info(`[リクエスト更新][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${drequest.status}⇒${nextStatus}]`);
                 }
                 // invalidならアカウント無効
-                else if (res.ok == "invalid"){
+                else if (res.ok == "invalid") {
                     _.remove(syncObj.state.accountRefs, r => r.path == accountDoc.ref.path);
                     fireStoreManager.updateRef(accountDoc.ref, { valid: false });
                     logger.error(`[アカウント無効][${account.tag}][Valid Off]`);
@@ -203,14 +202,14 @@ async function runAsync(accountDoc, syncObj, first) {
                 // errorならPG上のエラーハンドリング
                 else if (res.ok == "error") {
                     const error = res.error;
-                    const handled = await _.get(root, error.handle.split("/"))(drequest, delay);
+                    const handled = await _.get(root, error.handle.split("/"))(drequest, syncObj);
                     await fireStoreManager.updateRef(drequestDoc.ref, handled);
                     logger.warn(`[エラーハンドリング][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
                 // ngならDBを参照してエラーハンドリング
                 else if (res.ok == "ng") {
                     const error = await M_ErrorManager.getOrAdd(drequest, res.error);
-                    const handled = await _.get(root, error.handle.split("/"))(drequest, delay);
+                    const handled = await _.get(root, error.handle.split("/"))(drequest, syncObj);
                     await fireStoreManager.updateRef(drequestDoc.ref, handled);
                     logger.warn(`[エラーハンドリング][${account.tag}][${mrequest.tag}][${detail.tag}][${drequest.requestInfo.date.start}][${error.tag}][${error.handle}]`);
                 }
@@ -231,13 +230,12 @@ async function runAsync(accountDoc, syncObj, first) {
  * トランザクション処理を行い、リクエストを取得します。
  * @param {dayjs.Dayjs} date
  * @param {DocumentSnapshot} accountDoc 
- * @param {*} info
  */
-async function getRequest(date, accountDoc, info) {
+async function getRequest(date, accountDoc) {
     //transactin
     const getfunc = async (tran, obj) => {
         // 時間のorderbyでとってくる。0件なら終了
-        const query = await fireStoreManager.getQuery("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"], ["lock", "==", false], ["requestTime", "<=", Timestamp.fromDate(date.add(-info.delay, "minute").toDate())]]);
+        const query = await fireStoreManager.getQuery("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"], ["lock", "==", false], ["requestTime", "<=", Timestamp.fromDate(date.toDate())]]);
         const snapshot = await tran.get(query);
         obj.docs = snapshot.docs;
     }
@@ -263,7 +261,7 @@ async function getPreviewRequest(date, accountDoc) {
 }
 
 async function getMaxDate(date, accountDoc) {
-    return fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"]], [{ column: "requestTime", direction: "desc" }], 1);
+    return fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"], ["requestTime", "<", Timestamp.fromDate(systemInfo.nextTime.toDate())]], [{ column: "requestTime", direction: "desc" }], 1);
 }
 
 
@@ -273,8 +271,8 @@ async function getMaxDate(date, accountDoc) {
  * @param {DocumentSnapshot} accountDoc 
  * @param {*} info
  */
-async function getNextRequest(date, accountDoc, info) {
-    return await fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"], ["lock", "==", false], ["requestTime", ">", Timestamp.fromDate(date.add(-info.delay, "minute").toDate())], ["requestTime", "<", Timestamp.fromDate(systemInfo.nextTime.add(-info.delay, "minute").toDate())]], [{ column: "requestTime", direction: "asc" }], 1);
+async function getNextRequest(date, accountDoc) {
+    return await fireStoreManager.getDocs("D_ReportRequest", [["accountRef", "==", accountDoc.ref], ["status", "!=", "COMPLETED"], ["lock", "==", false], ["requestTime", ">", Timestamp.fromDate(date.toDate())], ["requestTime", "<", Timestamp.fromDate(systemInfo.nextTime.toDate())]], [{ column: "requestTime", direction: "asc" }], 1);
 }
 
 /**
@@ -302,4 +300,20 @@ async function startup() {
     return await fireStoreManager.transaction([getfunc], [writefunc]);
 }
 
+// ------------------エラー時処理--------------------------------//
+/**
+ * 
+ * @param {S_RunningState} state 
+ * @returns 
+ */
+async function rateLimit(accountRef, state) {
+    const accountDoc = await collectiomManager.get(accountRef);
+    const date = dayjs(state.nextTime.toDate());
+    const maxDoc = await getMaxDate(date, accountDoc);
+    const ret = dayjs(maxDoc[0].data().requestTime.toDate()).add(1, "minute");
+    if(ret >= systemInfo.nextTime)
+        return null;
+    return ret;
+}
+// -------------------------------------------------------------//
 await main();

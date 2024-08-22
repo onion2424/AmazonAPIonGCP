@@ -8,21 +8,13 @@ export class manager {
     constructor() {
     }
 
-    /**
-     * 
-     * @param {D_ReportRequest} drequest 
-     */
-    async skipOnce(drequest) {
+    async skipOnce() {
         return {
             lock: true,
         }
     }
 
-    /**
-     * 
-     * @param {D_ReportRequest} drequest 
-     */
-    async cancel(drequest) {
+    async cancel() {
         // statusを更新
         return {
             status: "COMPLETED",
@@ -31,11 +23,7 @@ export class manager {
         }
     }
 
-    /**
-     * 
-     * @param {D_ReportRequest} drequest 
-     */
-    async createStatus(drequest) {
+    async createStatus() {
         // statusを更新
         return {
             status: "CREATE",
@@ -44,10 +32,6 @@ export class manager {
         }
     }
 
-    /**
-     * 
-     * @param {D_ReportRequest} drequest 
-     */
     async downloadStatus(drequest) {
         // statusを更新
         return {
@@ -59,12 +43,23 @@ export class manager {
     /**
      * 
      * @param {D_ReportRequest} drequest 
+     * @param {*} syncObj 
+     * @returns 
      */
-    async rateLimit(drequest, info) {
-        if (info)
-            info.delay++;
+    async rateLimit(drequest, syncObj) {
+        if(syncObj){
+            /**
+             * @type{dayjs.Dayjs}
+             */
+            const requestTime = await syncObj.rateLimit(drequest.accountRef, syncObj.state);
+            if(requestTime)
+                return {
+                    requestTime: Timestamp.fromDate(requestTime.toDate()),
+                    lock: false,
+                }
+        }
         return {
-            lock: false
+            lock: true,
         }
     }
 }
