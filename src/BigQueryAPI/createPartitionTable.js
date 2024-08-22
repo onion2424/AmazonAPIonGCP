@@ -27,11 +27,18 @@ export async function createPartitionTable(bigquery, datasetId, tableId, options
     try {
         await dataset.table(tableId).get();
         // 存在するなら削除
-        await bigquery
-            .dataset(datasetId)
-            .table(tableId)
-            .delete();
-        logger.info(`[テーブル削除(old)][${datasetId}][${tableId}]`);
+        if (systemInfo.isTest()) {
+            await bigquery
+                .dataset(datasetId)
+                .table(tableId)
+                .delete();
+            logger.info(`[テーブル削除(old)][${datasetId}][${tableId}]`);
+        }
+        else{
+            logger.info(`[テーブル作成パス][${datasetId}][${tableId}]`);
+            return;
+        }
+
     } catch (e) {
 
     }
