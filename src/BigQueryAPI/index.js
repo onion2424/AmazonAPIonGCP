@@ -1,6 +1,6 @@
 import {BigQuery} from "@google-cloud/bigquery"
 
-const keyFilename = './AmazonApiServiceKey/amazon-api-report-48665c60d888.json';
+const keyFilename = './AmazonApiServiceKey/amazon-api-report-07711e863385.json';
 
 const bigquery = new BigQuery(
     {

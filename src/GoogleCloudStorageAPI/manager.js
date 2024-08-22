@@ -11,7 +11,7 @@ import { _, logger } from "../Common/common.js";
 import {Storage} from '@google-cloud/storage';
 
 // Creates a client
-const keyFilename = './AmazonApiServiceKey/amazon-api-report-48665c60d888.json';
+const keyFilename = './AmazonApiServiceKey/amazon-api-report-07711e863385.json';
 const bucketName = 'amazon-api-report';
 const storage = new Storage({keyFilename: keyFilename});
 

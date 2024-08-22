@@ -4,7 +4,7 @@ import { loadFromGCS } from "./loadFromGCS.js"
 import { createPartitionTable } from "./createPartitionTable.js";
 import { BigQuery } from '@google-cloud/bigquery';
 
-const keyFilename = './AmazonApiServiceKey/amazon-api-report-48665c60d888.json';
+const keyFilename = './AmazonApiServiceKey/amazon-api-report-07711e863385.json';
 
 const test = systemInfo.isTest() ? "Test" : "";
 
