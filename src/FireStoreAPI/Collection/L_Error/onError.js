@@ -81,7 +81,7 @@ export async function onFireStoreError(job, version, mode, error, doc) {
             const ref = fireStoreManager.createRef("L_Error");
             // FireStoreエラーの時はキャッチなし
             //await ref.set(create(job, error, doc));
-            await fireStoreManager.setRef(ref, create(job, version, error, doc));
+            await ref.set(create(job, version, error, doc));
         } catch (e) {
             // FireStoreのエラー時は握りつぶす
         }
