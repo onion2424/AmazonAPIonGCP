@@ -12,6 +12,7 @@ import { create } from "./create.js"
  */
 export async function onSystemError(job, version, mode, error, doc) {
     if (error.logged) return;
+    error.logged = true;
     if (mode.includes("WRITE")) {
         logger.error(`[システムエラー発生][エラー内容表示]`, error);
     }
@@ -19,7 +20,6 @@ export async function onSystemError(job, version, mode, error, doc) {
         const ref = fireStoreManager.createRef("L_Error");
         await fireStoreManager.setRef(ref, create(job, version, error, doc));
     }
-    error.logged = true;
 }
 
 /**
@@ -32,6 +32,7 @@ export async function onSystemError(job, version, mode, error, doc) {
  */
 export async function onRequestError(job, version, mode, error, doc) {
     if (error.logged) return;
+    error.logged = true;
     if (mode.includes("WRITE")) {
         logger.error(`[リクエストエラー発生][エラー内容表示]`, error);
     }
@@ -39,7 +40,6 @@ export async function onRequestError(job, version, mode, error, doc) {
         const ref = fireStoreManager.createRef("L_Error");
         await fireStoreManager.setRef(ref, create(job, version, error, doc));
     }
-    error.logged = true;
 }
 
 /**
@@ -52,6 +52,7 @@ export async function onRequestError(job, version, mode, error, doc) {
  */
 export async function onGCSError(job, version, mode, error, doc) {
     if (error.logged) return;
+    error.logged = true;
     if (mode.includes("WRITE")) {
         logger.error(`[GCSエラー発生][エラー内容表示]`, error);
     }
@@ -59,7 +60,6 @@ export async function onGCSError(job, version, mode, error, doc) {
         const ref = fireStoreManager.createRef("L_Error");
         await fireStoreManager.setRef(ref, create(job, version, error, doc));
     }
-    error.logged = true;
 }
 
 /**
@@ -72,6 +72,7 @@ export async function onGCSError(job, version, mode, error, doc) {
  */
 export async function onFireStoreError(job, version, mode, error, doc) {
     if (error.logged) return;
+    error.logged = true;
     if (mode.includes("WRITE")) {
         logger.error(`[FireStoreエラー発生][エラー内容表示]`, error);
     }
@@ -85,5 +86,4 @@ export async function onFireStoreError(job, version, mode, error, doc) {
             // FireStoreのエラー時は握りつぶす
         }
     }
-    error.logged = true;
 }
