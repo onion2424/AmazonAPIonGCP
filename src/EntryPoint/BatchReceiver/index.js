@@ -127,8 +127,23 @@ async function runAsync(accountDoc, syncObj) {
                 // 実行
                 const status = mrequest.statuses.find(s => s.status == drequest.status);
                 const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
-
-                if (res.ok == "ok") {
+                
+                // ステータスなら回数を確認
+                if (res.ok == "ok" && !res.next){
+                    const nextStatus = drequest.status;
+                    let update = {};
+                    if(res.reportInfo.continue > 9){
+                        update = await _.get(root, "FireStoreAPI/Collection/M_Error/Handle/skipOnce".split("/"))(drequest, syncObj);
+                        update.reportInfo = res.reportInfo;
+                    }
+                    else{
+                        const nextTime = Timestamp.fromDate(dayjs().add(1, "minute").toDate());
+                        update = { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, lock: false };
+                    }
+                    await fireStoreManager.updateRef(doc.ref, update);
+                }
+                // okなら次へ進める
+                else if (res.ok == "ok") {
                     const index = drequest.statuses.indexOf(drequest.status);
                     const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
                     // 1分後にする

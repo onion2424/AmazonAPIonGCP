@@ -177,10 +177,30 @@ async function runAsync(accountDoc, syncObj, first) {
                 // 実行
                 const status = mrequest.statuses.find(s => s.status == drequest.status);
                 const res = await _.get(root, status.path.split("/"))(drequest, mrequest);
-
-                if (res.ok == "ok") {
+                
+                // ステータスなら回数を確認
+                if (res.ok == "ok" && !res.next){
+                    const nextStatus = drequest.status;
+                    let update = {};
+                    // 3回目のスキップでキャンセル
+                    if(res.reportInfo.continue > 12){
+                        update = await _.get(root, "FireStoreAPI/Collection/M_Error/Handle/cancel".split("/"))(drequest, syncObj);
+                        update.reportInfo = res.reportInfo;
+                    }
+                    if(res.reportInfo.continue > 9){
+                        update = await _.get(root, "FireStoreAPI/Collection/M_Error/Handle/skipOnce".split("/"))(drequest, syncObj);
+                        update.reportInfo = res.reportInfo;
+                    }
+                    else{
+                        const nextTime = Timestamp.fromDate(dayjs().add(1, "minute").toDate());
+                        update = { requestTime: nextTime, reportInfo: res.reportInfo, status: nextStatus, lock: false };
+                    }
+                    await fireStoreManager.updateRef(drequestDoc.ref, update);
+                }
+                // okなら次へ進める
+                else if (res.ok == "ok") {
                     const index = drequest.statuses.indexOf(drequest.status);
-                    const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
+                    const nextStatus = drequest.statuses[index + 1] || "COMPLETED";
                     const nextTime = Timestamp.fromDate(dayjs().add(1, "minute").toDate());
                     if ("created" in res.reportInfo && res.reportInfo.created) {
                         // TimeStampに戻す https://stackoverflow.com/questions/57898146/firestore-timestamp-gets-saved-as-map

@@ -64,18 +64,6 @@ export async function status(drequest, mrequest) {
       }
       else if (data.processingStatus == "IN_PROGRESS" || data.processingStatus == "IN_QUEUE") {
         reportInfo.continue = reportInfo.continue + 1;
-        if (reportInfo.continue == 10) {
-          const error = M_ErrorManager.create();
-          error.handle = "FireStoreAPI/Collection/M_Error/Handle/skipOnce";
-          error.tag = "1回パス";
-          return { ok: "error", error: error };
-        }
-        // 1回パス後にとれなければあきらめる
-        else if (reportInfo.continue > 10) {
-          const error = M_ErrorManager.create();
-          
-          return { ok: "error", error: error };
-        }
         return { ok: "ok", reportInfo: reportInfo, next: false };
       }
       else if (data.processingStatus == "DONE") {
