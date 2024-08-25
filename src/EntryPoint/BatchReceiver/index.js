@@ -145,7 +145,7 @@ async function runAsync(accountDoc, syncObj) {
                 // okなら次へ進める
                 else if (res.ok == "ok") {
                     const index = drequest.statuses.indexOf(drequest.status);
-                    const nextStatus = res.next ? drequest.statuses[index + 1] || "COMPLETED" : drequest.status;
+                    const nextStatus = drequest.statuses[index + 1] || "COMPLETED";
                     // 1分後にする
                     const nextTime = Timestamp.fromDate(dayjs().add(1, "minute").toDate());
                     if ("created" in res.reportInfo && res.reportInfo.created) {
