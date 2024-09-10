@@ -313,7 +313,8 @@ async function startup() {
         const doc = obj.S_RunningState;
         if (doc) {
             const nextTime = systemInfo.nextTime;
-            tran.update(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
+            if(!systemInfo.isTest())
+                tran.update(doc.ref, { nextTime: Timestamp.fromDate(nextTime.toDate()) });
         }
     }
 
@@ -336,4 +337,5 @@ async function rateLimit(accountRef, state) {
     return ret;
 }
 // -------------------------------------------------------------//
-await main();
+
+main();

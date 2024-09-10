@@ -1,4 +1,4 @@
-import { utils } from '../Common/common.js';
+import { systemInfo, utils } from '../Common/common.js';
 import { Storage } from '@google-cloud/storage';
 import chain from "stream-chain";
 import { pipeline } from 'node:stream/promises';
@@ -13,14 +13,8 @@ import pick from "stream-json/filters/Pick.js";
 import iconv from 'iconv-lite';
 import * as csv from 'fast-csv';
 import L_ErrorManager from "../FireStoreAPI/Collection/L_Error/manager.js";
-
-// Get a reference to the bucket
-
-
-// Create a pass through stream from a string
-// const passthroughStream = new stream.PassThrough();
-// passthroughStream.write(contents);
-// passthroughStream.end();
+import { Readable } from 'node:stream';
+import fs from "node:fs"
 
 /**
  * 
@@ -41,7 +35,7 @@ export async function streamFileUpload(storage, bucketName, destFileName, readab
 
     // Create a reference to a file object
     const file = myBucket.file(destFileName);
-    const writable = file.createWriteStream({timeout: 1000 * 60 * 60,});
+    const writable = file.createWriteStream({ timeout: 1000 * 60 * 60, });
     // const stream = new chain(
     //     [
     //         readable,
@@ -102,6 +96,139 @@ export async function streamFileUpload(storage, bucketName, destFileName, readab
     return ret;
 }
 
+/**
+ * 
+ * @param {Storage} storage 
+ * @param {string} bucketName 
+ * @param {string} destFileName 
+ * @param {ReadableStream} readable
+ * @param {[string]} translaters 
+ * @returns 
+ */
+export async function streamFileUpload2(storage, bucketName, destFileName, readable, translaters, dateStr) {
+    logger.info(`[アップロード開始][バケット名：${bucketName}][ファイル名：${destFileName}]`);
+    let ret = false;
+
+    const myBucket = storage.bucket(bucketName);
+
+    // Create a reference to a file object
+    const file = myBucket.file(destFileName);
+    const writable = file.createWriteStream({ timeout: 1000 * 60 * 60, });
+    //const writable = fs.createWriteStream("./test.gz");
+
+    const test = new Promise((resolve, reject) => {
+        readable.on("readable", () => {
+            let data;
+            while ((data = readable.read()) !== null) {
+                let pause = writable.write(data);
+                if (pause)
+                    readable.pause();
+            }
+        }).on("end", () => {
+            writable.end();
+            resolve(true);
+        })
+            .on("drain", () => {
+                readable.resume();
+            })
+            .on("error", () => {
+                writable.end();
+                reject(false);
+            });
+    })
+
+    ret = await test;
+
+    if (ret) {
+        logger.info(`[アップロード完了][バケット名：${bucketName}][ファイル名：${destFileName}]`);
+    }
+
+    return ret;
+}
+
+/**
+ * onMemory ver
+ * @param {Storage} storage 
+ * @param {string} bucketName 
+ * @param {string} destFileName 
+ * @param {Readable} readable
+ * @param {[string]} translaters 
+ * @returns 
+ */
+export async function streamFileUpload3(storage, bucketName, destFileName, readable, translaters, dateStr) {
+    let ret = false;
+    let data = [];
+    const test = new Promise((resolve, reject) => {
+        let pipes = getTranslaters(translaters, dateStr);
+        // let stream = readable;
+        // for (const pipe of pipes) {
+        //     stream = stream.pipe(pipe);
+        // }
+        let count = 0;
+        readable
+            .on("data", (val) => {
+                if (val?.value.length)
+                    data = val.value;
+            })
+            .on("error", (val) => reject())
+            .on("finish", (val) => {
+                ret = false;
+                resolve();
+            });
+    });
+    await test;
+
+    const array = [];
+
+    const myBucket = storage.bucket(bucketName);
+
+    const file = myBucket.file(destFileName);
+    const writable = file.createWriteStream();
+
+
+    let json = [];
+    let obj;
+    let clickShareRank = 0;
+    for await (const value of data) {
+        clickShareRank = value.clickShareRank;
+        if (clickShareRank == 1) {
+            obj = {};
+            obj.partition_date = dateStr;
+            obj.searchFrequencyRank = value["searchFrequencyRank"];
+            obj.searchTerm = value["searchTerm"];
+        }
+        obj[`clickedAsin${clickShareRank}`] = value["clickedAsin"];
+        obj[`clickedItemName${clickShareRank}`] = value["clickedItemName"];
+        obj[`clickShareRank${clickShareRank}`] = value["clickShareRank"];
+        obj[`clickShare${clickShareRank}`] = value["clickShare"];
+        obj[`conversionShare${clickShareRank}`] = value["conversionShare"];
+        if (clickShareRank == 3) {
+            json.push(obj);
+        }
+    }
+
+    logger.info(`[アップロード開始][バケット名：${bucketName}][ファイル名：${destFileName}]`);
+
+    const test2 = new Promise((resolve, reject) => {
+        writable
+            .on("error", (val) => reject())
+            .on("finish", (val) => {
+                ret = true;
+                resolve();
+            });
+        writable.end(json.map((o) => JSON.stringify(o)).join("\n"));
+    });
+    await test2;
+
+    if (ret) {
+        logger.info(`[アップロード完了][バケット名：${bucketName}][ファイル名：${destFileName}]`);
+    }
+    else {
+        logger.info(`[アップロード失敗][バケット名：${bucketName}][ファイル名：${destFileName}]`)
+    }
+
+    return ret;
+}
 /**
  * @param {[string]} translaters
  * @param {string} dateStr
@@ -182,7 +309,7 @@ function getTranslaters(translaters, dateStr) {
                         }
                         else if (Array.isArray(value) && value.length && "date" in value[0]) {
                         }
-                        else if (Array.isArray(value) && value.length && "childAsin" in value[0]){
+                        else if (Array.isArray(value) && value.length && "childAsin" in value[0]) {
                             value.forEach(v => { v.reportSpecification = reportSpecification; v.partition_date = dateStr; v.cluster_asin = v.childAsin });
                             ret = value.map(v => JSON.stringify(v)).join("\n");
                         }
@@ -232,33 +359,29 @@ function getTranslaters(translaters, dateStr) {
             }
             case "GetBrandAnalysticsSearchTermsReport": {
                 ret.push(parser());
-                ret.push(pick.pick("dataByDepartmentAndSearchTerm"));
-                ret.push(new streamArray());
+                ret.push(pick.pick({ filter: "dataByDepartmentAndSearchTerm" }));
+                ret.push(new streamArray);
                 ret.push(async function* (source) {
+                    let obj;
                     let clickShareRank = 0;
-                    let ret = {};
                     for await (const { value } of source) {
                         clickShareRank = value.clickShareRank;
                         if (clickShareRank == 1) {
-                            ret = value;
-                            ret.partition_date = dateStr;
-                            delete ret[`clickedAsin`];
-                            delete ret[`clickedItemName`];
-                            delete ret[`clickShareRank`];
-                            delete ret[`clickShare`];
-                            delete ret[`conversionShare`];
-                            delete ret[`departmentName`];
+                            obj = {};
+                            obj.partition_date = dateStr;
+                            obj.searchFrequencyRank = value["searchFrequencyRank"];
+                            obj.searchTerm = value["searchTerm"];
                         }
-                        ret[`clickedAsin${clickShareRank}`] = value["clickedAsin"];
-                        ret[`clickedItemName${clickShareRank}`] = value["clickedItemName"];
-                        ret[`clickShareRank${clickShareRank}`] = value["clickShareRank"];
-                        ret[`clickShare${clickShareRank}`] = value["clickShare"];
-                        ret[`conversionShare${clickShareRank}`] = value["conversionShare"];
-                        if(clickShareRank == 3){
-                            yield value.map(v => JSON.stringify(v)).join("\n");
-                        }else{
+                        obj[`clickedAsin${clickShareRank}`] = value["clickedAsin"];
+                        obj[`clickedItemName${clickShareRank}`] = value["clickedItemName"];
+                        obj[`clickShareRank${clickShareRank}`] = value["clickShareRank"];
+                        obj[`clickShare${clickShareRank}`] = value["clickShare"];
+                        obj[`conversionShare${clickShareRank}`] = value["conversionShare"];
+                        if (clickShareRank == 3) {
+                            yield JSON.stringify(obj) + "\n";
+                        } else {
                             yield "";
-                        }                        
+                        }
                     }
                 });
                 break;

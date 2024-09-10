@@ -23,6 +23,7 @@ export default async function save(json) {
 
     const accountDocRef = fireStoreManager.createRef("M_Account");
     const account = M_AccountManager.create(json, null, spDocRef);
+    account.timezone = 'Asia/Tokyo';
     // システムコールを追加
     account.schedules.push("systemCall");
 

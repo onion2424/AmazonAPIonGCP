@@ -31,15 +31,25 @@ class manager {
     /**
      * 
      * @param {dayjs.Dayjs} date 
-     * @param {*} granulatiry 
+     * @param {*} granularity 
      * @param {*} timezone 
      */
-    getDate2(date, granulatiry, timezone) {
+    getDate2(date, granularity, timezone) {
         let start = date.tz(timezone, true);
         let end = date.tz(timezone, true).add(1, "day").add(-1, "millisecond");
         let ret = {
             start: start.add(start.utcOffset(), "minute").format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
             end: end.add(end.utcOffset(), "minute").format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+        };
+        return ret;
+    }
+
+    getDate3(date, granularity, timezone){
+        let start = date;
+        let end = date.add(1, "day").add(-1, "millisecond");
+        let ret = {
+            start: start.format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z",
+            end: end.format("YYYY-MM-DDTHH:mm:ss.SSS") + "Z",
         };
         return ret;
     }

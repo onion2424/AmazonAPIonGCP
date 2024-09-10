@@ -21,21 +21,25 @@ export async function schedulize(date, accountDoc, mtranDoc) {
     //該当するD_Scheduleを取得
     let doc = (await fireStoreManager.getDocs("D_Schedule", [["accountRef", "==", accountDoc.ref], ["transactionRef", "==", mtranDoc.ref]]))[0];
     if (!doc) {
+        /*
         const batch = await fireStoreManager.createBatch();
 
         // D_Scheduleがなければ作成
         const dschedule = D_ScheduleManager.create(accountDoc, mtranDoc, date);
 
         // D_Transactionを作成
-        const dtranRef = fireStoreManager.createRef("D_Transaction");
+        // firstreportがあれば、それまでの差分を埋める必要がある
+        const dtranRef = await fireStoreManager.createRef("D_Transaction");
         batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, dayjs(dschedule.date.toDate())));
 
         // 当日のは使用済みとし、翌日にする
         dschedule.date = Timestamp.fromDate(date.add(1, 'day').toDate());
-        const dscheduleRef = fireStoreManager.createRef("D_Schedule");
+        const dscheduleRef = await fireStoreManager.createRef("D_Schedule");
         batch.set(dscheduleRef, dschedule);
         await fireStoreManager.commitBatch(batch);
         logger.info(`[新規][${mtran.tag}]`);
+        */
+        throw new Error("D_Scheduleなし");
     }
     else {
         // あれば日時を見て、今より小さければD_Transactionに展開
@@ -44,17 +48,25 @@ export async function schedulize(date, accountDoc, mtranDoc) {
          */
         const dschedule = doc.data();
 
+        // ロックされている場合はパス
+        if(dschedule.lock){
+            logger.warn(`[パス][前回スケジュール未終了][${mtran.tag}]`);
+            return;
+        }
+
         if (dayjs(dschedule.date.toDate()).startOf("second") <= date.startOf("second")) {
             const batch = await fireStoreManager.createBatch();
             // D_Transactionを作成
-            const dtranRef = fireStoreManager.createRef("D_Transaction");
-            batch.set(dtranRef, D_TransactionManager.create(mtranDoc, accountDoc.ref, dayjs(dschedule.date.toDate())));
-            batch.update(doc.ref, { date: Timestamp.fromDate(dayjs(dschedule.date.toDate()).add(1, 'day').startOf('day').toDate()) });
+            const dtranRef = await fireStoreManager.createRef("D_Transaction");
+            const dtran = D_TransactionManager.create(mtranDoc, accountDoc.ref, date);
+            dtran.spans = [...Array(date.startOf("day").diff(dayjs(dschedule.date.toDate()).startOf("day"), "day") + 1)].map((_, i) => i);
+            batch.set(dtranRef, dtran);
+            batch.update(doc.ref, { date: Timestamp.fromDate(date.add(1, 'day').startOf('day').toDate()), lock:true });
             await fireStoreManager.commitBatch(batch);
-            logger.info(`[更新][${mtran.tag}]`);
+            logger.info(`[更新][スケジューリング][${mtran.tag}]`);
         }
         else {
-            logger.info(`[パス][${mtran.tag}]`);
+            logger.info(`[パス][スケジューリング済み][${mtran.tag}]`);
         }
     }
 }

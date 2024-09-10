@@ -62,7 +62,7 @@ export async function download(drequest, mrequest) {
       //     console.log(e);
       //     return true;
       //   })
-      const uploaded = await storageManager.streamFileUpload(destFileName, Readable.fromWeb(response.body), []);
+      const uploaded = await storageManager.streamFileUpload2(destFileName, Readable.fromWeb(response.body), []);
       // ステータス更新
       const reportInfo = structuredClone(drequest.reportInfo);
       if (uploaded) {
