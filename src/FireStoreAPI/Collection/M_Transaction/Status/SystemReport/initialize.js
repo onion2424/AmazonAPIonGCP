@@ -27,8 +27,8 @@ export async function initialize(batch, mtranDoc, dtranDoc, accountDoc) {
      */
     const account = accountDoc.data();
     // timezoneを考慮
-    let diff = dayjs(dtran.date.toDate()).add(2, "hour").tz(account.timezone, true).diff(date, "minutes");
-    // ↑が0なら2時だから、そのままでOK - ならもっとOK +ならそれ分minutesを+する
+    let diff = dayjs(dtran.date.toDate()).add(14, "hour").tz(account.timezone, true).diff(date, "minutes"); // SystemReportは14時にする
+    // ↑が0なら14時だから、そのままでOK - ならもっとOK +ならそれ分minutesを+する
     const firstDate = diff > 0 ? date.add(diff, "minute") : date;
     const allocation = drequestManager.allocation();
     logger.info(`[初期化開始][ステータス(SYSTEMREPORT)][${mtran.tag}]`);

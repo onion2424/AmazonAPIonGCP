@@ -11,7 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\src\\EntryPoint\\Receiver\\index.js",
+            "program": "${workspaceFolder}\\src\\EntryPoint\\UserSetting\\index.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
             ],
